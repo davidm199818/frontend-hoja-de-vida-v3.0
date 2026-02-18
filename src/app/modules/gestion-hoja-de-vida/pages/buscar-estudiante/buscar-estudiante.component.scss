@@ -1,0 +1,142 @@
+body {
+  background-color: #f8f9fc;
+}
+
+h2 {
+  color: #0c2340;
+}
+
+/* Estilo tabla */
+.table thead {
+  background-color: #1a3e73;
+  color: #fff;
+}
+
+.table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #f2f6fa;
+}
+
+.table td, .table th {
+  border: 1px solid #dee2e6;
+  vertical-align: middle;
+}
+
+/* Botón Seleccionar */
+.btn-link {
+  color: #0c2340;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+  color: #1a3e73;
+}
+
+/* Paginación */
+.page-link {
+  color: #0c2340;
+  border-radius: 6px;
+}
+
+.page-link:hover {
+  background-color: #e9ecef;
+  color: #0c2340;
+}
+
+.form-select {
+  min-width: 110px;
+  text-align: center;
+}
+
+/* Input búsqueda */
+.input-group-text {
+  background-color: #fff;
+  border-right: 0;
+}
+
+.form-control {
+  border-left: 0;
+}
+:host ::ng-deep {
+  --blue-dark: #0c2340;     
+  --blue-header: #1a3e73;   
+  --row-alt: #f2f6fa;       
+  --border: #dee2e6;        
+
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 0;
+    box-shadow: 0 6px 18px rgba(27,40,47,0.04);
+  }
+
+  /* TABLA */
+  .table thead th {
+    background-color: var(--blue-header) !important;
+    color: #ffffff !important;
+    border-color: var(--border) !important;
+    font-weight: 600;
+  }
+
+  .table tbody tr:nth-child(even) {
+    background-color: var(--row-alt) !important;
+  }
+
+  .table th,
+  .table td {
+    border: 1px solid var(--border) !important;
+    vertical-align: middle;
+    padding: 12px;
+  }
+
+  .table-hover tbody tr:hover {
+    background-color: #eaf3ff !important;
+  }
+
+  /* Botón Seleccionar */
+  .btn-link {
+    color: var(--blue-dark) !important;
+    font-weight: 600;
+    text-decoration: none !important;
+  }
+  .btn-link:hover {
+    color: var(--blue-header) !important;
+    text-decoration: underline !important;
+  }
+
+  /* Input búsqueda */
+  .input-group .input-group-text {
+    background: #fff;
+    border-right: 0;
+    border-color: var(--border);
+  }
+  .input-group .form-control {
+    border-left: 0;
+    border-color: var(--border);
+  }
+  .input-group .input-group-text i {
+    color: #6c757d;
+  }
+
+  /* Paginación */
+  .pagination .page-link {
+    color: var(--blue-dark);
+    border-radius: 6px;
+    border-color: var(--border);
+  }
+  .pagination .page-link:hover {
+    background-color: #e9ecef;
+    color: var(--blue-dark);
+  }
+  .form-select {
+    min-width: 110px;
+    text-align: center;
+    border-color: var(--border);
+  }
+}

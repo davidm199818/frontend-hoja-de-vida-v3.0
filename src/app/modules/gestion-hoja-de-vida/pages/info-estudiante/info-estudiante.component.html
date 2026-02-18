@@ -1,0 +1,345 @@
+<div class="main-wrapper" *ngIf="historia">
+
+  <!-- ================= ENCABEZADO ================= -->
+  <div class="header-section">
+    <div class="back-button-container">
+      <button class="btn btn-light shadow-sm" (click)="volver()">
+        <i class="fa fa-arrow-left me-2"></i> Atrás
+      </button>
+    </div>
+    <h1 class="title">Generar Hoja de Vida</h1>
+  </div>
+
+  <!-- ================= CONTENIDO PRINCIPAL ================= -->
+  <div class="main-content">
+
+    <!-- ===== TARJETA ESTUDIANTE ===== -->
+    <div class="card-container">
+      <div class="card">
+        <div class="card-header">
+          <h2>Datos del Estudiante</h2>
+        </div>
+        <div class="card-content">
+          <div class="user-icon-container">
+            <i class="pi pi-user"></i>
+          </div>
+          <div class="input-fields">
+            <input type="text" [value]="historia.codigoEstudiante" readonly>
+            <input type="text" [value]="historia.nombreCompleto" readonly>
+            <input type="text" [value]="historia.correoUniversidad" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= MENÚ + TABLAS ================= -->
+    <div class="menu-and-table-section">
+
+      <!-- ===== MENÚ LATERAL ===== -->
+      <div class="sidebar">
+
+        <div class="menu-item"
+             [ngClass]="{'active': activeMenuItem === 'fundamentacion'}"
+             (click)="selectMenuItem('fundamentacion')">
+          Área de Fundamentación
+        </div>
+
+        <div class="menu-item"
+             [ngClass]="{'active': activeMenuItem === 'electivas'}"
+             (click)="selectMenuItem('electivas')">
+          Área de Electivas
+        </div>
+
+        <div class="menu-item"
+             [ngClass]="{'expanded': expandedMenu['investigacion']}"
+             (click)="toggleSubmenu('investigacion')">
+          Área de Investigación
+        </div>
+
+        <div class="submenu" *ngIf="expandedMenu['investigacion']">
+          <div class="submenu-item"
+               [ngClass]="{'active': activeMenuItem === 'asignaturasVistas'}"
+               (click)="selectMenuItem('asignaturasVistas')">
+            Asignaturas Vistas
+          </div>
+
+          <div class="submenu-item"
+               [ngClass]="{'active': activeMenuItem === 'pasantias'}"
+               (click)="selectMenuItem('pasantias')">
+            Pasantías
+          </div>
+
+          <div class="submenu-item"
+               [ngClass]="{'active': activeMenuItem === 'publicaciones'}"
+               (click)="selectMenuItem('publicaciones')">
+            Publicaciones
+          </div>
+        </div>
+
+        <div class="menu-item"
+             [ngClass]="{'expanded': expandedMenu['complementacion']}"
+             (click)="toggleSubmenu('complementacion')">
+          Área de Complementación
+        </div>
+
+        <div class="submenu" *ngIf="expandedMenu['complementacion']">
+          <div class="submenu-item"
+               [ngClass]="{'active': activeMenuItem === 'practicaDocente'}"
+               (click)="selectMenuItem('practicaDocente')">
+            Práctica Docente
+          </div>
+
+          <div class="submenu-item"
+               [ngClass]="{'active': activeMenuItem === 'competenciasEmpresariales'}"
+               (click)="selectMenuItem('competenciasEmpresariales')">
+            Competencias Empresariales
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ================= TABLAS ================= -->
+
+      <!-- FUNDAMENTACIÓN -->
+      <div class="table-container" *ngIf="activeMenuItem === 'fundamentacion'">
+        <div class="card">
+          <div class="card-header"><h2>Área de Fundamentación</h2></div>
+          <div class="card-content">
+            <table class="data-table">
+              <thead>
+              <tr>
+                <th>Periodo</th><th>Código</th><th>Nombre</th><th>Créditos</th><th>Nota</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let a of historia.fundamentacion">
+                <td>{{ a.periodoCursado }}</td>
+                <td>{{ a.codigoMateria }}</td>
+                <td>{{ a.nombreMateria }}</td>
+                <td>{{ a.creditos }}</td>
+                <td>{{ a.notaDefinitiva }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ELECTIVAS -->
+      <div class="table-container" *ngIf="activeMenuItem === 'electivas'">
+        <div class="card">
+          <div class="card-header"><h2>Área de Electivas</h2></div>
+          <div class="card-content">
+            <table class="data-table">
+              <tbody>
+              <tr *ngFor="let a of historia.electivas">
+                <td>{{ a.periodoCursado }}</td>
+                <td>{{ a.codigoMateria }}</td>
+                <td>{{ a.nombreMateria }}</td>
+                <td>{{ a.creditos }}</td>
+                <td>{{ a.notaDefinitiva }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASIGNATURAS INVESTIGACIÓN -->
+      <div class="table-container" *ngIf="activeMenuItem === 'asignaturasVistas'">
+        <div class="card">
+          <div class="card-header"><h2>Asignaturas Investigación</h2></div>
+          <div class="card-content">
+            <table class="data-table">
+              <tr *ngFor="let a of historia.investigacion.asignaturasVistas">
+                <td>{{ a.periodoCursado }}</td>
+                <td>{{ a.codigoMateria }}</td>
+                <td>{{ a.nombreMateria }}</td>
+                <td>{{ a.creditos }}</td>
+                <td>{{ a.notaDefinitiva }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASANTÍAS -->
+      <div class="table-container" *ngIf="activeMenuItem === 'pasantias'">
+        <div class="card">
+          <div class="card-header"><h2>Pasantías</h2></div>
+          <div class="card-content">
+            <table class="data-table">
+              <tr *ngFor="let p of historia.investigacion.pasantias">
+                <td>{{ p.creditosAsignados }}</td>
+                <td>{{ p.acta }}</td>
+                <td>{{ p.fechaInicio }}</td>
+                <td>{{ p.fechaFin }}</td>
+                <td>{{ p.pais }}</td>
+                <td>{{ p.ciudad }}</td>
+                <td>{{ p.universidad }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PUBLICACIONES -->
+      <div class="table-container" *ngIf="activeMenuItem === 'publicaciones'">
+        <div class="card">
+          <div class="card-header"><h2>Publicaciones</h2></div>
+          <div class="card-content">
+            <table class="data-table">
+              <tr *ngFor="let p of historia.investigacion.publicaciones">
+                <td>{{ p.creditosAsignados }}</td>
+                <td>{{ p.acta }}</td>
+                <td>{{ p.nombrePublicacion }}</td>
+                <td>{{ p.tipoPublicacion }}</td>
+                <td>{{ p.fechaAceptacion }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRÁCTICA DOCENTE -->
+      <div class="table-container" *ngIf="activeMenuItem === 'practicaDocente'">
+        <div class="card">
+          <div class="card-header"><h2>Práctica Docente</h2></div>
+          <div class="card-content">
+            <p><strong>Créditos:</strong> {{ historia.complementacion.practicaDocente.creditosAsignados }}</p>
+            <p><strong>Acta:</strong> {{ historia.complementacion.practicaDocente.acta }}</p>
+            <p><strong>N° Actividades:</strong> {{ historia.complementacion.practicaDocente.numeroActividades }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPETENCIAS -->
+      <div class="table-container" *ngIf="activeMenuItem === 'competenciasEmpresariales'">
+        <div class="card">
+          <div class="card-header"><h2>Competencias Empresariales</h2></div>
+          <div class="card-content">
+            <table class="data-table">
+              <tr *ngFor="let a of historia.complementacion.competenciasEmpresariales">
+                <td>{{ a.periodoCursado }}</td>
+                <td>{{ a.codigoMateria }}</td>
+                <td>{{ a.nombreMateria }}</td>
+                <td>{{ a.creditos }}</td>
+                <td>{{ a.notaDefinitiva }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<div class="dashboard">
+
+  <!-- ENCABEZADO -->
+  <header class="dashboard-header">
+    <div>
+      <h1>Información Académica</h1>
+      <p>Seguimiento oficial de requisitos para grado</p>
+    </div>
+
+    <div class="completion-status">
+      <span class="dot"></span>
+      Requisitos completos
+    </div>
+  </header>
+
+  <!-- RESUMEN -->
+  <section class="summary">
+    <div class="summary-left">
+      <h2>40</h2>
+      <span>Créditos aprobados</span>
+    </div>
+
+    <div class="summary-right">
+      <div class="progress-labels">
+        <span>Progreso total</span>
+        <strong>102%</strong>
+      </div>
+
+      <div class="progress-line">
+        <div class="progress-fill"></div>
+      </div>
+
+      <small>42 créditos requeridos</small>
+    </div>
+  </section>
+
+  <!-- REQUISITOS -->
+  <section class="requirements">
+
+    <div class="requirement publication">
+      <h3>Publicación Académica</h3>
+      <p>Mínimo un artículo en revista categoría A, B o C.</p>
+
+      <div class="publication-item">
+        <strong>Proceso para desarrollar pruebas</strong>
+        <div class="chips">
+          <span>Tipo C</span>
+          <span>Colciencias</span>
+        </div>
+      </div>
+
+      <div class="publication-item">
+        <strong>Modelo para desarrollo de pruebas</strong>
+        <div class="chips">
+          <span>Tipo B</span>
+          <span>Colciencias</span>
+        </div>
+      </div>
+
+      <div class="status success">Cumple requisito</div>
+    </div>
+
+    <div class="requirement language">
+      <h3>Idioma Extranjero</h3>
+      <p>Prueba de suficiencia aprobada.</p>
+
+      <div class="language-status approved">
+        ✔ Aprobado
+      </div>
+    </div>
+
+  </section>
+
+  <!-- TRABAJO DE GRADO -->
+  <section class="thesis">
+    <h3>Trabajo de Grado</h3>
+
+    <div class="thesis-block">
+      <label>TÍTULO</label>
+      <p>
+        Modelo sustituto de XGBoost basado en un árbol de decisión explicable
+      </p>
+    </div>
+
+    <div class="thesis-row">
+      <div>
+        <label>DIRECTOR</label>
+        <p>Dr. Carlos Cobos</p>
+      </div>
+
+      <div>
+        <label>CODIRECTOR</label>
+        <p class="muted">No asignado</p>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+  <!-- BOTÓN -->
+  <div class="button-group">
+    <button class="generate-button"
+            (click)="mostrarConfirmacionGenerarHojaDeVida()">
+      Generar Hoja de Vida
+    </button>
+  </div>
+
+</div>
+

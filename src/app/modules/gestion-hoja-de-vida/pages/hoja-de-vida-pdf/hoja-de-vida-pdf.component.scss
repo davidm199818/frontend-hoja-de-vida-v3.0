@@ -1,0 +1,129 @@
+body {
+    background: #f4f6f9;
+    font-family: "Segoe UI", sans-serif;
+    color: #1f3c68;
+}
+
+.document {
+    background: white;
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 60px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* HEADER */
+.university-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 50px;
+}
+
+.university-header img {
+    width: 110px;
+}
+
+.faculty-title {
+    font-weight: 700;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+/* STUDENT */
+.student-section {
+    margin-bottom: 40px;
+}
+
+.student-name {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.student-info {
+    font-size: 18px;
+    margin-bottom: 3px;
+}
+
+.contact-info {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #555;
+}
+
+/* TITULOS */
+.section-title {
+    margin-top: 50px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    font-size: 22px;
+    text-transform: uppercase;
+    border-bottom: 2px solid #1f3c68;
+    padding-bottom: 5px;
+}
+
+/* TABLA */
+.academic-table thead {
+    background: #1f3c68;
+    color: white;
+    font-size: 14px;
+}
+
+.academic-table td,
+.academic-table th {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* DOS COLUMNAS */
+.two-columns {
+    margin-top: 40px;
+}
+
+/* FIRMA */
+.signature {
+    margin-top: 80px;
+}
+
+.signature-line {
+    margin-top: 40px;
+    font-weight: 500;
+}
+
+/* FOOTER */
+.footer {
+    margin-top: 60px;
+    font-size: 13px;
+    color: #555;
+    text-align: center;
+}
+
+/* IMPRESIÓN */
+@media print {
+    body {
+        background: white;
+    }
+
+    .document {
+        box-shadow: none;
+        margin: 0;
+        padding: 40px;
+    }
+}
+
+.top-banner {
+  margin: -20px -20px 30px -20px;
+}
+
+.bottom-banner {
+  margin: 20px -20px -20px -10px;
+}
+
+.top-banner img,
+.bottom-banner img {
+  width: 100%;
+  display: block;
+}
