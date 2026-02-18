@@ -61,10 +61,14 @@ export class BuscarEstudianteComponent implements OnInit {
         });
     }
 
-    seleccionarEstudiante(documento: string): void {
+    seleccionarEstudiante(codigo: string | undefined): void {
+        if (!codigo) {
+            return;
+        }
+
         this.router.navigate([
             '/gestion-hoja-de-vida/info-estudiante',
-            documento
+            codigo
         ]);
     }
 

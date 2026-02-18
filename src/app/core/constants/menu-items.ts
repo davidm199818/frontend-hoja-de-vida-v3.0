@@ -98,6 +98,11 @@ export const menuItems: MenuItem[] = [
         icon: 'pi pi-fw pi-chart-line',
     },
     {
+        label: 'HOJA DE VIDA',
+        icon: 'pi pi-fw pi-folder-open',
+        routerLink: '/gestion-hoja-de-vida',
+    },
+    {
         label: 'TRABAJOS DE GRADO',
         icon: 'pi pi-fw pi-book',
         items: [
@@ -105,11 +110,6 @@ export const menuItems: MenuItem[] = [
                 label: 'Examen de valoracion',
                 icon: 'pi pi-user',
                 routerLink: '/examen-de-valoracion',
-            },
-            {
-                label: 'Generar Hoja de Vida',
-                icon: 'pi pi-user',
-                routerLink: '/gestion-hoja-de-vida',
             },
             {
                 label: 'Seguimiento a egresados',

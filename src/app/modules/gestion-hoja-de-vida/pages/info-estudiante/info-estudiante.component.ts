@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { InformacionService } from '../../services/informacion.service';
 import { HistoriaAcademica } from '../../models/Historia-Academica';
 import { Asignatura } from '../../models/Asignatura';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 interface TableRow {
   periodo: string;
@@ -19,7 +19,7 @@ interface TableRow {
 })
 export class InfoEstudianteComponent implements OnInit {
 
-  codigoEstudiante = '67_23021063814012'; // Usa uno real del backend
+  codigoEstudiante = '';
 
   historia!: HistoriaAcademica;
 
@@ -39,11 +39,19 @@ export class InfoEstudianteComponent implements OnInit {
   competenciasEmpresarialesData: TableRow[] = [];
 
   constructor(
+    private route: ActivatedRoute,
     private router: Router,
     private infoService: InformacionService
   ) {}
 
   ngOnInit(): void {
+    this.codigoEstudiante = this.route.snapshot.paramMap.get('codigo') ?? '';
+
+    if (!this.codigoEstudiante) {
+      this.router.navigate(['/gestion-hoja-de-vida']);
+      return;
+    }
+
     this.cargarHistoriaAcademica();
   }
 
@@ -90,7 +98,8 @@ export class InfoEstudianteComponent implements OnInit {
     this.mostrarDialogoConfirmacionGenerarHojaDeVida = false;
 
   this.router.navigate([
-    '/gestion-hoja-de-vida/hoja-de-vida-pdf/1'
+    '/gestion-hoja-de-vida/hoja-de-vida-pdf',
+    this.codigoEstudiante
   ]);
   }
 
@@ -98,7 +107,8 @@ export class InfoEstudianteComponent implements OnInit {
     this.mostrarDialogoConfirmacionGenerarHojaDeVida = false;
 
     this.router.navigate([
-      '/gestion-hoja-de-vida/hoja-de-vida-pdf/1'
+      '/gestion-hoja-de-vida/hoja-de-vida-pdf',
+      this.codigoEstudiante
     ]);
   }
 

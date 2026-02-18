@@ -7,7 +7,7 @@ import { HojaDeVidaPdfComponent } from './pages/hoja-de-vida-pdf/hoja-de-vida-pd
 const routes: Routes = [
   { path: '', component: BuscarEstudianteComponent },
   { path: 'info-estudiante/:codigo', component: InfoEstudianteComponent },
-  { path: 'hoja-de-vida-pdf/:id', component: HojaDeVidaPdfComponent }
+  { path: 'hoja-de-vida-pdf/:codigo', component: HojaDeVidaPdfComponent }
 ];
 
 @NgModule({
