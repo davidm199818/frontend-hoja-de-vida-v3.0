@@ -1,142 +1,226 @@
-body {
-  background-color: #f8f9fc;
+:host {
+  --bg-0: #f4f8ff;
+  --bg-1: #edf3ff;
+  --surface: #ffffff;
+  --ink-0: #0f1d3d;
+  --ink-1: #1f2f56;
+  --ink-2: #617093;
+  --primary-0: #0b4cc0;
+  --line: #dbe4f3;
+  --shadow-soft: 0 10px 30px rgba(15, 41, 88, 0.08);
+  --shadow-strong: 0 16px 40px rgba(8, 26, 62, 0.14);
 }
 
-h2 {
-  color: #0c2340;
+.page-wrapper {
+  min-height: 100vh;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 10% 10%, #dde9ff 0%, transparent 40%),
+    radial-gradient(circle at 100% 0%, #d3f1ff 0%, transparent 30%),
+    linear-gradient(180deg, var(--bg-0), var(--bg-1));
+  color: var(--ink-0);
 }
 
-/* Estilo tabla */
-.table thead {
-  background-color: #1a3e73;
-  color: #fff;
+.hero-panel {
+  background: linear-gradient(120deg, #0f2f72 0%, #0b4cc0 60%, #2f6edf 100%);
+  border-radius: 20px;
+  padding: 18px 24px 26px;
+  color: #f5f8ff;
+  box-shadow: var(--shadow-strong);
+  width: 100%;
+  max-width: 1500px;
+  margin: 0 auto 24px;
 }
 
-.table tbody tr:nth-child(odd) {
-  background-color: #ffffff;
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 14px;
+}
+
+.back-button-container .btn {
+  border: none;
+  color: #0f2f72;
+  font-weight: 600;
+  border-radius: 999px;
+  padding: 8px 16px;
+}
+
+.hero-chip {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.13);
+}
+
+.hero-chip-label {
+  font-size: 0.75rem;
+  color: #d6e4ff;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.hero-chip strong {
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.hero-content {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-title-block {
+  max-width: 760px;
+}
+
+.hero-search {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.eyebrow {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(1.5rem, 2vw, 2rem);
+  font-weight: 700;
+}
+
+.title-subtitle {
+  margin: 8px 0 0;
+  color: #d8e5ff;
+  max-width: 620px;
+}
+
+.hero-metrics {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.metric-card {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metric-card span {
+  font-size: 0.78rem;
+  color: #d7e5ff;
+}
+
+.metric-card strong {
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+
+.content-container {
+  max-width: 1500px;
+  margin: 0 auto;
+}
+
+.search-group {
+  width: min(760px, 100%);
+}
+
+.card {
+  background: #fff;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid #e3ebf8;
+  box-shadow: var(--shadow-soft);
+}
+
+.table thead th {
+  background-color: #1a3e73 !important;
+  color: #ffffff !important;
+  border-color: #dee2e6 !important;
+  font-weight: 600;
 }
 
 .table tbody tr:nth-child(even) {
   background-color: #f2f6fa;
 }
 
-.table td, .table th {
-  border: 1px solid #dee2e6;
+.table th,
+.table td {
+  border: 1px solid #dee2e6 !important;
   vertical-align: middle;
+  padding: 12px;
 }
 
-/* Botón Seleccionar */
-.btn-link {
+.input-group .input-group-text {
+  background: #fff;
+  border-right: 0;
+  border-color: #dee2e6;
+}
+
+.input-group .form-control {
+  border-left: 0;
+  border-color: #dee2e6;
+}
+
+.hero-search .btn-outline-secondary {
+  background-color: #ffffff;
+  border-color: #dee2e6;
   color: #0c2340;
-  font-weight: 500;
-  text-decoration: none;
 }
 
-.btn-link:hover {
-  text-decoration: underline;
-  color: #1a3e73;
+.hero-search .btn-outline-secondary:disabled {
+  background-color: #ffffff;
+  border-color: #dee2e6;
+  color: #9aa6bd;
+  opacity: 1;
 }
 
-/* Paginación */
-.page-link {
+.pagination .page-link {
   color: #0c2340;
   border-radius: 6px;
+  border-color: #dee2e6;
 }
 
-.page-link:hover {
+.pagination .page-link:hover {
   background-color: #e9ecef;
   color: #0c2340;
 }
 
-.form-select {
-  min-width: 110px;
-  text-align: center;
+@media (max-width: 900px) {
+  .hero-metrics {
+    grid-template-columns: 1fr;
+  }
 }
 
-/* Input búsqueda */
-.input-group-text {
-  background-color: #fff;
-  border-right: 0;
-}
-
-.form-control {
-  border-left: 0;
-}
-:host ::ng-deep {
-  --blue-dark: #0c2340;     
-  --blue-header: #1a3e73;   
-  --row-alt: #f2f6fa;       
-  --border: #dee2e6;        
-
-  .card {
-    background: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 0;
-    box-shadow: 0 6px 18px rgba(27,40,47,0.04);
+@media (max-width: 640px) {
+  .page-wrapper {
+    padding: 14px;
   }
 
-  /* TABLA */
-  .table thead th {
-    background-color: var(--blue-header) !important;
-    color: #ffffff !important;
-    border-color: var(--border) !important;
-    font-weight: 600;
+  .hero-panel {
+    padding: 14px;
+    border-radius: 14px;
   }
 
-  .table tbody tr:nth-child(even) {
-    background-color: var(--row-alt) !important;
-  }
-
-  .table th,
-  .table td {
-    border: 1px solid var(--border) !important;
-    vertical-align: middle;
-    padding: 12px;
-  }
-
-  .table-hover tbody tr:hover {
-    background-color: #eaf3ff !important;
-  }
-
-  /* Botón Seleccionar */
-  .btn-link {
-    color: var(--blue-dark) !important;
-    font-weight: 600;
-    text-decoration: none !important;
-  }
-  .btn-link:hover {
-    color: var(--blue-header) !important;
-    text-decoration: underline !important;
-  }
-
-  /* Input búsqueda */
-  .input-group .input-group-text {
-    background: #fff;
-    border-right: 0;
-    border-color: var(--border);
-  }
-  .input-group .form-control {
-    border-left: 0;
-    border-color: var(--border);
-  }
-  .input-group .input-group-text i {
-    color: #6c757d;
-  }
-
-  /* Paginación */
-  .pagination .page-link {
-    color: var(--blue-dark);
-    border-radius: 6px;
-    border-color: var(--border);
-  }
-  .pagination .page-link:hover {
-    background-color: #e9ecef;
-    color: var(--blue-dark);
-  }
-  .form-select {
-    min-width: 110px;
-    text-align: center;
-    border-color: var(--border);
+  .hero-top {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }

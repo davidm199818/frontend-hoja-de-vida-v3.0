@@ -1,366 +1,601 @@
-<div class="main-wrapper" *ngIf="historia">
-  <div class="header-section">
+﻿<div class="main-wrapper" *ngIf="historia">
+  <section class="hero-panel">
     <div class="back-button-container">
       <button class="btn btn-light shadow-sm" (click)="volver()">
-        <i class="fa fa-arrow-left me-2"></i> Atrás
+        <i class="fa fa-arrow-left me-2"></i> Atras
       </button>
     </div>
-    <h1 class="title">Generar Hoja de Vida</h1>
-  </div>
 
-  <div class="main-content">
-    <div class="card-container">
-      <div class="card">
-        <div class="card-header">
-          <h2>Datos del Estudiante Seleccionado</h2>
-        </div>
-        <div class="card-content">
-          <div class="user-icon-container">
-            <i class="pi pi-user"></i>
-          </div>
-          <div class="input-fields">
-            <input type="text" [value]="historia.codigoEstudiante" readonly>
-            <input type="text" [value]="historia.nombreCompleto" readonly>
-            <input type="text" [value]="historia.correoUniversidad" readonly>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="menu-and-table-section">
-      <div class="sidebar">
-        <div class="menu-item"
-             [ngClass]="{'active': activeMenuItem === 'fundamentacion'}"
-             (click)="selectMenuItem('fundamentacion')">
-          Área de Fundamentación <i class="pi pi-angle-right"></i>
-        </div>
-
-        <div class="menu-item"
-             [ngClass]="{'active': activeMenuItem === 'electivas'}"
-             (click)="selectMenuItem('electivas')">
-          Área de Electivas <i class="pi pi-angle-right"></i>
-        </div>
-
-        <div class="menu-item"
-             [ngClass]="{'expanded': expandedMenu['investigacion']}"
-             (click)="toggleSubmenu('investigacion')">
-          Área de Investigación
-          <i class="pi" [ngClass]="{'pi-angle-down': expandedMenu['investigacion'], 'pi-angle-right': !expandedMenu['investigacion']}"></i>
-        </div>
-
-        <div class="submenu" *ngIf="expandedMenu['investigacion']">
-          <div class="submenu-item"
-               [ngClass]="{'active': activeMenuItem === 'asignaturasVistas'}"
-               (click)="selectMenuItem('asignaturasVistas')">Asignaturas Vistas</div>
-          <div class="submenu-item"
-               [ngClass]="{'active': activeMenuItem === 'pasantias'}"
-               (click)="selectMenuItem('pasantias')">Datos de las Pasantías de Investigación Realizadas</div>
-          <div class="submenu-item"
-               [ngClass]="{'active': activeMenuItem === 'publicaciones'}"
-               (click)="selectMenuItem('publicaciones')">Datos de las Publicaciones Realizadas</div>
-        </div>
-
-        <div class="menu-item"
-             [ngClass]="{'expanded': expandedMenu['complementacion']}"
-             (click)="toggleSubmenu('complementacion')">
-          Área de Complementación
-          <i class="pi" [ngClass]="{'pi-angle-down': expandedMenu['complementacion'], 'pi-angle-right': !expandedMenu['complementacion']}"></i>
-        </div>
-
-        <div class="submenu" *ngIf="expandedMenu['complementacion']">
-          <div class="submenu-item"
-               [ngClass]="{'active': activeMenuItem === 'practicaDocente'}"
-               (click)="selectMenuItem('practicaDocente')">Práctica Docente</div>
-          <div class="submenu-item"
-               [ngClass]="{'active': activeMenuItem === 'competenciasEmpresariales'}"
-               (click)="selectMenuItem('competenciasEmpresariales')">Asignatura de Competencias Empresariales</div>
-        </div>
-      </div>
-
-      <div class="table-container" *ngIf="activeMenuItem === 'fundamentacion'">
-        <div class="card">
-          <div class="card-header"><h2>Área de Fundamentación</h2></div>
-          <div class="card-content">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Periodo</th>
-                  <th>Código</th>
-                  <th>Nombre</th>
-                  <th>Créditos</th>
-                  <th>Nota</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of fundamentacionData">
-                  <td>{{ row.periodo }}</td>
-                  <td>{{ row.codigo }}</td>
-                  <td>{{ row.nombre }}</td>
-                  <td>{{ row.creditos }}</td>
-                  <td>{{ row.nota }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="table-container" *ngIf="activeMenuItem === 'electivas'">
-        <div class="card">
-          <div class="card-header"><h2>Área de Electivas</h2></div>
-          <div class="card-content">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Periodo</th>
-                  <th>Código</th>
-                  <th>Nombre</th>
-                  <th>Créditos</th>
-                  <th>Nota</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of electivasData">
-                  <td>{{ row.periodo }}</td>
-                  <td>{{ row.codigo }}</td>
-                  <td>{{ row.nombre }}</td>
-                  <td>{{ row.creditos }}</td>
-                  <td>{{ row.nota }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="table-container" *ngIf="activeMenuItem === 'asignaturasVistas'">
-        <div class="card">
-          <div class="card-header"><h2>Asignaturas Vistas</h2></div>
-          <div class="card-content">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Periodo</th>
-                  <th>Código</th>
-                  <th>Nombre</th>
-                  <th>Créditos</th>
-                  <th>Nota</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of asignaturasVistasData">
-                  <td>{{ row.periodo }}</td>
-                  <td>{{ row.codigo }}</td>
-                  <td>{{ row.nombre }}</td>
-                  <td>{{ row.creditos }}</td>
-                  <td>{{ row.nota }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="table-container" *ngIf="activeMenuItem === 'pasantias'">
-        <div class="card">
-          <div class="card-header"><h2>Datos de las Pasantías de Investigación Realizadas</h2></div>
-          <div class="card-content">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Créditos Asignados</th>
-                  <th>Acta</th>
-                  <th>Fecha de Inicio</th>
-                  <th>Fecha de Fin</th>
-                  <th>País</th>
-                  <th>Ciudad</th>
-                  <th>Universidad</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let pasantia of historia.investigacion.pasantias">
-                  <td>{{ pasantia.creditosAsignados }}</td>
-                  <td>{{ pasantia.acta }}</td>
-                  <td>{{ pasantia.fechaInicio }}</td>
-                  <td>{{ pasantia.fechaFin }}</td>
-                  <td>{{ pasantia.pais }}</td>
-                  <td>{{ pasantia.ciudad }}</td>
-                  <td>{{ pasantia.universidad }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="table-container" *ngIf="activeMenuItem === 'publicaciones'">
-        <div class="card">
-          <div class="card-header"><h2>Datos de las Publicaciones Realizadas</h2></div>
-          <div class="card-content">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Créditos Asignados</th>
-                  <th>Acta</th>
-                  <th>Nombre Publicacion</th>
-                  <th>Tipo de Publicacion</th>
-                  <th>Fecha de Aceptación</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let publicacion of historia.investigacion.publicaciones">
-                  <td>{{ publicacion.creditosAsignados }}</td>
-                  <td>{{ publicacion.acta }}</td>
-                  <td>{{ publicacion.nombrePublicacion }}</td>
-                  <td>{{ publicacion.tipoPublicacion }}</td>
-                  <td>{{ publicacion.fechaAceptacion }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="table-container" *ngIf="activeMenuItem === 'practicaDocente'">
-        <div class="card">
-          <div class="card-header"><h2>Práctica Docente</h2></div>
-          <div class="card-content">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Créditos Asignados</th>
-                  <th>Acta</th>
-                  <th>No de Actividades</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngIf="historia.complementacion.practicaDocente as practica">
-                  <td>{{ practica.creditosAsignados }}</td>
-                  <td>{{ practica.acta }}</td>
-                  <td>{{ practica.numeroActividades }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
-      <div class="table-container" *ngIf="activeMenuItem === 'competenciasEmpresariales'">
-        <div class="card">
-          <div class="card-header"><h2>Asignatura de Competencias Empresariales</h2></div>
-          <div class="card-content">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Periodo</th>
-                  <th>Código</th>
-                  <th>Nombre</th>
-                  <th>Créditos</th>
-                  <th>Nota</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let row of competenciasEmpresarialesData">
-                  <td>{{ row.periodo }}</td>
-                  <td>{{ row.codigo }}</td>
-                  <td>{{ row.nombre }}</td>
-                  <td>{{ row.creditos }}</td>
-                  <td>{{ row.nota }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="dashboard">
-    <header class="dashboard-header">
+    <div class="hero-content">
       <div>
-        <h1>Información Académica</h1>
-        <p>Seguimiento oficial de requisitos para grado</p>
-      </div>
-
-      <div class="completion-status">
-        <span class="dot"></span>
-        Requisitos completos
-      </div>
-    </header>
-
-    <section class="summary">
-      <div class="summary-left">
-        <h2>40</h2>
-        <span>Créditos aprobados</span>
-      </div>
-
-      <div class="summary-right">
-        <div class="progress-labels">
-          <span>Progreso total</span>
-          <strong>102%</strong>
-        </div>
-
-        <div class="progress-line">
-          <div class="progress-fill"></div>
-        </div>
-
-        <small>42 créditos requeridos</small>
-      </div>
-    </section>
-
-    <section class="requirements">
-      <div class="requirement publication">
-        <h3>Publicación Académica</h3>
-        <p>Mínimo un artículo en revista categoría A, B o C.</p>
-
-        <div class="publication-item">
-          <strong>Proceso para desarrollar pruebas</strong>
-          <div class="chips">
-            <span>Tipo C</span>
-            <span>Colciencias</span>
-          </div>
-        </div>
-
-        <div class="publication-item">
-          <strong>Modelo para desarrollo de pruebas</strong>
-          <div class="chips">
-            <span>Tipo B</span>
-            <span>Colciencias</span>
-          </div>
-        </div>
-
-        <div class="status success">Cumple requisito</div>
-      </div>
-
-      <div class="requirement language">
-        <h3>Idioma Extranjero</h3>
-        <p>Prueba de suficiencia aprobada.</p>
-
-        <div class="language-status approved">
-          &#10004; Aprobado
-        </div>
-      </div>
-    </section>
-
-    <section class="thesis">
-      <h3>Trabajo de Grado</h3>
-
-      <div class="thesis-block">
-        <label>TÍTULO</label>
-        <p>
-          Modelo sustituto de XGBoost basado en un árbol de decisión explicable
+        <p class="eyebrow">Sistema de hoja de vida academica</p>
+        <h1 class="title">Historial Academico</h1>
+        <p class="title-subtitle">
+          Consulta, revisa y valida el historial academico del
+          estudiante.
         </p>
       </div>
 
-      <div class="thesis-row">
-        <div>
-          <label>DIRECTOR</label>
-          <p>Dr. Carlos Cobos</p>
+      <div class="hero-metrics">
+        <article class="metric-card">
+          <span>Creditos aprobados</span>
+          <strong>{{ creditosCumplidos }}</strong>
+        </article>
+        <article class="metric-card">
+          <span>Meta de creditos</span>
+          <strong>{{ creditosRequeridos }}</strong>
+        </article>
+        <article class="metric-card">
+          <span>Progreso global</span>
+          <strong>{{ progresoCreditos }}%</strong>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <div class="main-content">
+    <section class="student-spotlight card">
+      <div class="card-header">
+        <h2>Estudiante seleccionado</h2>
+      </div>
+      <div class="card-content student-card-content">
+        <div class="user-icon-container">
+          <i class="pi pi-user"></i>
         </div>
 
-        <div>
-          <label>CODIRECTOR</label>
-          <p class="muted">No asignado</p>
+        <div class="student-details">
+          <div class="detail-item">
+            <span class="detail-label">Nombre completo</span>
+            <span class="detail-value">{{
+              historia.estudiante.nombreCompleto
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Codigo</span>
+            <span class="detail-value">{{
+              historia.estudiante.codigoEstudiante
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Correo institucional</span>
+            <span class="detail-value">{{
+              historia.estudiante.correoUniversidad
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Identificacion</span>
+            <span class="detail-value">{{
+              historia.estudiante.identificacion
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Semestre</span>
+            <span class="detail-value">{{
+              historia.estudiante.semestreAcademico
+              }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Periodo de Ingreso</span>
+            <span class="detail-value">{{
+              historia.estudiante.periodoIngreso
+              }}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu-and-table-section">
+      <aside class="sidebar">
+        <div class="sidebar-title">Navegacion academica</div>
+
+        <div class="menu-item" [ngClass]="{ active: activeMenuItem === 'fundamentacion' }"
+          (click)="selectMenuItem('fundamentacion')">
+          Area de Fundamentacion <i class="pi pi-angle-right"></i>
+        </div>
+
+        <div class="menu-item" [ngClass]="{ active: activeMenuItem === 'electivas' }"
+          (click)="selectMenuItem('electivas')">
+          Area de Electivas <i class="pi pi-angle-right"></i>
+        </div>
+
+        <div class="menu-item" [ngClass]="{ expanded: expandedMenu['investigacion'] }"
+          (click)="toggleSubmenu('investigacion')">
+          Area de Investigacion
+          <i class="pi" [ngClass]="{
+                            'pi-angle-down': expandedMenu['investigacion'],
+                            'pi-angle-right': !expandedMenu['investigacion']
+                        }"></i>
+        </div>
+
+        <div class="submenu" *ngIf="expandedMenu['investigacion']">
+          <div class="submenu-item" [ngClass]="{
+                            active: activeMenuItem === 'asignaturasVistas'
+                        }" (click)="selectMenuItem('asignaturasVistas')">
+            Asignaturas
+          </div>
+          <div class="submenu-item" [ngClass]="{ active: activeMenuItem === 'pasantias' }"
+            (click)="selectMenuItem('pasantias')">
+            Pasantias de investigacion
+          </div>
+          <div class="submenu-item" [ngClass]="{
+                            active: activeMenuItem === 'publicaciones'
+                        }" (click)="selectMenuItem('publicaciones')">
+            Publicaciones
+          </div>
+        </div>
+
+        <div class="menu-item" [ngClass]="{ expanded: expandedMenu['complementacion'] }"
+          (click)="toggleSubmenu('complementacion')">
+          Area de Complementacion
+          <i class="pi" [ngClass]="{
+                            'pi-angle-down': expandedMenu['complementacion'],
+                            'pi-angle-right': !expandedMenu['complementacion']
+                        }"></i>
+        </div>
+
+        <div class="submenu" *ngIf="expandedMenu['complementacion']">
+          <div class="submenu-item" [ngClass]="{
+                            active: activeMenuItem === 'practicaDocente'
+                        }" (click)="selectMenuItem('practicaDocente')">
+            Practica Docente
+          </div>
+          <div class="submenu-item" [ngClass]="{
+                            active:
+                                activeMenuItem === 'competenciasEmpresariales'
+                        }" (click)="selectMenuItem('competenciasEmpresariales')">
+            Competencias Empresariales
+          </div>
+        </div>
+
+        <div class="menu-item" [ngClass]="{
+                        active: activeMenuItem === 'informacionAcademica'
+                    }" (click)="selectMenuItem('informacionAcademica')">
+          Informacion Academica
+          <i class="pi pi-angle-right"></i>
+        </div>
+      </aside>
+
+      <div class="content-area">
+        <div class="table-container" *ngIf="activeMenuItem === 'fundamentacion'">
+          <article class="data-panel card">
+            <header class="panel-topbar">
+              <h2>Area de Fundamentacion</h2>
+              <span class="pill">{{ fundamentacionData.length }} registros</span>
+            </header>
+            <div class="table-shell" *ngIf="
+                                fundamentacionData.length > 0;
+                                else emptyFundamentacion
+                            ">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Periodo</th>
+                      <th>Codigo</th>
+                      <th>Nombre</th>
+                      <th>Creditos</th>
+                      <th>Nota</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="
+                                                let row of fundamentacionData
+                                            ">
+                      <td>{{ row.periodo }}</td>
+                      <td>{{ row.codigo }}</td>
+                      <td>{{ row.nombre }}</td>
+                      <td>{{ row.creditos }}</td>
+                      <td>{{ row.nota }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <ng-template #emptyFundamentacion>
+              <div class="empty-state">
+                No hay asignaturas registradas en esta area.
+              </div>
+            </ng-template>
+          </article>
+        </div>
+
+        <div class="table-container" *ngIf="activeMenuItem === 'electivas'">
+          <article class="data-panel card">
+            <header class="panel-topbar">
+              <h2>Area de Electivas</h2>
+              <span class="pill">{{ electivasData.length }} registros</span>
+            </header>
+            <div class="table-shell" *ngIf="
+                                electivasData.length > 0;
+                                else emptyElectivas
+                            ">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Periodo</th>
+                      <th>Codigo</th>
+                      <th>Nombre</th>
+                      <th>Creditos</th>
+                      <th>Nota</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let row of electivasData">
+                      <td>{{ row.periodo }}</td>
+                      <td>{{ row.codigo }}</td>
+                      <td>{{ row.nombre }}</td>
+                      <td>{{ row.creditos }}</td>
+                      <td>{{ row.nota }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <ng-template #emptyElectivas>
+              <div class="empty-state">
+                No hay asignaturas registradas en esta area.
+              </div>
+            </ng-template>
+          </article>
+        </div>
+
+        <div class="table-container" *ngIf="activeMenuItem === 'asignaturasVistas'">
+          <article class="data-panel card">
+            <header class="panel-topbar">
+              <h2>Asignaturas de Investigacion</h2>
+              <span class="pill">{{
+                asignaturasVistasData.length
+                }}
+                registros</span>
+            </header>
+            <div class="table-shell" *ngIf="
+                                asignaturasVistasData.length > 0;
+                                else emptyAsignaturasInvestigacion
+                            ">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Periodo</th>
+                      <th>Codigo</th>
+                      <th>Nombre</th>
+                      <th>Creditos</th>
+                      <th>Nota</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="
+                                                let row of asignaturasVistasData
+                                            ">
+                      <td>{{ row.periodo }}</td>
+                      <td>{{ row.codigo }}</td>
+                      <td>{{ row.nombre }}</td>
+                      <td>{{ row.creditos }}</td>
+                      <td>{{ row.nota }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <ng-template #emptyAsignaturasInvestigacion>
+              <div class="empty-state">
+                No hay asignaturas registradas en esta area.
+              </div>
+            </ng-template>
+          </article>
+        </div>
+
+        <div class="table-container" *ngIf="activeMenuItem === 'pasantias'">
+          <article class="data-panel card">
+            <header class="panel-topbar">
+              <h2>Pasantias de Investigacion</h2>
+              <span class="pill">{{
+                historia.historiaAcademica.investigacion
+                .pasantias.length
+                }}
+                registros</span>
+            </header>
+            <div class="table-shell" *ngIf="
+                                historia.historiaAcademica.investigacion
+                                    .pasantias.length > 0;
+                                else emptyPasantias
+                            ">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Creditos Asignados</th>
+                      <th>Acta</th>
+                      <th>Fecha de Acta</th>
+                      <th>Informe</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="
+                                                let pasantia of historia
+                                                    .historiaAcademica
+                                                    .investigacion.pasantias
+                                            ">
+                      <td>
+                        {{ pasantia.creditosAsignados }}
+                      </td>
+                      <td>{{ pasantia.acta }}</td>
+                      <td>{{ pasantia.fechaActa }}</td>
+                      <td>
+                        {{ pasantia.informePasantia }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <ng-template #emptyPasantias>
+              <div class="empty-state">
+                No hay pasantias registradas.
+              </div>
+            </ng-template>
+          </article>
+        </div>
+
+        <div class="table-container" *ngIf="activeMenuItem === 'publicaciones'">
+          <article class="data-panel card">
+            <header class="panel-topbar">
+              <h2>Publicaciones</h2>
+              <span class="pill">{{
+                historia.historiaAcademica.investigacion
+                .publicaciones.length
+                }}
+                registros</span>
+            </header>
+            <div class="table-shell" *ngIf="
+                                historia.historiaAcademica.investigacion
+                                    .publicaciones.length > 0;
+                                else emptyPublicaciones
+                            ">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Creditos Asignados</th>
+                      <th>Acta</th>
+                      <th>Nombre Publicacion</th>
+                      <th>Tipo de Publicacion</th>
+                      <th>Categoria Indexada</th>
+                      <th>Fecha de Aceptacion</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="
+                                                let publicacion of historia
+                                                    .historiaAcademica
+                                                    .investigacion.publicaciones
+                                            ">
+                      <td>
+                        {{
+                        publicacion.creditosAsignados
+                        }}
+                      </td>
+                      <td>{{ publicacion.acta }}</td>
+                      <td>
+                        {{
+                        publicacion.nombrePublicacion
+                        }}
+                      </td>
+                      <td>
+                        {{
+                        publicacion.tipoPublicacion
+                        }}
+                      </td>
+                      <td>
+                        {{
+                        publicacion.categoriaIndexada ||
+                        "NR"
+                        }}
+                      </td>
+                      <td>
+                        {{
+                        publicacion.fechaAceptacion
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <ng-template #emptyPublicaciones>
+              <div class="empty-state">
+                No hay publicaciones registradas.
+              </div>
+            </ng-template>
+          </article>
+        </div>
+
+        <div class="table-container" *ngIf="activeMenuItem === 'practicaDocente'">
+          <article class="data-panel card">
+            <header class="panel-topbar">
+              <h2>Practica Docente</h2>
+              <span class="pill">{{
+                historia.historiaAcademica.complementacion
+                .practicasDocentes.length
+                }}
+                registros</span>
+            </header>
+            <div class="table-shell" *ngIf="
+                                historia.historiaAcademica.complementacion
+                                    .practicasDocentes.length > 0;
+                                else emptyPracticaDocente
+                            ">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Creditos Asignados</th>
+                      <th>Acta</th>
+                      <th>Horas</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="
+                                                let practica of historia
+                                                    .historiaAcademica
+                                                    .complementacion
+                                                    .practicasDocentes
+                                            ">
+                      <td>
+                        {{ practica.creditosAsignados }}
+                      </td>
+                      <td>{{ practica.acta }}</td>
+                      <td>{{ practica.horas }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <ng-template #emptyPracticaDocente>
+              <div class="empty-state">
+                No hay registros de practica docente.
+              </div>
+            </ng-template>
+          </article>
+        </div>
+
+        <div class="table-container" *ngIf="activeMenuItem === 'competenciasEmpresariales'">
+          <article class="data-panel card">
+            <header class="panel-topbar">
+              <h2>Competencias Empresariales</h2>
+              <span class="pill">{{
+                competenciasEmpresarialesData.length
+                }}
+                registros</span>
+            </header>
+            <div class="table-shell" *ngIf="
+                                competenciasEmpresarialesData.length > 0;
+                                else emptyEmpresariales
+                            ">
+              <div class="table-scroll">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Periodo</th>
+                      <th>Codigo</th>
+                      <th>Nombre</th>
+                      <th>Creditos</th>
+                      <th>Nota</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="
+                                                let row of competenciasEmpresarialesData
+                                            ">
+                      <td>{{ row.periodo }}</td>
+                      <td>{{ row.codigo }}</td>
+                      <td>{{ row.nombre }}</td>
+                      <td>{{ row.creditos }}</td>
+                      <td>{{ row.nota }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <ng-template #emptyEmpresariales>
+              <div class="empty-state">
+                No hay asignaturas registradas en esta area.
+              </div>
+            </ng-template>
+          </article>
+        </div>
+
+        <div class="dashboard" *ngIf="activeMenuItem === 'informacionAcademica'">
+          <header class="dashboard-header">
+            <div>
+              <h1>Informacion Academica</h1>
+              <p>Seguimiento oficial de requisitos para grado.</p>
+            </div>
+
+            <div class="completion-status">
+              <span class="dot"></span>
+              Requisitos completos
+            </div>
+          </header>
+
+          <section class="summary">
+            <div class="summary-left">
+              <h2>{{ creditosCumplidos }}</h2>
+              <span>Creditos aprobados</span>
+            </div>
+
+            <div class="summary-right">
+              <div class="progress-labels">
+                <span>Progreso total</span>
+                <strong>{{ progresoCreditos }}%</strong>
+              </div>
+
+              <div class="progress-line">
+                <div class="progress-fill" [style.width.%]="progresoCreditos"></div>
+              </div>
+
+              <small>{{ creditosRequeridos }} creditos
+                requeridos</small>
+            </div>
+          </section>
+
+          <section class="requirements">
+            <div class="requirement publication">
+              <h3>Publicacion Academica</h3>
+
+              <p>
+                Minimo un articulo en revista categoria A, B o
+                C.
+              </p>
+
+              <ng-container *ngIf="publicacionesInvestigacion.length > 0; else sinPublicaciones">
+                <div class="publication-item" *ngFor="let publicacion of publicacionesInvestigacion">
+                  <strong>{{ publicacion.nombrePublicacion }}</strong>
+                  <div class="chips">
+                    <span>{{ publicacion.tipoPublicacion || 'Tipo NR' }}</span>
+                    <span>{{ publicacion.categoriaIndexada || 'Categoría NR' }}</span>
+                  </div>
+                </div>
+              </ng-container>
+
+              <ng-template #sinPublicaciones>
+                <div class="status pending">Sin publicaciones registradas.</div>
+              </ng-template>
+
+              <div class="status success">Cumple requisito</div>
+            </div>
+            <div class="requirement language">
+              <h3>Prueba de Suficiencia Idioma Extranjero
+              </h3>
+
+
+              <div class="language-status" [ngClass]="claseEstadoPruebaIdiomaExtranjero">
+                {{ estadoPruebaIdiomaExtranjero }}
+              </div>
+            </div>
+          </section>
+
+          <section class="thesis">
+            <h3>Trabajo de Grado</h3>
+
+            <div class="thesis-block">
+              <label>TITULO</label>
+              <p>{{ tituloTesis }}</p>
+            </div>
+
+            <div class="thesis-row">
+              <div>
+                <label>DIRECTOR</label>
+                <p>{{ directorTesis }}</p>
+              </div>
+
+              <div>
+                <label>CODIRECTOR</label>
+                <p [class.muted]="codirectorTesis === 'Sin registrar'">{{ codirectorTesis }}</p>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </section>
