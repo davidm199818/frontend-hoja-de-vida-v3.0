@@ -22,7 +22,9 @@
 }
 
 .hero-panel {
-  background: linear-gradient(120deg, #0f2f72 0%, #0b4cc0 60%, #2f6edf 100%);
+  background:
+    linear-gradient(rgba(8, 20, 44, 0.42), rgba(8, 20, 44, 0.42)),
+    url('/assets/layout/images/buscar.png') center / cover no-repeat;
   border-radius: 20px;
   padding: 18px 24px 26px;
   color: #f5f8ff;
@@ -30,6 +32,18 @@
   width: 100%;
   max-width: 1500px;
   margin: 0 auto 24px;
+  animation: heroBackgroundPan 14s ease-in-out infinite alternate;
+}
+
+@keyframes heroBackgroundPan {
+  0% {
+    background-position: center center, 50% 50%;
+    background-size: auto, 100%;
+  }
+  100% {
+    background-position: center center, 52% 46%;
+    background-size: auto, 108%;
+  }
 }
 
 .hero-top {
@@ -84,6 +98,38 @@
   margin-top: 16px;
   display: flex;
   justify-content: center;
+}
+
+.hero-image-wrap {
+  margin-top: 14px;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-image {
+  width: min(940px, 100%);
+  height: 220px;
+  object-fit: cover;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  box-shadow: 0 12px 28px rgba(8, 26, 62, 0.28);
+  animation: heroImageFloat 5.5s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes heroImageFloat {
+  0% {
+    transform: translateY(0) scale(1);
+    filter: saturate(1);
+  }
+  50% {
+    transform: translateY(-6px) scale(1.01);
+    filter: saturate(1.06);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    filter: saturate(1);
+  }
 }
 
 .eyebrow {
@@ -207,6 +253,10 @@
   .hero-metrics {
     grid-template-columns: 1fr;
   }
+
+  .hero-image {
+    height: 180px;
+  }
 }
 
 @media (max-width: 640px) {
@@ -222,5 +272,10 @@
   .hero-top {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .hero-image {
+    height: 150px;
+    border-radius: 12px;
   }
 }
