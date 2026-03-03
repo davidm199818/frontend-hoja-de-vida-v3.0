@@ -1,26 +1,45 @@
 import { Asignatura } from './Asignatura';
-import { PasantiaInvestigacion } from './PasantiaInvestigacion ';
-import { Publicacion } from './Publicacion ';
-import { PracticaDocente } from './PracticaDocente ';
+import { PasantiaInvestigacion } from './PasantiaInvestigacion';
+import { Publicacion } from './Publicacion';
+import { PracticaDocente } from './PracticaDocente';
 
-export interface HistoriaAcademica {
+export interface AreaAcademica {
+  asignaturas: Asignatura[];
+}
+
+export interface EstudianteHistoriaAcademica {
   codigoEstudiante: string;
   nombreCompleto: string;
   correoUniversidad: string;
   tituloPregrado: string;
   fechaGrado: string;
+}
 
-  fundamentacion: Asignatura[];
-  electivas: Asignatura[];
+export interface HistoriaAcademicaData {
+  fundamentacion: AreaAcademica;
+  electivas: AreaAcademica;
 
   investigacion: {
-    asignaturasVistas: Asignatura[];
+    asignaturas: Asignatura[];
     pasantias: PasantiaInvestigacion[];
     publicaciones: Publicacion[];
   };
 
   complementacion: {
-    practicaDocente: PracticaDocente;
-    competenciasEmpresariales: Asignatura[];
+    practicasDocentes: PracticaDocente[];
+    competenciasEmpresariales: AreaAcademica;
   };
+
+  informacionAdicional: {
+    creditosCumplidos: number;
+    tituloTesis: string | null;
+    directorTesis: string;
+    codirectorTesis: string;
+    asignaturas?: Asignatura[];
+  };
+}
+
+export interface HistoriaAcademica {
+  estudiante: EstudianteHistoriaAcademica;
+  historiaAcademica: HistoriaAcademicaData;
 }

@@ -3,5 +3,6 @@ export interface Publicacion {
   acta: string;
   nombrePublicacion: string;
   tipoPublicacion: string;
+  categoriaIndexada:string;
   fechaAceptacion: string;
 }

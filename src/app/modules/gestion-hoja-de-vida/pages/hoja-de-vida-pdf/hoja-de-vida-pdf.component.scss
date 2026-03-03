@@ -8,7 +8,7 @@ body {
     background: white;
     max-width: 1000px;
     margin: 40px auto;
-    padding: 60px;
+    padding: 40px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
 }
@@ -65,17 +65,16 @@ body {
 }
 
 /* TABLA */
-.academic-table thead {
-    background: #1f3c68;
-    color: white;
-    font-size: 14px;
+.academic-table {
+    width: 100%;
+    table-layout: fixed;   /* obliga a distribuir el ancho */
+    font-size: 12px;       /* reducimos ligeramente */
 }
 
-.academic-table td,
-.academic-table th {
-    vertical-align: middle;
-    text-align: center;
-    font-size: 14px;
+.academic-table th,
+.academic-table td {
+    padding: 4px;
+    word-break: break-word; /* evita que el texto empuje la tabla */
 }
 
 /* DOS COLUMNAS */

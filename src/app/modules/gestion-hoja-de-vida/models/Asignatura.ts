@@ -3,6 +3,5 @@ export interface Asignatura {
   codigoMateria: string;
   nombreMateria: string;
   creditos: number;
-  notaDefinitiva: number;
-  area: 'FUNDAMENTACION' | 'ELECTIVAS' | 'INVESTIGACION' | 'COMPLEMENTACION';
+  notaDefinitiva: string;
 }
