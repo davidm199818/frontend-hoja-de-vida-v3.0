@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { InformacionService } from '../../services/informacion.service';
 import { HistoriaAcademica } from '../../models/Historia-Academica';
 import { Asignatura } from '../../models/Asignatura';
 import { Publicacion } from '../../models/Publicacion';
+import jsPDF from 'jspdf';
 
 interface TableRow {
   periodo: string;
@@ -19,9 +20,11 @@ interface TableRow {
   styleUrls: ['./hoja-de-vida-pdf.component.scss']
 })
 export class HojaDeVidaPdfComponent implements OnInit {
+  @ViewChild('pdfContent') pdfContent?: ElementRef<HTMLElement>;
 
   codigoEstudiante = '';
   historia!: HistoriaAcademica;
+  generandoPdf = false;
 
   fundamentacionData: TableRow[] = [];
   electivasData: TableRow[] = [];
@@ -78,5 +81,42 @@ export class HojaDeVidaPdfComponent implements OnInit {
   }
   get publicacionesInvestigacion(): Publicacion[] {
     return this.historia?.historiaAcademica?.investigacion?.publicaciones ?? [];
+  }
+
+  previsualizarPdf(): void {
+    window.print();
+  }
+
+  async descargarPdf(): Promise<void> {
+    if (!this.pdfContent?.nativeElement || this.generandoPdf) {
+      return;
+    }
+
+    this.generandoPdf = true;
+
+    try {
+      const doc = new jsPDF({
+        orientation: 'p',
+        unit: 'pt',
+        format: 'a4'
+      });
+
+      await new Promise<void>((resolve) => {
+        doc.html(this.pdfContent!.nativeElement, {
+          margin: [20, 20, 20, 20],
+          autoPaging: 'text',
+          html2canvas: {
+            scale: 0.6,
+            useCORS: true
+          },
+          callback: (pdf) => {
+            pdf.save(`hoja-de-vida-${this.codigoEstudiante || 'estudiante'}.pdf`);
+            resolve();
+          }
+        });
+      });
+    } finally {
+      this.generandoPdf = false;
+    }
   }
 }

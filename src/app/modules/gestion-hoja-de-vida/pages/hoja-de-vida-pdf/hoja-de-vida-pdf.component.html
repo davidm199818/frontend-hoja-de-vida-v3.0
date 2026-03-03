@@ -1,4 +1,14 @@
-<div class="document" *ngIf="historia">
+<div class="pdf-actions no-print" *ngIf="historia">
+    <button class="btn btn-outline-primary me-2" (click)="previsualizarPdf()">
+        <i class="fa fa-eye me-1"></i> Previsualizar PDF
+    </button>
+    <button class="btn btn-primary" (click)="descargarPdf()" [disabled]="generandoPdf">
+        <i class="fa fa-download me-1"></i>
+        {{ generandoPdf ? 'Generando...' : 'Descargar PDF' }}
+    </button>
+</div>
+
+<div class="document" *ngIf="historia" #pdfContent>
 
     <!-- HEADER -->
     <div class="top-banner">
@@ -65,10 +75,10 @@
             <tr>
                 <td><strong>Fundamentación</strong></td>
 
-                <ng-container *ngFor="let materia of fundamentacionData">
-                    <td>{{ materia.nombre }}</td>
-                    <td>{{ materia.creditos }}</td>
-                    <td>{{ materia.nota }}</td>
+                <ng-container *ngFor="let i of [0, 1, 2, 3]">
+                    <td>{{ fundamentacionData[i]?.nombre || '' }}</td>
+                    <td>{{ fundamentacionData[i]?.creditos ?? '' }}</td>
+                    <td>{{ fundamentacionData[i]?.nota || '' }}</td>
                 </ng-container>
             </tr>
 
@@ -76,10 +86,10 @@
             <tr>
                 <td><strong>Electivas</strong></td>
 
-                <ng-container *ngFor="let materia of electivasData">
-                    <td>{{ materia.nombre }}</td>
-                    <td>{{ materia.creditos }}</td>
-                    <td>{{ materia.nota }}</td>
+                <ng-container *ngFor="let i of [0, 1, 2, 3]">
+                    <td>{{ electivasData[i]?.nombre || '' }}</td>
+                    <td>{{ electivasData[i]?.creditos ?? '' }}</td>
+                    <td>{{ electivasData[i]?.nota || '' }}</td>
                 </ng-container>
             </tr>
 
@@ -87,10 +97,10 @@
             <tr>
                 <td><strong>Investigación</strong></td>
 
-                <ng-container *ngFor="let materia of investigacionData">
-                    <td>{{ materia.nombre }}</td>
-                    <td>{{ materia.creditos }}</td>
-                    <td>{{ materia.nota }}</td>
+                <ng-container *ngFor="let i of [0, 1, 2, 3]">
+                    <td>{{ investigacionData[i]?.nombre || '' }}</td>
+                    <td>{{ investigacionData[i]?.creditos ?? '' }}</td>
+                    <td>{{ investigacionData[i]?.nota || '' }}</td>
                 </ng-container>
             </tr>
 
@@ -123,37 +133,61 @@
 
         </tbody>
     </table>
-
     <!-- DOS COLUMNAS -->
     <div class="row two-columns">
         <div class="col-md-6">
-            <div class="section-title">Proyecto de Grado</div>
+            <section class="detail-card">
+                <div class="section-title compact-title">Proyecto de Grado</div>
 
-            <p><strong>Título:</strong> {{ tituloTesis }}</p>
-            <p><strong>Director:</strong> {{ estudiante?.director || '-' }}</p>
-            <p><strong>Codirector:</strong> {{ estudiante?.codirector || '-' }}</p>
-
+                <div class="detail-grid">
+                    <div class="detail-row">
+                        <span class="detail-label">Título</span>
+                        <p class="detail-value">{{ tituloTesis }}</p>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Director</span>
+                        <p class="detail-value">{{ directorTesis }}</p>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Codirector</span>
+                        <p class="detail-value">{{ codirectorTesis }}</p>
+                    </div>
+                </div>
+            </section>
         </div>
 
         <div class="col-md-6">
-            <div class="section-title">Producción Académica</div>
-            <ul>
-                <li *ngIf="estudiante?.articuloPublicado">
-                    Artículo publicado: {{ estudiante?.articuloPublicado }}
-                </li>
-                <li *ngIf="estudiante?.pasantia">
-                    Pasantía de investigación y docencia
-                </li>
-                <li *ngIf="estudiante?.idiomaExtranjeroAprobado">
-                    Prueba de suficiencia en idioma extranjero (Aprobada)
-                </li>
-            </ul>
+            <section class="detail-card">
+                <div class="section-title compact-title">Producción Académica</div>
+
+                <ul class="publication-list" *ngIf="publicacionesInvestigacion.length > 0; else sinPublicaciones">
+                    <li *ngFor="let publicacion of publicacionesInvestigacion">
+                        <span class="pub-title">{{ publicacion.nombrePublicacion || 'Publicación sin título' }}</span>
+                        <div class="pub-meta">
+                            <span class="pub-tag">{{ publicacion.tipoPublicacion || 'Sin tipo' }}</span>
+                            <span class="pub-tag">{{ publicacion.categoriaIndexada || 'Sin categoría' }}</span>
+                        </div>
+                    </li>
+                </ul>
+
+                <ng-template #sinPublicaciones>
+                    <p class="empty-note">No hay publicaciones registradas.</p>
+                </ng-template>
+
+                <div class="extra-checks">
+                    <p *ngIf="estudiante?.pasantia">
+                        <strong>Pasantía:</strong> Pasantía de investigación y docencia.
+                    </p>
+                    <p *ngIf="estudiante?.idiomaExtranjeroAprobado">
+                        <strong>Idioma:</strong> Prueba de suficiencia en idioma extranjero aprobada.
+                    </p>
+                </div>
+            </section>
         </div>
     </div>
-
     <!-- FIRMA -->
     <div class="signature">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Signature_placeholder.svg" width="200">
+        <img src="assets/layout/images/firma.png" alt="Firma coordinador" width="200">
         <div class="signature-line">
             Coordinador<br>
             Programa de Maestría en Computación<br>
@@ -168,4 +202,5 @@
     </div>
 
 </div>
+
 

@@ -13,6 +13,13 @@ body {
     border-radius: 8px;
 }
 
+.pdf-actions {
+    max-width: 1000px;
+    margin: 24px auto 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
 /* HEADER */
 .university-header {
     display: flex;
@@ -69,17 +76,122 @@ body {
     width: 100%;
     table-layout: fixed;   /* obliga a distribuir el ancho */
     font-size: 12px;       /* reducimos ligeramente */
+    border-collapse: collapse;
+    border: 1px solid #1f3c68;
 }
 
 .academic-table th,
 .academic-table td {
     padding: 4px;
     word-break: break-word; /* evita que el texto empuje la tabla */
+    border: 1px solid #1f3c68 !important;
 }
 
 /* DOS COLUMNAS */
 .two-columns {
     margin-top: 40px;
+}
+
+.detail-card {
+    border: 1px solid #d6dfeb;
+    border-radius: 10px;
+    background: #fbfdff;
+    padding: 14px 16px;
+    height: 100%;
+}
+
+.compact-title {
+    margin-top: 0;
+    margin-bottom: 14px;
+    font-size: 18px;
+}
+
+.detail-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.detail-row {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background: #ffffff;
+}
+
+.detail-label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #4f6488;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.detail-value {
+    margin: 0;
+    color: #1f3c68;
+    font-weight: 600;
+}
+
+.publication-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.publication-list li {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 8px 10px;
+}
+
+.pub-title {
+    display: block;
+    color: #1f3c68;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.pub-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pub-tag {
+    border: 1px solid #c8d8f0;
+    background: #ecf3ff;
+    color: #355482;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.empty-note {
+    margin: 0;
+    border: 1px dashed #cbd8ea;
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 10px;
+    color: #4f6488;
+}
+
+.extra-checks {
+    margin-top: 12px;
+    border-top: 1px solid #dbe4f1;
+    padding-top: 10px;
+}
+
+.extra-checks p {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #1f3c68;
 }
 
 /* FIRMA */
@@ -106,10 +218,34 @@ body {
         background: white;
     }
 
+    .no-print {
+        display: none !important;
+    }
+
     .document {
         box-shadow: none;
         margin: 0;
         padding: 40px;
+    }
+}
+
+:host ::ng-deep {
+    @media print {
+        .layout-topbar,
+        .layout-topbar-separator,
+        .layout-sidebar,
+        .layout-footer,
+        .layout-menu-container,
+        .layout-config {
+            display: none !important;
+        }
+
+        .layout-main-container,
+        .layout-main,
+        .layout-wrapper {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
     }
 }
 
