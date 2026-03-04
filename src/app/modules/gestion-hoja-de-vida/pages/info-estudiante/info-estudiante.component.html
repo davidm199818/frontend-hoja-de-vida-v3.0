@@ -40,7 +40,11 @@
       </div>
       <div class="card-content student-card-content">
         <div class="user-icon-container">
-          <i class="pi pi-user"></i>
+          <div class="student-avatar" aria-hidden="true">
+            <div class="avatar-hair"></div>
+            <div class="avatar-head"></div>
+            <div class="avatar-body"></div>
+          </div>
         </div>
 
         <div class="student-details">
@@ -566,31 +570,52 @@
               <div class="status success">Cumple requisito</div>
             </div>
             <div class="requirement language">
-              <h3>Prueba de Suficiencia Idioma Extranjero
-              </h3>
+              <div class="language-head">
+                <h3>Prueba de Suficiencia Idioma Extranjero</h3>
+                <span class="language-pill">Segunda lengua</span>
+              </div>
+              <p>Validación del requisito institucional de segunda lengua.</p>
 
-
-              <div class="language-status" [ngClass]="claseEstadoPruebaIdiomaExtranjero">
-                {{ estadoPruebaIdiomaExtranjero }}
+              <div class="language-detail-grid">
+                <div class="language-detail-item">
+                  <span class="detail-label">Estado</span>
+                  <div class="language-status" [ngClass]="claseEstadoPruebaIdiomaExtranjero">
+                    <span class="language-dot"></span>
+                    <span class="language-icon">
+                      {{ estadoPruebaIdiomaExtranjero === 'Aprobada' ? '✓' : (estadoPruebaIdiomaExtranjero === 'No aprobada' ? '!' : '•') }}
+                    </span>
+                    {{ estadoPruebaIdiomaExtranjero }}
+                  </div>
+                </div>
+                <div class="language-detail-item">
+                  <span class="detail-label">Cumplimiento</span>
+                  <strong>{{ estadoPruebaIdiomaExtranjero === 'Aprobada' ? 'Requisito cumplido' : 'Pendiente de cumplir' }}</strong>
+                  <small class="language-note" *ngIf="estadoPruebaIdiomaExtranjero !== 'Aprobada'">
+                    Debe aprobar la prueba para completar este requisito.
+                  </small>
+                </div>
               </div>
             </div>
           </section>
 
           <section class="thesis">
-            <h3>Trabajo de Grado</h3>
+            <div class="thesis-header">
+              <h3>Trabajo de Grado</h3>
+              <span class="thesis-badge">Seguimiento activo</span>
+            </div>
 
-            <div class="thesis-block">
-              <label>TITULO</label>
+            <div class="thesis-main-card">
+              <label>TITULO DEL TRABAJO</label>
               <p>{{ tituloTesis }}</p>
             </div>
 
             <div class="thesis-row">
-              <div>
+              <div class="thesis-person-card">
                 <label>DIRECTOR</label>
                 <p>{{ directorTesis }}</p>
               </div>
 
-              <div>
+              <div class="thesis-person-card">
                 <label>CODIRECTOR</label>
                 <p [class.muted]="codirectorTesis === 'Sin registrar'">{{ codirectorTesis }}</p>
               </div>

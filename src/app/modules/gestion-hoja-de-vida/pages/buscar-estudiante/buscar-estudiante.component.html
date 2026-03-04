@@ -10,8 +10,7 @@
 
         <div class="hero-content">
             <div class="hero-title-block">
-                <p class="eyebrow">Sistema de hoja de vida academica</p>
-                <h1 class="title">Generar Hoja de Vida</h1>
+                <h1 class="title">Consultar Hoja de Vida</h1>
                 <p class="title-subtitle">Busca y selecciona el estudiante para consultar su historial academico.</p>
             </div>
         </div>
@@ -51,20 +50,22 @@
                 <table class="table table-bordered align-middle text-center mb-0">
                     <thead class="table-light">
                         <tr>
-                            <th>Tipo de Documento</th>
-                            <th>Documento</th>
                             <th>Nombre</th>
                             <th>Apellido</th>
+                            <th>Codigo</th>
+                            <th>Identificacion</th>
+                            <th>Periodo de Ingreso</th>
                             <th>Opciones</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         <tr *ngFor="let estudiante of estudiantesPaginados">
-                            <td>{{ estudiante.tipoIdentificacion }}</td>
-                            <td>{{ estudiante.identificacion }}</td>
                             <td>{{ estudiante.nombre }}</td>
                             <td>{{ estudiante.apellido }}</td>
+                            <td>{{ estudiante.codigo }}</td>
+                            <td>{{ estudiante.identificacion }}</td>
+                            <td>{{ estudiante.periodoIngreso }}</td>
                             <td>
                                 <button
                                     class="btn btn-sm btn-primary"

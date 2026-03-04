@@ -6,7 +6,7 @@ body {
 
 .document {
     background: white;
-    max-width: 1000px;
+    max-width: 1180px;
     margin: 40px auto;
     padding: 40px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -14,7 +14,7 @@ body {
 }
 
 .pdf-actions {
-    max-width: 1000px;
+    max-width: 1180px;
     margin: 24px auto 0;
     display: flex;
     justify-content: flex-end;
@@ -72,19 +72,93 @@ body {
 }
 
 /* TABLA */
+.table-card {
+    border: 1px solid #d6dfeb;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 6px 16px rgba(25, 45, 85, 0.08);
+    margin-top: 10px;
+}
+
+.table-card-head {
+    background: linear-gradient(90deg, #eef4ff, #f7faff);
+    border-bottom: 1px solid #d6dfeb;
+    padding: 10px 14px;
+    color: #1f3c68;
+    font-size: 14px;
+}
+
+.table-card-body {
+    padding: 10px;
+}
+
 .academic-table {
     width: 100%;
     table-layout: fixed;   /* obliga a distribuir el ancho */
-    font-size: 12px;       /* reducimos ligeramente */
+    font-size: 13.5px;
+    line-height: 1.35;
     border-collapse: collapse;
     border: 1px solid #1f3c68;
 }
 
 .academic-table th,
 .academic-table td {
-    padding: 4px;
+    padding: 8px 6px;
     word-break: break-word; /* evita que el texto empuje la tabla */
     border: 1px solid #1f3c68 !important;
+    vertical-align: middle;
+}
+
+.academic-table th {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.academic-table-modern thead th {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background: #1f3c68;
+    color: #ffffff;
+    font-size: 12px;
+    text-align: center;
+}
+
+.academic-table-modern .area-row td {
+    background: linear-gradient(90deg, #edf3ff, #f5f9ff);
+    color: #1d3a65;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 9px 10px;
+}
+
+.academic-table-modern tbody tr:nth-child(even):not(.area-row):not(.summary-row):not(.empty-row) {
+    background: #f9fbff;
+}
+
+.academic-table-modern .empty-row td {
+    text-align: center;
+    color: #607090;
+    background: #ffffff;
+    font-style: italic;
+}
+
+.academic-table-modern .summary-row td {
+    background: #edf2f8;
+    color: #1f3c68;
+    font-size: 13px;
+}
+
+.academic-table-modern tbody td:nth-child(1),
+.academic-table-modern tbody td:nth-child(2),
+.academic-table-modern tbody td:nth-child(4),
+.academic-table-modern tbody td:nth-child(5) {
+    text-align: center;
+}
+
+.academic-table-modern tbody td:nth-child(3) {
+    text-align: left;
 }
 
 /* DOS COLUMNAS */

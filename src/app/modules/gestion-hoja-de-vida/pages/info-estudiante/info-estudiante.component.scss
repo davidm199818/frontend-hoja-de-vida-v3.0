@@ -215,15 +215,52 @@
   width: 92px;
   height: 92px;
   border-radius: 50%;
-  background: linear-gradient(180deg, #e9f1ff, #d6e5ff);
+  background: radial-gradient(circle at 35% 20%, #f2f7ff 0%, #d3e3ff 62%, #b9cff6 100%);
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  border: 1px solid #c7d7f2;
+  box-shadow: inset 0 1px 8px rgba(255, 255, 255, 0.7);
 }
 
-.user-icon-container .pi {
-  font-size: 2.7rem;
-  color: var(--primary-0);
+.student-avatar {
+  position: relative;
+  width: 64px;
+  height: 72px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.avatar-head {
+  position: absolute;
+  top: 12px;
+  width: 28px;
+  height: 32px;
+  border-radius: 46% 46% 44% 44%;
+  background: linear-gradient(180deg, #ffd7b5, #f3bc95);
+  border: 1px solid rgba(176, 120, 90, 0.35);
+  z-index: 2;
+}
+
+.avatar-hair {
+  position: absolute;
+  top: 6px;
+  width: 34px;
+  height: 20px;
+  border-radius: 14px 14px 10px 10px;
+  background: linear-gradient(180deg, #2b3f66, #1a2d52);
+  z-index: 3;
+}
+
+.avatar-body {
+  width: 54px;
+  height: 34px;
+  border-radius: 18px 18px 8px 8px;
+  background: linear-gradient(180deg, #3f7fe8, #2c5fbe);
+  border: 1px solid rgba(22, 53, 115, 0.45);
+  box-shadow: 0 -6px 10px rgba(44, 95, 190, 0.25) inset;
 }
 
 .student-details {
@@ -584,12 +621,141 @@
   font-weight: 700;
 }
 
+.requirement.language {
+  background: linear-gradient(180deg, #ffffff, #f8fbff);
+}
+
+.language-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.language-pill {
+  border: 1px solid #cfe0ff;
+  background: #ecf3ff;
+  color: #264f8f;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.language-status {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 0.84rem;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.language-detail-item .language-status {
+  margin-top: 6px;
+}
+
+.language-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.language-icon {
+  width: 16px;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.language-status.approved {
+  background: #ebf9f1;
+  border-color: #bee8cf;
+  color: #178f57;
+}
+
+.language-status.pending {
+  background: #fff6e9;
+  border-color: #ffd9a4;
+  color: #b26d00;
+}
+
+.language-status.not-recorded {
+  background: #eef3fb;
+  border-color: #d5dfef;
+  color: #4d6389;
+}
+
+.language-detail-grid {
+  margin-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+
+.language-detail-item {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 10px;
+}
+
+.language-detail-item strong {
+  display: block;
+  color: var(--ink-1);
+  margin-top: 2px;
+}
+
+.language-note {
+  display: block;
+  margin-top: 6px;
+  color: #617093;
+  font-size: 0.78rem;
+}
+
 .thesis {
   padding: 20px;
+  background: linear-gradient(180deg, #ffffff, #f9fbff);
 }
 
 .thesis h3 {
   margin: 0 0 14px;
+  color: var(--ink-1);
+}
+
+.thesis-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.thesis-badge {
+  border: 1px solid #cfe0ff;
+  background: #ecf3ff;
+  color: #264f8f;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+}
+
+.thesis-main-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #ffffff;
+  padding: 12px;
+}
+
+.thesis-main-card p {
+  margin: 6px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
   color: var(--ink-1);
 }
 
@@ -610,8 +776,16 @@
 
 .thesis-row {
   display: flex;
-  gap: 28px;
+  gap: 12px;
   margin-top: 16px;
+}
+
+.thesis-person-card {
+  flex: 1;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 10px 12px;
 }
 
 .muted {

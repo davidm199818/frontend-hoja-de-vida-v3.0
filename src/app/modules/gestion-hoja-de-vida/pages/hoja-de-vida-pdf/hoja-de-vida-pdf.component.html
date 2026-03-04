@@ -37,102 +37,54 @@
     <!-- FORMACIÓN -->
     <div class="section-title">Formación Académica</div>
 
-    <div class="text-center mb-3">
-        <strong>Plan de estudios: 2015 - Actual</strong>
-    </div>
+    <section class="table-card">
+        <div class="table-card-head">
+            <strong>Plan de estudios: 2015 - Actual</strong>
+        </div>
 
-    <table class="table table-bordered academic-table text-center">
-        <thead class="table-primary">
-            <tr>
-                <th rowspan="2">Área de Formación</th>
-                <th colspan="3">Semestre 1</th>
-                <th colspan="3">Semestre 2</th>
-                <th colspan="3">Semestre 3</th>
-                <th colspan="3">Semestre 4</th>
-            </tr>
-            <tr>
-                <th>Asignatura</th>
-                <th>Créditos</th>
-                <th>Nota</th>
+        <div class="table-card-body">
+            <table class="table table-bordered academic-table academic-table-modern">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Periodo</th>
+                        <th>Codigo</th>
+                        <th>Asignatura</th>
+                        <th>Creditos</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
 
-                <th>Asignatura</th>
-                <th>Créditos</th>
-                <th>Nota</th>
+                <tbody>
+                    <ng-container *ngFor="let seccion of seccionesMaterias">
+                        <tr class="area-row">
+                            <td colspan="5">{{ seccion.area }}</td>
+                        </tr>
 
-                <th>Asignatura</th>
-                <th>Créditos</th>
-                <th>Nota</th>
+                        <tr *ngIf="seccion.materias.length === 0" class="empty-row">
+                            <td colspan="5">Sin asignaturas registradas en esta area.</td>
+                        </tr>
 
-                <th>Asignatura</th>
-                <th>Créditos</th>
-                <th>Nota</th>
-            </tr>
-        </thead>
+                        <tr *ngFor="let materia of seccion.materias">
+                            <td>{{ materia.periodo || 'NR' }}</td>
+                            <td>{{ materia.codigo || 'NR' }}</td>
+                            <td>{{ materia.nombre || 'NR' }}</td>
+                            <td>{{ materia.creditos ?? 'NR' }}</td>
+                            <td>{{ materia.nota || 'NR' }}</td>
+                        </tr>
+                    </ng-container>
 
-        <tbody>
-
-            <!-- FUNDAMENTACIÓN -->
-            <tr>
-                <td><strong>Fundamentación</strong></td>
-
-                <ng-container *ngFor="let i of [0, 1, 2, 3]">
-                    <td>{{ fundamentacionData[i]?.nombre || '' }}</td>
-                    <td>{{ fundamentacionData[i]?.creditos ?? '' }}</td>
-                    <td>{{ fundamentacionData[i]?.nota || '' }}</td>
-                </ng-container>
-            </tr>
-
-            <!-- ELECTIVAS -->
-            <tr>
-                <td><strong>Electivas</strong></td>
-
-                <ng-container *ngFor="let i of [0, 1, 2, 3]">
-                    <td>{{ electivasData[i]?.nombre || '' }}</td>
-                    <td>{{ electivasData[i]?.creditos ?? '' }}</td>
-                    <td>{{ electivasData[i]?.nota || '' }}</td>
-                </ng-container>
-            </tr>
-
-            <!-- INVESTIGACIÓN -->
-            <tr>
-                <td><strong>Investigación</strong></td>
-
-                <ng-container *ngFor="let i of [0, 1, 2, 3]">
-                    <td>{{ investigacionData[i]?.nombre || '' }}</td>
-                    <td>{{ investigacionData[i]?.creditos ?? '' }}</td>
-                    <td>{{ investigacionData[i]?.nota || '' }}</td>
-                </ng-container>
-            </tr>
-
-            <!-- COMPLEMENTACIÓN -->
-            <tr>
-                <td><strong>Créditos Mínimos</strong></td>
-
-                <td></td>
-                <td>{{ historia?.historiaAcademica?.informacionAdicional?.creditosCumplidos }}</td>
-                <td></td>
-
-                <td colspan="9"></td>
-            </tr>
-
-            <tr>
-                <td><strong>Créditos Máximos</strong></td>
-                <td colspan="12">
-                    {{ historia?.historiaAcademica?.informacionAdicional?.creditosMaximos }}
-                </td>
-            </tr>
-
-            <tr>
-                <td colspan="13">
-                    <strong>
-                        Total de Créditos Cumplidos:
-                        {{ historia?.historiaAcademica?.informacionAdicional?.creditosCumplidos }}
-                    </strong>
-                </td>
-            </tr>
-
-        </tbody>
-    </table>
+                    <tr class="summary-row">
+                        <td colspan="3"><strong>Total de creditos cumplidos</strong></td>
+                        <td colspan="2"><strong>{{ historia?.historiaAcademica?.informacionAdicional?.creditosCumplidos }}</strong></td>
+                    </tr>
+                    <tr class="summary-row">
+                        <td colspan="3"><strong>Creditos maximos</strong></td>
+                        <td colspan="2"><strong>{{ historia?.historiaAcademica?.informacionAdicional?.creditosMaximos }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
     <!-- DOS COLUMNAS -->
     <div class="row two-columns">
         <div class="col-md-6">
@@ -202,5 +154,6 @@
     </div>
 
 </div>
+
 
 

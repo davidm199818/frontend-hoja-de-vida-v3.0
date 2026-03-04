@@ -5,6 +5,7 @@ import { HistoriaAcademica } from '../../models/Historia-Academica';
 import { Asignatura } from '../../models/Asignatura';
 import { Publicacion } from '../../models/Publicacion';
 import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface TableRow {
   periodo: string;
@@ -12,6 +13,11 @@ interface TableRow {
   nombre: string;
   creditos: number;
   nota: string;
+}
+
+interface TableSection {
+  area: string;
+  materias: TableRow[];
 }
 
 @Component({
@@ -83,6 +89,15 @@ export class HojaDeVidaPdfComponent implements OnInit {
     return this.historia?.historiaAcademica?.investigacion?.publicaciones ?? [];
   }
 
+  get seccionesMaterias(): TableSection[] {
+    return [
+      { area: 'Area de Fundamentacion', materias: this.fundamentacionData },
+      { area: 'Area de Electivas', materias: this.electivasData },
+      { area: 'Area de Investigacion', materias: this.investigacionData },
+      { area: 'Area de Complementacion', materias: this.complementacionData }
+    ];
+  }
+
   previsualizarPdf(): void {
     window.print();
   }
@@ -95,26 +110,45 @@ export class HojaDeVidaPdfComponent implements OnInit {
     this.generandoPdf = true;
 
     try {
+      const content = this.pdfContent.nativeElement;
       const doc = new jsPDF({
         orientation: 'p',
         unit: 'pt',
         format: 'a4'
       });
 
-      await new Promise<void>((resolve) => {
-        doc.html(this.pdfContent!.nativeElement, {
-          margin: [20, 20, 20, 20],
-          autoPaging: 'text',
-          html2canvas: {
-            scale: 0.6,
-            useCORS: true
-          },
-          callback: (pdf) => {
-            pdf.save(`hoja-de-vida-${this.codigoEstudiante || 'estudiante'}.pdf`);
-            resolve();
-          }
-        });
+      const margin = 20;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const usableWidth = pageWidth - margin * 2;
+      const usableHeight = pageHeight - margin * 2;
+
+      const canvas = await html2canvas(content, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        windowWidth: content.scrollWidth,
+        windowHeight: content.scrollHeight,
+        scrollX: 0,
+        scrollY: -window.scrollY
       });
+
+      const imgData = canvas.toDataURL('image/png');
+      const imgHeight = (canvas.height * usableWidth) / canvas.width;
+      let heightLeft = imgHeight;
+      let yPosition = margin;
+
+      doc.addImage(imgData, 'PNG', margin, yPosition, usableWidth, imgHeight);
+      heightLeft -= usableHeight;
+
+      while (heightLeft > 0) {
+        doc.addPage();
+        yPosition = margin - (imgHeight - heightLeft);
+        doc.addImage(imgData, 'PNG', margin, yPosition, usableWidth, imgHeight);
+        heightLeft -= usableHeight;
+      }
+
+      doc.save(`hoja-de-vida-${this.codigoEstudiante || 'estudiante'}.pdf`);
     } finally {
       this.generandoPdf = false;
     }
