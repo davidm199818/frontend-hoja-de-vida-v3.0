@@ -20,17 +20,17 @@
         <div class="student-name">
             {{ historia.estudiante.nombreCompleto }}
         </div>
-        
+
         <div class="student-info">
-            Maestria en Computacion  -  Universidad del Cauca
+            Maestría en Computación  -  Universidad del Cauca
         </div>
 
         <div class="student-info">
-            Codigo: {{ historia.estudiante.codigoEstudiante }}
+            Código: {{ historia.estudiante.codigoEstudiante }}
         </div>
 
         <div class="contact-info">
-            {{ historia.estudiante.correoUniversidad }} 
+            {{ historia.estudiante.correoUniversidad }}
         </div>
     </div>
 
@@ -47,9 +47,9 @@
                 <thead class="table-primary">
                     <tr>
                         <th>Periodo</th>
-                        <th>Codigo</th>
+                        <th>Código</th>
                         <th>Asignatura</th>
-                        <th>Creditos</th>
+                        <th>Créditos</th>
                         <th>Nota</th>
                     </tr>
                 </thead>
@@ -61,7 +61,7 @@
                         </tr>
 
                         <tr *ngIf="seccion.materias.length === 0" class="empty-row">
-                            <td colspan="5">Sin asignaturas registradas en esta area.</td>
+                            <td colspan="5">Sin asignaturas registradas en esta área.</td>
                         </tr>
 
                         <tr *ngFor="let materia of seccion.materias">
@@ -74,12 +74,12 @@
                     </ng-container>
 
                     <tr class="summary-row">
-                        <td colspan="3"><strong>Total de creditos cumplidos</strong></td>
+                        <td colspan="3"><strong>Total de créditos cumplidos</strong></td>
                         <td colspan="2"><strong>{{ historia?.historiaAcademica?.informacionAdicional?.creditosCumplidos }}</strong></td>
                     </tr>
                     <tr class="summary-row">
-                        <td colspan="3"><strong>Creditos maximos</strong></td>
-                        <td colspan="2"><strong>{{ historia?.historiaAcademica?.informacionAdicional?.creditosMaximos }}</strong></td>
+                        <td colspan="3"><strong>Créditos máximos</strong></td>
+                        <td colspan="2"><strong>58{{ historia?.historiaAcademica?.informacionAdicional?.creditosMaximos }}</strong></td>
                     </tr>
                 </tbody>
             </table>

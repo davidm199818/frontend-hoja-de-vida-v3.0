@@ -3,7 +3,7 @@
         <div class="hero-top">
             <div class="back-button-container">
                 <button class="btn btn-light shadow-sm" (click)="volver()">
-                    <i class="fa fa-arrow-left me-2"></i> Atras
+                    <i class="fa fa-arrow-left me-2"></i> Atrás
                 </button>
             </div>
         </div>
@@ -11,7 +11,7 @@
         <div class="hero-content">
             <div class="hero-title-block">
                 <h1 class="title">Consultar Hoja de Vida</h1>
-                <p class="title-subtitle">Busca y selecciona el estudiante para consultar su historial academico.</p>
+                <p class="title-subtitle">Busca y selecciona el estudiante para consultar su historial académico.</p>
             </div>
         </div>
 
@@ -24,7 +24,7 @@
                 <input
                     type="text"
                     class="form-control border-start-0"
-                    placeholder="Ingrese codigo, identificacion o nombre"
+                    placeholder="Ingrese código, identificación o nombre"
                     [(ngModel)]="criterio"
                 />
 
@@ -52,8 +52,8 @@
                         <tr>
                             <th>Nombres</th>
                             <th>Apellidos</th>
-                            <th>Codigo</th>
-                            <th>Identificacion</th>
+                            <th>Código</th>
+                            <th>Identificación</th>
                             <th>Periodo de Ingreso</th>
                             <th>Opciones</th>
                         </tr>
@@ -89,7 +89,7 @@
 
                         <li class="page-item disabled">
                             <span class="page-link">
-                                Pagina {{ page + 1 }}
+                                Página {{ page + 1 }}
                             </span>
                         </li>
 
@@ -109,7 +109,7 @@
                 *ngIf="!cargando && estudiantes.length === 0 && !error"
                 class="text-center p-4 text-secondary"
             >
-                No hay estudiantes registrados
+                No hay estudiantes registrados.
             </div>
         </div>
     </div>

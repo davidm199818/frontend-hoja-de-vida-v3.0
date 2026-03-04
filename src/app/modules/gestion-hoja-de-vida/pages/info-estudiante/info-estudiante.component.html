@@ -2,7 +2,7 @@
   <section class="hero-panel">
     <div class="back-button-container">
       <button class="btn btn-light shadow-sm" (click)="volver()">
-        <i class="fa fa-arrow-left me-2"></i> Atras
+        <i class="fa fa-arrow-left me-2"></i> Atrás
       </button>
     </div>
 
@@ -90,21 +90,21 @@
 
     <section class="menu-and-table-section">
       <aside class="sidebar">
-        <div class="sidebar-title">Navegacion academica</div>
+        <div class="sidebar-title">Navegación académica</div>
 
         <div class="menu-item" [ngClass]="{ active: activeMenuItem === 'fundamentacion' }"
           (click)="selectMenuItem('fundamentacion')">
-          Area de Fundamentacion <i class="pi pi-angle-right"></i>
+          Área de Fundamentación <i class="pi pi-angle-right"></i>
         </div>
 
         <div class="menu-item" [ngClass]="{ active: activeMenuItem === 'electivas' }"
           (click)="selectMenuItem('electivas')">
-          Area de Electivas <i class="pi pi-angle-right"></i>
+          Área de Electivas <i class="pi pi-angle-right"></i>
         </div>
 
         <div class="menu-item" [ngClass]="{ expanded: expandedMenu['investigacion'] }"
           (click)="toggleSubmenu('investigacion')">
-          Area de Investigacion
+          Área de Investigación
           <i class="pi" [ngClass]="{
                             'pi-angle-down': expandedMenu['investigacion'],
                             'pi-angle-right': !expandedMenu['investigacion']
@@ -119,7 +119,7 @@
           </div>
           <div class="submenu-item" [ngClass]="{ active: activeMenuItem === 'pasantias' }"
             (click)="selectMenuItem('pasantias')">
-            Pasantias de investigacion
+            Pasantías de investigación
           </div>
           <div class="submenu-item" [ngClass]="{
                             active: activeMenuItem === 'publicaciones'
@@ -130,7 +130,7 @@
 
         <div class="menu-item" [ngClass]="{ expanded: expandedMenu['complementacion'] }"
           (click)="toggleSubmenu('complementacion')">
-          Area de Complementacion
+          Área de Complementación
           <i class="pi" [ngClass]="{
                             'pi-angle-down': expandedMenu['complementacion'],
                             'pi-angle-right': !expandedMenu['complementacion']
@@ -141,7 +141,7 @@
           <div class="submenu-item" [ngClass]="{
                             active: activeMenuItem === 'practicaDocente'
                         }" (click)="selectMenuItem('practicaDocente')">
-            Practica Docente
+            Práctica Docente
           </div>
           <div class="submenu-item" [ngClass]="{
                             active:
@@ -154,7 +154,7 @@
         <div class="menu-item" [ngClass]="{
                         active: activeMenuItem === 'informacionAcademica'
                     }" (click)="selectMenuItem('informacionAcademica')">
-          Informacion Academica
+          Información Académica
           <i class="pi pi-angle-right"></i>
         </div>
       </aside>
@@ -163,7 +163,7 @@
         <div class="table-container" *ngIf="activeMenuItem === 'fundamentacion'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Area de Fundamentacion</h2>
+              <h2>Área de Fundamentación</h2>
               <span class="pill">{{ fundamentacionData.length }} registros</span>
             </header>
             <div class="table-shell" *ngIf="
@@ -175,9 +175,9 @@
                   <thead>
                     <tr>
                       <th>Periodo</th>
-                      <th>Codigo</th>
+                      <th>Código</th>
                       <th>Nombre</th>
-                      <th>Creditos</th>
+                      <th>Créditos</th>
                       <th>Nota</th>
                     </tr>
                   </thead>
@@ -197,7 +197,7 @@
             </div>
             <ng-template #emptyFundamentacion>
               <div class="empty-state">
-                No hay asignaturas registradas en esta area.
+                No hay asignaturas registradas en esta área.
               </div>
             </ng-template>
           </article>
@@ -206,7 +206,7 @@
         <div class="table-container" *ngIf="activeMenuItem === 'electivas'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Area de Electivas</h2>
+              <h2>Área de Electivas</h2>
               <span class="pill">{{ electivasData.length }} registros</span>
             </header>
             <div class="table-shell" *ngIf="
@@ -218,9 +218,9 @@
                   <thead>
                     <tr>
                       <th>Periodo</th>
-                      <th>Codigo</th>
+                      <th>Código</th>
                       <th>Nombre</th>
-                      <th>Creditos</th>
+                      <th>Créditos</th>
                       <th>Nota</th>
                     </tr>
                   </thead>
@@ -238,7 +238,7 @@
             </div>
             <ng-template #emptyElectivas>
               <div class="empty-state">
-                No hay asignaturas registradas en esta area.
+                No hay asignaturas registradas en esta área.
               </div>
             </ng-template>
           </article>
@@ -247,7 +247,7 @@
         <div class="table-container" *ngIf="activeMenuItem === 'asignaturasVistas'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Asignaturas de Investigacion</h2>
+              <h2>Asignaturas de Investigación</h2>
               <span class="pill">{{
                 asignaturasVistasData.length
                 }}
@@ -262,9 +262,9 @@
                   <thead>
                     <tr>
                       <th>Periodo</th>
-                      <th>Codigo</th>
+                      <th>Código</th>
                       <th>Nombre</th>
-                      <th>Creditos</th>
+                      <th>Créditos</th>
                       <th>Nota</th>
                     </tr>
                   </thead>
@@ -284,7 +284,7 @@
             </div>
             <ng-template #emptyAsignaturasInvestigacion>
               <div class="empty-state">
-                No hay asignaturas registradas en esta area.
+                No hay asignaturas registradas en esta área.
               </div>
             </ng-template>
           </article>
@@ -293,7 +293,7 @@
         <div class="table-container" *ngIf="activeMenuItem === 'pasantias'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Pasantias de Investigacion</h2>
+              <h2>Pasantías de Investigación</h2>
               <span class="pill">{{
                 historia.historiaAcademica.investigacion
                 .pasantias.length
@@ -309,7 +309,7 @@
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>Creditos Asignados</th>
+                      <th>Créditos Asignados</th>
                       <th>Acta</th>
                       <th>Fecha de Acta</th>
                       <th>Informe</th>
@@ -361,12 +361,12 @@
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>Creditos Asignados</th>
+                      <th>Créditos Asignados</th>
                       <th>Acta</th>
-                      <th>Nombre Publicacion</th>
-                      <th>Tipo de Publicacion</th>
-                      <th>Categoria Indexada</th>
-                      <th>Fecha de Aceptacion</th>
+                      <th>Nombre Publicación</th>
+                      <th>Tipo de Publicación</th>
+                      <th>Categoría Indexada</th>
+                      <th>Fecha de Aceptación</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -418,7 +418,7 @@
         <div class="table-container" *ngIf="activeMenuItem === 'practicaDocente'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Practica Docente</h2>
+              <h2>Práctica Docente</h2>
               <span class="pill">{{
                 historia.historiaAcademica.complementacion
                 .practicasDocentes.length
@@ -434,7 +434,7 @@
                 <table class="data-table">
                   <thead>
                     <tr>
-                      <th>Creditos Asignados</th>
+                      <th>Créditos Asignados</th>
                       <th>Acta</th>
                       <th>Horas</th>
                     </tr>
@@ -482,9 +482,9 @@
                   <thead>
                     <tr>
                       <th>Periodo</th>
-                      <th>Codigo</th>
+                      <th>Código</th>
                       <th>Nombre</th>
-                      <th>Creditos</th>
+                      <th>Créditos</th>
                       <th>Nota</th>
                     </tr>
                   </thead>
@@ -504,7 +504,7 @@
             </div>
             <ng-template #emptyEmpresariales>
               <div class="empty-state">
-                No hay asignaturas registradas en esta area.
+                No hay asignaturas registradas en esta área.
               </div>
             </ng-template>
           </article>
@@ -513,8 +513,8 @@
         <div class="dashboard" *ngIf="activeMenuItem === 'informacionAcademica'">
           <header class="dashboard-header">
             <div>
-              <h1>Informacion Academica</h1>
-              <p>Seguimiento oficial de requisitos para grado.</p>
+              <h1>Información Académica</h1>
+              <p>Seguimiento oficial de requisitos de grado.</p>
             </div>
 
             <div class="completion-status">
@@ -526,7 +526,7 @@
           <section class="summary">
             <div class="summary-left">
               <h2>{{ creditosCumplidos }}</h2>
-              <span>Creditos aprobados</span>
+              <span>Créditos aprobados</span>
             </div>
 
             <div class="summary-right">
@@ -539,17 +539,17 @@
                 <div class="progress-fill" [style.width.%]="progresoCreditos"></div>
               </div>
 
-              <small>{{ creditosRequeridos }} creditos
+              <small>{{ creditosRequeridos }} créditos
                 requeridos</small>
             </div>
           </section>
 
           <section class="requirements">
             <div class="requirement publication">
-              <h3>Publicacion Academica</h3>
+              <h3>Publicación Académica</h3>
 
               <p>
-                Minimo un articulo en revista categoria A, B o
+                Mínimo un artículo en revista categoría A, B o
                 C.
               </p>
 
@@ -605,7 +605,7 @@
             </div>
 
             <div class="thesis-main-card">
-              <label>TITULO DEL TRABAJO</label>
+              <label>TÍTULO DEL TRABAJO</label>
               <p>{{ tituloTesis }}</p>
             </div>
 
