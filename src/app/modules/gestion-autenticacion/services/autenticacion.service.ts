@@ -27,6 +27,7 @@ export class AutenticacionService {
     private isLoggedInStatus: boolean = false;
     private userRole: string = '';
     private loggedInUser: Usuario | null = null;
+    private isMockAuth: boolean = false;
     loginSuccess$: EventEmitter<void> = new EventEmitter<void>();
     logoutSuccess$: EventEmitter<void> = new EventEmitter<void>();
 
@@ -38,6 +39,8 @@ export class AutenticacionService {
         private menuService: MenuService,
         private router: Router
     ) {
+        this.isMockAuth = localStorage.getItem('mockAuth') === 'true';
+
         // Recuperar el usuario autenticado del localStorage al iniciar
         const storedUser = localStorage.getItem('loggedInUser');
         if (storedUser) {
@@ -47,6 +50,12 @@ export class AutenticacionService {
 
         // Suscribirse al estado de autenticación sin sobrescribir loggedInUser
         this.afAuth.authState.subscribe((user) => {
+            if (this.isMockAuth) {
+                // Mantener sesion mock sin depender de Firebase
+                this.isLoggedInStatus = !!this.loggedInUser;
+                return;
+            }
+
             if (user && user.email?.endsWith('@unicauca.edu.co')) {
                 this.isLoggedInStatus = true;
 
@@ -156,6 +165,7 @@ export class AutenticacionService {
             localStorage.removeItem('token');
             localStorage.removeItem('est');
             localStorage.removeItem('estEgresado');
+            localStorage.removeItem('mockAuth');
             this.router.navigate(['']);
 
             // Emitir evento de logout
