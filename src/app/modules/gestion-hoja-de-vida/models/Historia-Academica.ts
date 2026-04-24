@@ -11,6 +11,7 @@ export interface EstudianteHistoriaAcademica {
   codigoEstudiante: string;
   nombreCompleto: string;
   correoUniversidad: string;
+  promedioCarrera?: number | string;
   tituloPregrado: string;
   fechaGrado: string;
 }

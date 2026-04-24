@@ -4,5 +4,6 @@ export interface Publicacion {
   nombrePublicacion: string;
   tipoPublicacion: string;
   categoriaIndexada:string;
+  urlPublicacion?: string;
   fechaAceptacion: string;
 }

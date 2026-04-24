@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { InformacionService } from '../../services/informacion.service';
 import { HistoriaAcademica } from '../../models/Historia-Academica';
@@ -31,6 +31,7 @@ export class HojaDeVidaPdfComponent implements OnInit {
   codigoEstudiante = '';
   historia!: HistoriaAcademica;
   generandoPdf = false;
+  fechaHoraGeneracion = '';
 
   fundamentacionData: TableRow[] = [];
   electivasData: TableRow[] = [];
@@ -39,7 +40,8 @@ export class HojaDeVidaPdfComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private infoService: InformacionService
+    private infoService: InformacionService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -110,6 +112,10 @@ export class HojaDeVidaPdfComponent implements OnInit {
     this.generandoPdf = true;
 
     try {
+      this.fechaHoraGeneracion = this.obtenerFechaHoraGeneracion();
+      this.cdr.detectChanges();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
       const content = this.pdfContent.nativeElement;
       const doc = new jsPDF({
         orientation: 'p',
@@ -152,5 +158,16 @@ export class HojaDeVidaPdfComponent implements OnInit {
     } finally {
       this.generandoPdf = false;
     }
+  }
+
+  private obtenerFechaHoraGeneracion(): string {
+    return new Intl.DateTimeFormat('es-CO', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    }).format(new Date());
   }
 }

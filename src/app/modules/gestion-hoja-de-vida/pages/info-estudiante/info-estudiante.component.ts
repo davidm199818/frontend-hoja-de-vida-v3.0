@@ -130,6 +130,24 @@ export class InfoEstudianteComponent implements OnInit {
     return this.historia?.historiaAcademica?.investigacion?.publicaciones ?? [];
   }
 
+  get tienePublicacionesRegistradas(): boolean {
+    return this.publicacionesInvestigacion.length > 0;
+  }
+
+  get promedioCarrera(): number | null {
+    const promedio = this.historia?.estudiante?.promedioCarrera;
+    if (promedio === null || promedio === undefined || promedio === '') {
+      return null;
+    }
+
+    const promedioNumerico = Number(String(promedio).replace(',', '.'));
+    return Number.isNaN(promedioNumerico) ? null : promedioNumerico;
+  }
+
+  get tieneReconocimientoPromedio(): boolean {
+    return (this.promedioCarrera ?? 0) > 4.8;
+  }
+
   get directorTesis(): string {
     const director = this.historia?.historiaAcademica?.informacionAdicional?.directorTesis;
     return director && director.trim().length > 0 ? director : 'Sin registrar';
@@ -171,14 +189,15 @@ export class InfoEstudianteComponent implements OnInit {
   }
 
   get claseEstadoPruebaIdiomaExtranjero(): string {
-    const estado = this.estadoPruebaIdiomaExtranjero;
-    if (estado === 'Aprobada') {
-      return 'approved';
-    }
-    if (estado === 'No aprobada') {
-      return 'pending';
-    }
-    return 'not-recorded';
+    return this.cumplePruebaIdiomaExtranjero ? 'approved' : 'rejected';
+  }
+
+  get cumplePruebaIdiomaExtranjero(): boolean {
+    return this.estadoPruebaIdiomaExtranjero === 'Aprobada';
+  }
+
+  get cumpleRequisitosAcademicos(): boolean {
+    return this.tienePublicacionesRegistradas && this.cumplePruebaIdiomaExtranjero;
   }
 
   private esPruebaIdioma(asignatura: Asignatura): boolean {

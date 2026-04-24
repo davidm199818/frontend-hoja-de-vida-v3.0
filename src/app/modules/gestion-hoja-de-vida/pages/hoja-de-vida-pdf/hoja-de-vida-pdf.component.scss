@@ -60,6 +60,13 @@ body {
     color: #555;
 }
 
+.generation-info {
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #355482;
+}
+
 /* TITULOS */
 .section-title {
     margin-top: 50px;
@@ -238,6 +245,14 @@ body {
     gap: 6px;
 }
 
+.pub-meta-row {
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
 .pub-tag {
     border: 1px solid #c8d8f0;
     background: #ecf3ff;
@@ -245,6 +260,13 @@ body {
     font-size: 11px;
     padding: 2px 8px;
     border-radius: 999px;
+}
+
+.pub-url {
+    font-size: 11px;
+    font-weight: 600;
+    color: #355482;
+    word-break: break-word;
 }
 
 .empty-note {

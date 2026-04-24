@@ -4,7 +4,7 @@
     </button>
     <button class="btn btn-primary" (click)="descargarPdf()" [disabled]="generandoPdf">
         <i class="fa fa-download me-1"></i>
-        {{ generandoPdf ? 'Generando...' : 'Descargar PDF' }}
+        {{ generandoPdf ? 'Generando...' : 'Descargar' }}
     </button>
 </div>
 
@@ -32,6 +32,7 @@
         <div class="contact-info">
             {{ historia.estudiante.correoUniversidad }}
         </div>
+
     </div>
 
     <!-- FORMACIÓN -->
@@ -70,6 +71,11 @@
                             <td>{{ materia.nombre || 'NR' }}</td>
                             <td>{{ materia.creditos ?? 'NR' }}</td>
                             <td>{{ materia.nota || 'NR' }}</td>
+                        </tr>
+
+                        <tr class="summary-row" *ngIf="seccion.area === 'Area de Complementacion'">
+                            <td colspan="3"><strong>Promedio total de la carrera</strong></td>
+                            <td colspan="2"><strong>{{ historia?.estudiante?.promedioCarrera ?? 'Sin registrar' }}</strong></td>
                         </tr>
                     </ng-container>
 
@@ -115,9 +121,14 @@
                 <ul class="publication-list" *ngIf="publicacionesInvestigacion.length > 0; else sinPublicaciones">
                     <li *ngFor="let publicacion of publicacionesInvestigacion">
                         <span class="pub-title">{{ publicacion.nombrePublicacion || 'Publicación sin título' }}</span>
+                        <div class="pub-meta-row">
                         <div class="pub-meta">
                             <span class="pub-tag">{{ publicacion.tipoPublicacion || 'Sin tipo' }}</span>
                             <span class="pub-tag">{{ publicacion.categoriaIndexada || 'Sin categoría' }}</span>
+                        </div>
+                        <div class="pub-url" *ngIf="publicacion.urlPublicacion">
+                            {{ publicacion.urlPublicacion }}
+                        </div>
                         </div>
                     </li>
                 </ul>
@@ -139,12 +150,15 @@
     </div>
     <!-- FIRMA -->
     <div class="signature">
-        <img src="assets/layout/images/FirmaEnBlanco.png" alt="Firma coordinador" width="200">
+        <img src="assets/layout/images/firma.png" alt="Firma coordinador" width="200">
         <div class="signature-line">
             Coordinador: Hugo Ordoñez<br>
             Programa de Maestría en Computación<br>
             Facultad de Ingeniería Electrónica y Telecomunicaciones<br>
             Universidad del Cauca
+            <div class="generation-info" *ngIf="fechaHoraGeneracion">
+                Generado el {{ fechaHoraGeneracion }}
+            </div>
         </div>
     </div>
 

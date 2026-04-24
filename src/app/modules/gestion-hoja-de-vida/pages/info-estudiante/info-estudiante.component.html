@@ -67,9 +67,9 @@
               }}</span>
           </div>
           <div class="detail-item">
-            <span class="detail-label">Identificación</span>
+            <span class="detail-label">Promedio</span>
             <span class="detail-value">{{
-              historia.estudiante.identificacion
+              historia.estudiante.promedioCarrera ?? 'Sin registrar'
               }}</span>
           </div>
           <div class="detail-item">
@@ -154,7 +154,7 @@
         <div class="menu-item" [ngClass]="{
                         active: activeMenuItem === 'informacionAcademica'
                     }" (click)="selectMenuItem('informacionAcademica')">
-          Información Académica
+          Información Adicional
           <i class="pi pi-angle-right"></i>
         </div>
       </aside>
@@ -513,13 +513,13 @@
         <div class="dashboard" *ngIf="activeMenuItem === 'informacionAcademica'">
           <header class="dashboard-header">
             <div>
-              <h1>Información Académica</h1>
+              <h1>Información Adicional</h1>
               <p>Seguimiento oficial de requisitos de grado.</p>
             </div>
 
-            <div class="completion-status">
+            <div class="completion-status" [ngClass]="{ incomplete: !cumpleRequisitosAcademicos }">
               <span class="dot"></span>
-              Requisitos completos
+              {{ cumpleRequisitosAcademicos ? 'Requisitos completos' : 'No cumple los requisitos' }}
             </div>
           </header>
 
@@ -556,18 +556,30 @@
               <ng-container *ngIf="publicacionesInvestigacion.length > 0; else sinPublicaciones">
                 <div class="publication-item" *ngFor="let publicacion of publicacionesInvestigacion">
                   <strong>{{ publicacion.nombrePublicacion }}</strong>
-                  <div class="chips">
-                    <span>{{ publicacion.tipoPublicacion || 'Tipo NR' }}</span>
-                    <span>{{ publicacion.categoriaIndexada || 'Categoría NR' }}</span>
+                  <div class="publication-meta">
+                    <div class="chips">
+                      <span>{{ publicacion.tipoPublicacion || 'Tipo NR' }}</span>
+                      <span>{{ publicacion.categoriaIndexada || 'Categoría NR' }}</span>
+                    </div>
+                    <a
+                      *ngIf="publicacion.urlPublicacion"
+                      class="publication-link"
+                      [href]="publicacion.urlPublicacion"
+                      target="_blank"
+                      rel="noopener noreferrer">
+                      {{ publicacion.urlPublicacion }}
+                    </a>
                   </div>
                 </div>
               </ng-container>
 
               <ng-template #sinPublicaciones>
-                <div class="status pending">Sin publicaciones registradas.</div>
+                <div class="status failure">Sin publicaciones registradas.</div>
               </ng-template>
 
-              <div class="status success">Cumple requisito</div>
+              <div class="status" [ngClass]="tienePublicacionesRegistradas ? 'success' : 'failure'">
+                {{ tienePublicacionesRegistradas ? 'Cumple requisito' : 'No cumple los requisitos' }}
+              </div>
             </div>
             <div class="requirement language">
               <div class="language-head">
@@ -589,8 +601,10 @@
                 </div>
                 <div class="language-detail-item">
                   <span class="detail-label">Cumplimiento</span>
-                  <strong>{{ estadoPruebaIdiomaExtranjero === 'Aprobada' ? 'Requisito cumplido' : 'Pendiente de cumplir' }}</strong>
-                  <small class="language-note" *ngIf="estadoPruebaIdiomaExtranjero !== 'Aprobada'">
+                  <strong [class.failure-text]="!cumplePruebaIdiomaExtranjero">
+                    {{ cumplePruebaIdiomaExtranjero ? 'Cumple requisito' : 'No cumple los requisitos' }}
+                  </strong>
+                  <small class="language-note" *ngIf="!cumplePruebaIdiomaExtranjero">
                     Debe aprobar la prueba para completar este requisito.
                   </small>
                 </div>
@@ -598,28 +612,58 @@
             </div>
           </section>
 
-          <section class="thesis">
-            <div class="thesis-header">
-              <h3>Trabajo de Grado</h3>
-              <span class="thesis-badge">Seguimiento activo</span>
-            </div>
-
-            <div class="thesis-main-card">
-              <label>TÍTULO DEL TRABAJO</label>
-              <p>{{ tituloTesis }}</p>
-            </div>
-
-            <div class="thesis-row">
-              <div class="thesis-person-card">
-                <label>DIRECTOR</label>
-                <p>{{ directorTesis }}</p>
+          <section class="academic-support-grid">
+            <article class="thesis">
+              <div class="thesis-header">
+                <h3>Trabajo de Grado</h3>
+                <span class="thesis-badge">Seguimiento activo</span>
               </div>
 
-              <div class="thesis-person-card">
-                <label>CODIRECTOR</label>
-                <p [class.muted]="codirectorTesis === 'Sin registrar'">{{ codirectorTesis }}</p>
+              <div class="thesis-main-card">
+                <label>TÍTULO DEL TRABAJO</label>
+                <p>{{ tituloTesis }}</p>
               </div>
-            </div>
+
+              <div class="thesis-row">
+                <div class="thesis-person-card">
+                  <label>DIRECTOR</label>
+                  <p>{{ directorTesis }}</p>
+                </div>
+
+                <div class="thesis-person-card">
+                  <label>CODIRECTOR</label>
+                  <p [class.muted]="codirectorTesis === 'Sin registrar'">{{ codirectorTesis }}</p>
+                </div>
+              </div>
+            </article>
+
+            <article class="recognition-card">
+              <div class="recognition-header">
+                <h3>Reconocimiento o mención</h3>
+                <span class="recognition-badge">Distinción</span>
+              </div>
+
+              <div class="recognition-highlight recognition-highlight-medal" *ngIf="tieneReconocimientoPromedio; else sinReconocimiento">
+                <img
+                  class="recognition-medal"
+                  src="assets/layout/images/medalla4.8.png"
+                  alt="Medalla por promedio superior a 4.8">
+                <div>
+                  <strong>Reconocimiento por excelencia académica</strong>
+                  <small>El estudiante obtuvo un promedio superior a 4.8 y recibe esta distinción.</small>
+                </div>
+              </div>
+
+              <ng-template #sinReconocimiento>
+                <div class="recognition-highlight">
+                  <span class="recognition-icon">RM</span>
+                <div>
+                  <strong>Sin reconocimiento registrado</strong>
+                  <small>Aquí se podrá visualizar la distinción académica del estudiante.</small>
+                </div>
+                </div>
+              </ng-template>
+            </article>
           </section>
         </div>
       </div>

@@ -517,6 +517,16 @@
   background: #1a8a52;
 }
 
+.completion-status.incomplete {
+  background: #fdeeee;
+  border-color: #f3b8b8;
+  color: #c62828;
+}
+
+.completion-status.incomplete .dot {
+  background: #c62828;
+}
+
 .summary {
   display: grid;
   grid-template-columns: 220px 1fr;
@@ -603,6 +613,29 @@
   color: var(--ink-1);
 }
 
+.publication-meta {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.publication-link {
+  display: inline-block;
+  flex: 0 1 auto;
+  color: #1f5fbf;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-decoration: none;
+  word-break: break-word;
+  text-align: left;
+}
+
+.publication-link:hover {
+  text-decoration: underline;
+}
+
 .chips span {
   display: inline-block;
   margin-top: 6px;
@@ -618,6 +651,12 @@
 .language-status.approved {
   margin-top: 14px;
   color: #178f57;
+  font-weight: 700;
+}
+
+.status.failure {
+  margin-top: 14px;
+  color: #c62828;
   font-weight: 700;
 }
 
@@ -679,16 +718,10 @@
   color: #178f57;
 }
 
-.language-status.pending {
-  background: #fff6e9;
-  border-color: #ffd9a4;
-  color: #b26d00;
-}
-
-.language-status.not-recorded {
-  background: #eef3fb;
-  border-color: #d5dfef;
-  color: #4d6389;
+.language-status.rejected {
+  background: #fdeeee;
+  border-color: #f3b8b8;
+  color: #c62828;
 }
 
 .language-detail-grid {
@@ -710,11 +743,21 @@
   margin-top: 2px;
 }
 
+.language-detail-item strong.failure-text {
+  color: #c62828;
+}
+
 .language-note {
   display: block;
   margin-top: 6px;
   color: #617093;
   font-size: 0.78rem;
+}
+
+.academic-support-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
 }
 
 .thesis {
@@ -786,6 +829,88 @@
   border-radius: 10px;
   background: #ffffff;
   padding: 10px 12px;
+}
+
+.recognition-card {
+  padding: 20px;
+  background: linear-gradient(180deg, #fffdf6, #fff8e8);
+}
+
+.recognition-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.recognition-header h3 {
+  margin: 0;
+  color: var(--ink-1);
+}
+
+.recognition-badge {
+  border: 1px solid #f4d28b;
+  background: #fff2c7;
+  color: #8a5a00;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.recognition-copy {
+  margin: 0;
+  color: var(--ink-2);
+}
+
+.recognition-highlight {
+  margin-top: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px dashed #efcf8b;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.78);
+  padding: 14px;
+}
+
+.recognition-highlight-medal {
+  border-style: solid;
+  border-color: #e3c066;
+  background: linear-gradient(180deg, rgba(255, 250, 233, 0.98), rgba(255, 241, 199, 0.92));
+}
+
+.recognition-icon {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffe8a3, #ffc94b);
+  font-size: 1.3rem;
+}
+
+.recognition-medal {
+  width: 68px;
+  height: 68px;
+  object-fit: contain;
+  flex: 0 0 68px;
+}
+
+.recognition-highlight strong {
+  display: block;
+  color: #7a4d00;
+}
+
+.recognition-highlight small {
+  display: block;
+  margin-top: 4px;
+  color: #8a6a2d;
+  line-height: 1.4;
 }
 
 .muted {
@@ -935,9 +1060,22 @@
     grid-template-columns: 1fr;
   }
 
+  .academic-support-grid {
+    grid-template-columns: 1fr;
+  }
+
   .thesis-row {
     flex-direction: column;
     gap: 14px;
+  }
+
+  .publication-meta {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .publication-link {
+    text-align: left;
   }
 }
 
