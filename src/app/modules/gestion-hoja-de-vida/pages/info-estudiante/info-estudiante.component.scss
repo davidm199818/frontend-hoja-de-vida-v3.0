@@ -834,6 +834,7 @@
 .recognition-card {
   padding: 20px;
   background: linear-gradient(180deg, #fffdf6, #fff8e8);
+  overflow: hidden;
 }
 
 .recognition-header {
@@ -865,8 +866,26 @@
   color: var(--ink-2);
 }
 
-.recognition-highlight {
+.recognition-carousel {
   margin-top: 18px;
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding-bottom: 8px;
+}
+
+.recognition-carousel::-webkit-scrollbar {
+  height: 8px;
+}
+
+.recognition-carousel::-webkit-scrollbar-thumb {
+  background: rgba(120, 95, 36, 0.35);
+  border-radius: 999px;
+}
+
+.recognition-highlight {
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -876,10 +895,22 @@
   padding: 14px;
 }
 
+.recognition-slide {
+  min-width: 100%;
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+}
+
 .recognition-highlight-medal {
   border-style: solid;
   border-color: #e3c066;
   background: linear-gradient(180deg, rgba(255, 250, 233, 0.98), rgba(255, 241, 199, 0.92));
+}
+
+.recognition-highlight-disabled {
+  border-style: solid;
+  border-color: #d1d7e2;
+  background: linear-gradient(180deg, rgba(248, 250, 253, 0.98), rgba(235, 239, 245, 0.92));
 }
 
 .recognition-icon {
@@ -895,10 +926,15 @@
 }
 
 .recognition-medal {
-  width: 68px;
-  height: 68px;
+  width: 112px;
+  height: 112px;
   object-fit: contain;
-  flex: 0 0 68px;
+  flex: 0 0 112px;
+}
+
+.recognition-medal-disabled {
+  filter: grayscale(1) saturate(0.2);
+  opacity: 0.85;
 }
 
 .recognition-highlight strong {

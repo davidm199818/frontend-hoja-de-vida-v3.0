@@ -642,27 +642,36 @@
                 <h3>Reconocimiento o mención</h3>
                 <span class="recognition-badge">Distinción</span>
               </div>
+              <div class="recognition-carousel">
+                <div
+                  class="recognition-highlight recognition-slide"
+                  [ngClass]="tieneReconocimientoPromedio ? 'recognition-highlight-medal' : 'recognition-highlight-disabled'">
+                  <img
+                    class="recognition-medal"
+                    [class.recognition-medal-disabled]="!tieneReconocimientoPromedio"
+                    src="assets/layout/images/medalla4.8.png"
+                    alt="Medalla por promedio superior a 4.8">
+                  <div>
+                    <strong>{{ tieneReconocimientoPromedio ? 'Reconocimiento por excelencia académica' : 'Medalla de excelencia académica' }}</strong>
+                    <small>
+                      {{ tieneReconocimientoPromedio
+                      ? 'El estudiante obtuvo un promedio superior a 4.8 y recibe esta distinción.'
+                      : 'La medalla se activa cuando el estudiante alcanza un promedio superior a 4.8.' }}
+                    </small>
+                  </div>
+                </div>
 
-              <div class="recognition-highlight recognition-highlight-medal" *ngIf="tieneReconocimientoPromedio; else sinReconocimiento">
-                <img
-                  class="recognition-medal"
-                  src="assets/layout/images/medalla4.8.png"
-                  alt="Medalla por promedio superior a 4.8">
-                <div>
-                  <strong>Reconocimiento por excelencia académica</strong>
-                  <small>El estudiante obtuvo un promedio superior a 4.8 y recibe esta distinción.</small>
+                <div class="recognition-highlight recognition-highlight-medal recognition-slide">
+                  <img
+                    class="recognition-medal"
+                    src="assets/layout/images/medallaTrabajoDeGrado.png"
+                    alt="Medalla por trabajo de grado">
+                  <div>
+                    <strong>Medalla por trabajo de grado</strong>
+                    <small>Reconocimiento otorgado al estudiante por su desempeño y dedicación en el trabajo de grado.</small>
+                  </div>
                 </div>
               </div>
-
-              <ng-template #sinReconocimiento>
-                <div class="recognition-highlight">
-                  <span class="recognition-icon">RM</span>
-                <div>
-                  <strong>Sin reconocimiento registrado</strong>
-                  <small>Aquí se podrá visualizar la distinción académica del estudiante.</small>
-                </div>
-                </div>
-              </ng-template>
             </article>
           </section>
         </div>
