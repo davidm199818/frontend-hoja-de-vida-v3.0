@@ -12,6 +12,8 @@ import { Estudiante } from '../../models/Estudiantehv';
 export class BuscarEstudianteComponent implements OnInit {
 
     criterio = '';
+    suficienciaIdiomaAprobada: boolean | null = null;
+    semestreActual: number | null = null;
     estudiantes: Estudiante[] = [];
     cargando = false;
     error = '';
@@ -29,11 +31,19 @@ export class BuscarEstudianteComponent implements OnInit {
     }
 
     buscar(): void {
+        const criterio = this.criterio.trim();
+        if (!criterio) {
+            return;
+        }
+
+        this.suficienciaIdiomaAprobada = null;
+        this.semestreActual = null;
+        this.page = 0;
         this.cargando = true;
         this.error = '';
         this.estudiantes = [];
 
-        this.hojaDeVidaService.buscar(this.criterio).subscribe({
+        this.hojaDeVidaService.buscar(criterio).subscribe({
             next: (data) => {
                 this.estudiantes = data;
                 this.cargando = false;
@@ -46,6 +56,7 @@ export class BuscarEstudianteComponent implements OnInit {
     }
 
     cargarEstudiantes(): void {
+        this.page = 0;
         this.cargando = true;
         this.error = '';
 
@@ -59,6 +70,48 @@ export class BuscarEstudianteComponent implements OnInit {
                 this.cargando = false;
             }
         });
+    }
+
+    aplicarFiltros(): void {
+        if (!this.puedeAplicarFiltros) {
+            return;
+        }
+
+        this.criterio = '';
+        this.page = 0;
+        this.cargando = true;
+        this.error = '';
+        this.estudiantes = [];
+
+        this.hojaDeVidaService
+            .filtrar(this.suficienciaIdiomaAprobada, this.semestreActual)
+            .subscribe({
+                next: (data) => {
+                    this.estudiantes = data;
+                    this.cargando = false;
+                },
+                error: () => {
+                    this.error = 'Error al filtrar los estudiantes';
+                    this.cargando = false;
+                }
+            });
+    }
+
+    limpiarFiltros(): void {
+        this.criterio = '';
+        this.suficienciaIdiomaAprobada = null;
+        this.semestreActual = null;
+        this.cargarEstudiantes();
+    }
+
+    get semestreInvalido(): boolean {
+        return this.semestreActual !== null
+            && (!Number.isInteger(this.semestreActual) || this.semestreActual <= 0);
+    }
+
+    get puedeAplicarFiltros(): boolean {
+        const hayFiltro = this.suficienciaIdiomaAprobada !== null || this.semestreActual !== null;
+        return hayFiltro && !this.semestreInvalido && !this.cargando;
     }
 
     seleccionarEstudiante(codigo: string | undefined): void {

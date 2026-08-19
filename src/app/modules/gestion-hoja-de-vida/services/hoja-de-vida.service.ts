@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Estudiante } from '../models/Estudiantehv';
 
@@ -21,9 +21,29 @@ export class HojaDeVidaService {
     }
 
     buscar(valor: string): Observable<Estudiante[]> {
-    return this.http.get<Estudiante[]>(
-      `${this.apiUrl}/buscar`, { params: { valor } }
-    );
-  }
+        return this.http.get<Estudiante[]>(
+            `${this.apiUrl}/buscar`, { params: { valor } }
+        );
+    }
+
+    filtrar(
+        suficienciaIdiomaAprobada: boolean | null,
+        semestreActual: number | null
+    ): Observable<Estudiante[]> {
+        let params = new HttpParams();
+
+        if (suficienciaIdiomaAprobada !== null) {
+            params = params.set(
+                'suficienciaIdiomaAprobada',
+                String(suficienciaIdiomaAprobada)
+            );
+        }
+
+        if (semestreActual !== null) {
+            params = params.set('semestreActual', String(semestreActual));
+        }
+
+        return this.http.get<Estudiante[]>(`${this.apiUrl}/filtrar`, { params });
+    }
 
 }

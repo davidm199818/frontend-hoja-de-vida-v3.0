@@ -26,6 +26,7 @@
                     class="form-control border-start-0"
                     placeholder="Ingrese código, identificación o nombre"
                     [(ngModel)]="criterio"
+                    (keyup.enter)="buscar()"
                 />
 
                 <button class="btn btn-outline-secondary" (click)="buscar()" [disabled]="!criterio || !criterio.trim()">
@@ -37,6 +38,70 @@
     </section>
 
     <div class="content-container">
+        <section class="filters-panel shadow-sm" aria-labelledby="filters-title">
+            <div class="filters-heading">
+                <div>
+                    <h2 id="filters-title">Filtrar estudiantes</h2>
+                    <p>Selecciona uno o ambos criterios para consultar el listado.</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-link filters-clear"
+                    (click)="limpiarFiltros()"
+                    [disabled]="cargando"
+                >
+                    <i class="fa fa-undo me-1"></i>
+                    Limpiar
+                </button>
+            </div>
+
+            <div class="filters-grid">
+                <div class="filter-field">
+                    <label for="suficienciaIdioma">Suficiencia en idioma extranjero</label>
+                    <select
+                        id="suficienciaIdioma"
+                        class="form-select"
+                        [(ngModel)]="suficienciaIdiomaAprobada"
+                    >
+                        <option [ngValue]="null">Selecciona un estado</option>
+                        <option [ngValue]="true">Aprobada</option>
+                        <option [ngValue]="false">Pendiente</option>
+                    </select>
+                </div>
+
+                <div class="filter-field">
+                    <label for="semestreActual">Semestre actual</label>
+                    <input
+                        id="semestreActual"
+                        type="number"
+                        min="1"
+                        step="1"
+                        class="form-control"
+                        [class.is-invalid]="semestreInvalido"
+                        placeholder="Ej. 4"
+                        [(ngModel)]="semestreActual"
+                        (keyup.enter)="aplicarFiltros()"
+                    />
+                    <div class="invalid-feedback" *ngIf="semestreInvalido">
+                        El semestre debe ser un número entero mayor que cero.
+                    </div>
+                </div>
+
+                <div class="filter-actions">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        (click)="aplicarFiltros()"
+                        [disabled]="!puedeAplicarFiltros"
+                    >
+                        <i class="fa fa-filter me-1"></i>
+                        Aplicar filtros
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <div class="card shadow-sm">
             <div *ngIf="cargando" class="text-center p-4">
                 <div class="spinner-border text-secondary" role="status"></div>
@@ -55,6 +120,7 @@
                             <th>Código</th>
                             <th>Identificación</th>
                             <th>Periodo de Ingreso</th>
+                            <th>Semestre actual</th>
                             <th>Opciones</th>
                         </tr>
                     </thead>
@@ -66,6 +132,7 @@
                             <td>{{ estudiante.codigo }}</td>
                             <td>{{ estudiante.identificacion }}</td>
                             <td>{{ estudiante.periodoIngreso }}</td>
+                            <td>{{ estudiante.semestreActual }}</td>
                             <td>
                                 <button
                                     class="btn btn-sm btn-primary"
@@ -109,7 +176,7 @@
                 *ngIf="!cargando && estudiantes.length === 0 && !error"
                 class="text-center p-4 text-secondary"
             >
-                No hay estudiantes registrados.
+                No hay estudiantes que coincidan con la consulta.
             </div>
         </div>
     </div>
