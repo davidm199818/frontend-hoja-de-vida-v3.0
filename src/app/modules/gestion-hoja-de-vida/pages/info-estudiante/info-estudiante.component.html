@@ -650,28 +650,136 @@
                     class="recognition-medal"
                     [class.recognition-medal-disabled]="!tieneReconocimientoPromedio"
                     src="assets/layout/images/medalla4.8.png"
-                    alt="Medalla por promedio superior a 4.8">
+                    alt="Medalla de excelencia académica">
                   <div>
-                    <strong>{{ tieneReconocimientoPromedio ? 'Reconocimiento por excelencia académica' : 'Medalla de excelencia académica' }}</strong>
+                    <strong>Reconocimiento por excelencia académica</strong>
+                    <span
+                      class="recognition-state"
+                      [class.granted]="tieneReconocimientoPromedio">
+                      {{ tieneReconocimientoPromedio ? 'Otorgada' : 'Sin otorgar' }}
+                    </span>
                     <small>
                       {{ tieneReconocimientoPromedio
-                      ? 'El estudiante obtuvo un promedio superior a 4.8 y recibe esta distinción.'
-                      : 'La medalla se activa cuando el estudiante alcanza un promedio superior a 4.8.' }}
+                      ? 'Distinción registrada para este estudiante.'
+                      : (esElegibleExcelenciaAcademica
+                        ? 'El estudiante cumple el promedio mínimo de 4.8; falta registrar la resolución.'
+                        : 'Requiere un promedio igual o superior a 4.8.') }}
                     </small>
+                    <button
+                      *ngIf="tieneReconocimientoPromedio"
+                      type="button"
+                      class="view-resolution-button"
+                      [disabled]="cargandoResolucion === 'EXCELENCIA_ACADEMICA'"
+                      (click)="verResolucion('EXCELENCIA_ACADEMICA')">
+                      {{ cargandoResolucion === 'EXCELENCIA_ACADEMICA' ? 'Cargando…' : 'Ver resolución PDF' }}
+                    </button>
                   </div>
                 </div>
 
-                <div class="recognition-highlight recognition-highlight-medal recognition-slide">
+                <div
+                  class="recognition-highlight recognition-slide"
+                  [ngClass]="tieneMencionHonorTrabajoGrado ? 'recognition-highlight-medal' : 'recognition-highlight-disabled'">
                   <img
                     class="recognition-medal"
+                    [class.recognition-medal-disabled]="!tieneMencionHonorTrabajoGrado"
                     src="assets/layout/images/medallaTrabajoDeGrado.png"
                     alt="Medalla por trabajo de grado">
                   <div>
-                    <strong>Medalla por trabajo de grado</strong>
-                    <small>Reconocimiento otorgado al estudiante por su desempeño y dedicación en el trabajo de grado.</small>
+                    <strong>Mención de honor por trabajo de grado</strong>
+                    <span
+                      class="recognition-state"
+                      [class.granted]="tieneMencionHonorTrabajoGrado">
+                      {{ tieneMencionHonorTrabajoGrado ? 'Otorgada' : 'Sin otorgar' }}
+                    </span>
+                    <small>
+                      {{ tieneMencionHonorTrabajoGrado
+                        ? 'Distinción registrada para este estudiante.'
+                        : 'Aún no se ha registrado la resolución de esta distinción.' }}
+                    </small>
+                    <button
+                      *ngIf="tieneMencionHonorTrabajoGrado"
+                      type="button"
+                      class="view-resolution-button"
+                      [disabled]="cargandoResolucion === 'MENCION_HONOR_TRABAJO_GRADO'"
+                      (click)="verResolucion('MENCION_HONOR_TRABAJO_GRADO')">
+                      {{ cargandoResolucion === 'MENCION_HONOR_TRABAJO_GRADO' ? 'Cargando…' : 'Ver resolución PDF' }}
+                    </button>
                   </div>
                 </div>
               </div>
+
+              <div class="recognition-feedback success" *ngIf="mensajeDistincion">
+                {{ mensajeDistincion }}
+              </div>
+              <div class="recognition-feedback error" *ngIf="errorDistincion">
+                {{ errorDistincion }}
+              </div>
+
+              <button
+                *ngIf="!tieneTodasLasDistinciones"
+                type="button"
+                class="recognition-form-toggle"
+                (click)="mostrarFormularioDistincion = !mostrarFormularioDistincion">
+                {{ mostrarFormularioDistincion ? 'Cancelar registro' : 'Registrar distinción' }}
+              </button>
+
+              <form
+                *ngIf="mostrarFormularioDistincion && !tieneTodasLasDistinciones"
+                class="recognition-form"
+                (ngSubmit)="registrarDistincion()">
+                <label for="tipoDistincion">Tipo de distinción</label>
+                <select
+                  id="tipoDistincion"
+                  name="tipoDistincion"
+                  [(ngModel)]="tipoDistincion"
+                  required>
+                  <option value="" disabled>Selecciona una opción</option>
+                  <option
+                    value="EXCELENCIA_ACADEMICA"
+                    [disabled]="tieneReconocimientoPromedio">
+                    Excelencia académica (promedio mínimo 4.8)
+                  </option>
+                  <option
+                    value="MENCION_HONOR_TRABAJO_GRADO"
+                    [disabled]="tieneMencionHonorTrabajoGrado">
+                    Mención de honor por trabajo de grado
+                  </option>
+                </select>
+
+                <label for="numeroResolucion">Número de resolución</label>
+                <input
+                  id="numeroResolucion"
+                  name="numeroResolucion"
+                  type="text"
+                  maxlength="100"
+                  [(ngModel)]="numeroResolucion"
+                  required>
+
+                <label for="fechaResolucion">Fecha de resolución</label>
+                <input
+                  id="fechaResolucion"
+                  name="fechaResolucion"
+                  type="date"
+                  [max]="fechaMaximaResolucion"
+                  [(ngModel)]="fechaResolucion"
+                  required>
+
+                <label for="archivoResolucion">Resolución en PDF (máximo 5 MB)</label>
+                <input
+                  id="archivoResolucion"
+                  name="archivoResolucion"
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  (change)="seleccionarResolucion($event)"
+                  required>
+
+                <button
+                  type="submit"
+                  class="recognition-submit"
+                  [disabled]="guardandoDistincion">
+                  {{ guardandoDistincion ? 'Registrando…' : 'Guardar distinción' }}
+                </button>
+              </form>
             </article>
           </section>
         </div>
@@ -684,4 +792,14 @@
       Generar Hoja de Vida
     </button>
   </div>
+</div>
+
+<div class="pdf-viewer-overlay" *ngIf="urlResolucion" (click)="cerrarVisorResolucion()">
+  <section class="pdf-viewer-dialog" (click)="$event.stopPropagation()">
+    <header>
+      <h2>{{ tituloResolucion }}</h2>
+      <button type="button" aria-label="Cerrar visor" (click)="cerrarVisorResolucion()">×</button>
+    </header>
+    <embed [src]="urlResolucion" type="application/pdf">
+  </section>
 </div>

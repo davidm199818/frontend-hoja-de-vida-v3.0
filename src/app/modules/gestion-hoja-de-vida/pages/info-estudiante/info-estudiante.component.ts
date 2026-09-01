@@ -1,8 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Asignatura } from '../../models/Asignatura';
 import { HistoriaAcademica } from '../../models/Historia-Academica';
-import { InformacionService } from '../../services/informacion.service';
+import {
+  InformacionService,
+  TipoDistincionAcademica
+} from '../../services/informacion.service';
 import { Publicacion } from '../../models/Publicacion';
 interface TableRow {
   periodo: string;
@@ -17,7 +21,7 @@ interface TableRow {
   templateUrl: './info-estudiante.component.html',
   styleUrls: ['./info-estudiante.component.scss']
 })
-export class InfoEstudianteComponent implements OnInit {
+export class InfoEstudianteComponent implements OnInit, OnDestroy {
 
   codigoEstudiante = '';
   historia!: HistoriaAcademica;
@@ -31,6 +35,20 @@ export class InfoEstudianteComponent implements OnInit {
   };
 
   mostrarDialogoConfirmacionGenerarHojaDeVida = false;
+  mostrarFormularioDistincion = false;
+  tipoDistincion: TipoDistincionAcademica | '' = '';
+  numeroResolucion = '';
+  fechaResolucion = '';
+  archivoResolucion: File | null = null;
+  guardandoDistincion = false;
+  mensajeDistincion = '';
+  errorDistincion = '';
+  readonly fechaMaximaResolucion = this.obtenerFechaLocalActual();
+  private inputResolucion: HTMLInputElement | null = null;
+  urlResolucion: SafeResourceUrl | null = null;
+  tituloResolucion = '';
+  cargandoResolucion: TipoDistincionAcademica | null = null;
+  private urlObjetoResolucion: string | null = null;
 
   fundamentacionData: TableRow[] = [];
   electivasData: TableRow[] = [];
@@ -41,7 +59,8 @@ export class InfoEstudianteComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private infoService: InformacionService
+    private infoService: InformacionService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +72,10 @@ export class InfoEstudianteComponent implements OnInit {
     }
 
     this.cargarHistoriaAcademica();
+  }
+
+  ngOnDestroy(): void {
+    this.liberarUrlResolucion();
   }
 
   volver(): void {
@@ -145,7 +168,101 @@ export class InfoEstudianteComponent implements OnInit {
   }
 
   get tieneReconocimientoPromedio(): boolean {
-    return (this.promedioCarrera ?? 0) > 4.8;
+    return this.tieneDistincion('EXCELENCIA_ACADEMICA');
+  }
+
+  get esElegibleExcelenciaAcademica(): boolean {
+    return (this.promedioCarrera ?? 0) >= 4.8;
+  }
+
+  get tieneMencionHonorTrabajoGrado(): boolean {
+    return this.tieneDistincion('MENCION_HONOR_TRABAJO_GRADO');
+  }
+
+  get tieneTodasLasDistinciones(): boolean {
+    return this.tieneReconocimientoPromedio && this.tieneMencionHonorTrabajoGrado;
+  }
+
+  seleccionarResolucion(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.inputResolucion = input;
+    this.archivoResolucion = input.files?.item(0) ?? null;
+    this.errorDistincion = '';
+
+    if (this.archivoResolucion && this.archivoResolucion.size > 5 * 1024 * 1024) {
+      this.errorDistincion = 'La resolución en PDF no puede superar los 5 MB.';
+      this.archivoResolucion = null;
+      input.value = '';
+    }
+  }
+
+  registrarDistincion(): void {
+    this.mensajeDistincion = '';
+    this.errorDistincion = '';
+
+    if (!this.tipoDistincion || !this.numeroResolucion.trim()
+      || !this.fechaResolucion || !this.archivoResolucion) {
+      this.errorDistincion = 'Completa todos los campos y adjunta la resolución en PDF.';
+      return;
+    }
+
+    if (this.tieneDistincion(this.tipoDistincion)) {
+      this.errorDistincion = 'El estudiante ya tiene registrada esta distinción.';
+      return;
+    }
+
+    this.guardandoDistincion = true;
+    this.infoService.registrarDistincion(
+      this.codigoEstudiante,
+      this.tipoDistincion,
+      this.numeroResolucion,
+      this.fechaResolucion,
+      this.archivoResolucion
+    ).subscribe({
+      next: () => {
+        this.guardandoDistincion = false;
+        this.mensajeDistincion = 'La distinción se registró correctamente.';
+        this.limpiarFormularioDistincion();
+        this.cargarHistoriaAcademica();
+      },
+      error: (error) => {
+        this.guardandoDistincion = false;
+        this.errorDistincion = error?.error?.mensaje
+          ?? 'No fue posible registrar la distinción.';
+      }
+    });
+  }
+
+  verResolucion(tipo: TipoDistincionAcademica): void {
+    this.errorDistincion = '';
+    this.cargandoResolucion = tipo;
+
+    this.infoService.obtenerResolucionDistincion(this.codigoEstudiante, tipo)
+      .subscribe({
+        next: (resolucion) => {
+          this.liberarUrlResolucion();
+          this.urlObjetoResolucion = URL.createObjectURL(
+            new Blob([resolucion], { type: 'application/pdf' })
+          );
+          this.urlResolucion = this.sanitizer.bypassSecurityTrustResourceUrl(
+            this.urlObjetoResolucion
+          );
+          this.tituloResolucion = tipo === 'EXCELENCIA_ACADEMICA'
+            ? 'Resolución de excelencia académica'
+            : 'Resolución de mención de honor por trabajo de grado';
+          this.cargandoResolucion = null;
+        },
+        error: () => {
+          this.cargandoResolucion = null;
+          this.errorDistincion = 'No fue posible cargar la resolución registrada.';
+        }
+      });
+  }
+
+  cerrarVisorResolucion(): void {
+    this.urlResolucion = null;
+    this.tituloResolucion = '';
+    this.liberarUrlResolucion();
   }
 
   get directorTesis(): string {
@@ -210,5 +327,34 @@ export class InfoEstudianteComponent implements OnInit {
       || nombre.includes('SUFICIENCIA')
       || nombre.includes('EXTRANJER')
     );
+  }
+
+  private tieneDistincion(tipo: TipoDistincionAcademica): boolean {
+    const distinciones = this.historia?.historiaAcademica
+      ?.informacionAdicional?.distincionesAcademicas ?? [];
+    return distinciones.includes(tipo);
+  }
+
+  private limpiarFormularioDistincion(): void {
+    this.tipoDistincion = '';
+    this.numeroResolucion = '';
+    this.fechaResolucion = '';
+    this.archivoResolucion = null;
+    if (this.inputResolucion) {
+      this.inputResolucion.value = '';
+    }
+  }
+
+  private obtenerFechaLocalActual(): string {
+    const hoy = new Date();
+    const desfase = hoy.getTimezoneOffset() * 60_000;
+    return new Date(hoy.getTime() - desfase).toISOString().slice(0, 10);
+  }
+
+  private liberarUrlResolucion(): void {
+    if (this.urlObjetoResolucion) {
+      URL.revokeObjectURL(this.urlObjetoResolucion);
+      this.urlObjetoResolucion = null;
+    }
   }
 }
