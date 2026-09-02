@@ -42,10 +42,18 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   fechaResolucion = '';
   archivoResolucion: File | null = null;
   guardandoDistincion = false;
+  tipoDistincionEdicion: TipoDistincionAcademica | null = null;
+  numeroResolucionEdicion = '';
+  fechaResolucionEdicion = '';
+  archivoResolucionEdicion: File | null = null;
+  actualizandoDistincion = false;
+  tipoDistincionEliminacion: TipoDistincionAcademica | null = null;
+  eliminandoDistincion = false;
   mensajeDistincion = '';
   errorDistincion = '';
   readonly fechaMaximaResolucion = this.obtenerFechaLocalActual();
   private inputResolucion: HTMLInputElement | null = null;
+  private inputResolucionEdicion: HTMLInputElement | null = null;
   urlResolucion: SafeResourceUrl | null = null;
   tituloResolucion = '';
   cargandoResolucion: TipoDistincionAcademica | null = null;
@@ -194,13 +202,23 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   seleccionarResolucion(event: Event): void {
     const input = event.target as HTMLInputElement;
     this.inputResolucion = input;
-    this.archivoResolucion = input.files?.item(0) ?? null;
-    this.errorDistincion = '';
+    this.archivoResolucion = this.obtenerArchivoPdf(input);
+  }
 
-    if (this.archivoResolucion && this.archivoResolucion.size > 5 * 1024 * 1024) {
-      this.errorDistincion = 'La resolución en PDF no puede superar los 5 MB.';
-      this.archivoResolucion = null;
-      input.value = '';
+  seleccionarResolucionEdicion(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.inputResolucionEdicion = input;
+    this.archivoResolucionEdicion = this.obtenerArchivoPdf(input);
+  }
+
+  alternarFormularioRegistro(): void {
+    this.mostrarFormularioDistincion = !this.mostrarFormularioDistincion;
+    this.mensajeDistincion = '';
+    this.errorDistincion = '';
+    if (this.mostrarFormularioDistincion) {
+      this.limpiarFormularioEdicion();
+    } else {
+      this.limpiarFormularioDistincion();
     }
   }
 
@@ -244,6 +262,113 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
           ?? 'No fue posible registrar la distinción.';
       }
     });
+  }
+
+  abrirFormularioEdicion(tipo: TipoDistincionAcademica): void {
+    if (!this.esCoordinador) {
+      this.errorDistincion = 'No tiene permisos para editar distinciones.';
+      return;
+    }
+
+    this.mostrarFormularioDistincion = false;
+    this.limpiarFormularioDistincion();
+    this.tipoDistincionEdicion = tipo;
+    this.numeroResolucionEdicion = '';
+    this.fechaResolucionEdicion = '';
+    this.archivoResolucionEdicion = null;
+    this.mensajeDistincion = '';
+    this.errorDistincion = '';
+  }
+
+  cancelarEdicionDistincion(): void {
+    this.limpiarFormularioEdicion();
+    this.errorDistincion = '';
+  }
+
+  editarDistincion(): void {
+    this.mensajeDistincion = '';
+    this.errorDistincion = '';
+
+    if (!this.esCoordinador) {
+      this.errorDistincion = 'No tiene permisos para editar distinciones.';
+      return;
+    }
+
+    if (!this.tipoDistincionEdicion
+      || !this.numeroResolucionEdicion.trim()
+      || !this.fechaResolucionEdicion) {
+      this.errorDistincion = 'Completa el número y la fecha de la resolución.';
+      return;
+    }
+
+    this.actualizandoDistincion = true;
+    this.infoService.editarDistincion(
+      this.codigoEstudiante,
+      this.tipoDistincionEdicion,
+      this.numeroResolucionEdicion,
+      this.fechaResolucionEdicion,
+      this.archivoResolucionEdicion
+    ).subscribe({
+      next: () => {
+        this.actualizandoDistincion = false;
+        this.mensajeDistincion = 'La distinción se actualizó correctamente.';
+        this.limpiarFormularioEdicion();
+        this.cargarHistoriaAcademica();
+      },
+      error: (error) => {
+        this.actualizandoDistincion = false;
+        this.errorDistincion = error?.error?.mensaje
+          ?? 'No fue posible actualizar la distinción.';
+      }
+    });
+  }
+
+  solicitarEliminarDistincion(tipo: TipoDistincionAcademica): void {
+    if (!this.esCoordinador) {
+      this.errorDistincion = 'No tiene permisos para eliminar distinciones.';
+      return;
+    }
+
+    this.tipoDistincionEliminacion = tipo;
+    this.mensajeDistincion = '';
+    this.errorDistincion = '';
+  }
+
+  cancelarEliminacionDistincion(): void {
+    if (!this.eliminandoDistincion) {
+      this.tipoDistincionEliminacion = null;
+    }
+  }
+
+  confirmarEliminacionDistincion(): void {
+    if (!this.tipoDistincionEliminacion || this.eliminandoDistincion) {
+      return;
+    }
+
+    const tipo = this.tipoDistincionEliminacion;
+    this.eliminandoDistincion = true;
+    this.infoService.eliminarDistincion(this.codigoEstudiante, tipo).subscribe({
+      next: () => {
+        this.eliminandoDistincion = false;
+        this.tipoDistincionEliminacion = null;
+        this.mensajeDistincion = 'La distinción se eliminó correctamente.';
+        this.limpiarFormularioEdicion();
+        this.cerrarVisorResolucion();
+        this.cargarHistoriaAcademica();
+      },
+      error: (error) => {
+        this.eliminandoDistincion = false;
+        this.tipoDistincionEliminacion = null;
+        this.errorDistincion = error?.error?.mensaje
+          ?? 'No fue posible eliminar la distinción.';
+      }
+    });
+  }
+
+  nombreTipoDistincion(tipo: TipoDistincionAcademica): string {
+    return tipo === 'EXCELENCIA_ACADEMICA'
+      ? 'Excelencia académica'
+      : 'Mención de honor por trabajo de grado';
   }
 
   verResolucion(tipo: TipoDistincionAcademica): void {
@@ -356,6 +481,39 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     if (this.inputResolucion) {
       this.inputResolucion.value = '';
     }
+  }
+
+  private limpiarFormularioEdicion(): void {
+    this.tipoDistincionEdicion = null;
+    this.numeroResolucionEdicion = '';
+    this.fechaResolucionEdicion = '';
+    this.archivoResolucionEdicion = null;
+    if (this.inputResolucionEdicion) {
+      this.inputResolucionEdicion.value = '';
+    }
+  }
+
+  private obtenerArchivoPdf(input: HTMLInputElement): File | null {
+    const archivo = input.files?.item(0) ?? null;
+    this.errorDistincion = '';
+
+    if (!archivo) {
+      return null;
+    }
+    if (archivo.size > 5 * 1024 * 1024) {
+      this.errorDistincion = 'La resolución en PDF no puede superar los 5 MB.';
+      input.value = '';
+      return null;
+    }
+
+    const esPdf = archivo.type === 'application/pdf'
+      || archivo.name.toLowerCase().endsWith('.pdf');
+    if (!esPdf) {
+      this.errorDistincion = 'El archivo de resolución debe ser un PDF.';
+      input.value = '';
+      return null;
+    }
+    return archivo;
   }
 
   private obtenerFechaLocalActual(): string {

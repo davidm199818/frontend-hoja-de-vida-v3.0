@@ -673,6 +673,20 @@
                       (click)="verResolucion('EXCELENCIA_ACADEMICA')">
                       {{ cargandoResolucion === 'EXCELENCIA_ACADEMICA' ? 'Cargando…' : 'Ver resolución PDF' }}
                     </button>
+                    <div class="recognition-actions" *ngIf="esCoordinador && tieneReconocimientoPromedio">
+                      <button
+                        type="button"
+                        class="edit-distinction-button"
+                        (click)="abrirFormularioEdicion('EXCELENCIA_ACADEMICA')">
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        class="delete-distinction-button"
+                        (click)="solicitarEliminarDistincion('EXCELENCIA_ACADEMICA')">
+                        Eliminar
+                      </button>
+                    </div>
                   </div>
                 </div>
 
@@ -704,6 +718,20 @@
                       (click)="verResolucion('MENCION_HONOR_TRABAJO_GRADO')">
                       {{ cargandoResolucion === 'MENCION_HONOR_TRABAJO_GRADO' ? 'Cargando…' : 'Ver resolución PDF' }}
                     </button>
+                    <div class="recognition-actions" *ngIf="esCoordinador && tieneMencionHonorTrabajoGrado">
+                      <button
+                        type="button"
+                        class="edit-distinction-button"
+                        (click)="abrirFormularioEdicion('MENCION_HONOR_TRABAJO_GRADO')">
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        class="delete-distinction-button"
+                        (click)="solicitarEliminarDistincion('MENCION_HONOR_TRABAJO_GRADO')">
+                        Eliminar
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -715,11 +743,63 @@
                 {{ errorDistincion }}
               </div>
 
+              <form
+                *ngIf="esCoordinador && tipoDistincionEdicion"
+                class="recognition-form recognition-edit-form"
+                (ngSubmit)="editarDistincion()">
+                <div class="recognition-form-heading">
+                  <strong>Editar {{ nombreTipoDistincion(tipoDistincionEdicion) }}</strong>
+                  <small>Ingresa los nuevos datos. El PDF es opcional si deseas conservar el actual.</small>
+                </div>
+
+                <label for="numeroResolucionEdicion">Número de resolución</label>
+                <input
+                  id="numeroResolucionEdicion"
+                  name="numeroResolucionEdicion"
+                  type="text"
+                  maxlength="100"
+                  [(ngModel)]="numeroResolucionEdicion"
+                  required>
+
+                <label for="fechaResolucionEdicion">Fecha de resolución</label>
+                <input
+                  id="fechaResolucionEdicion"
+                  name="fechaResolucionEdicion"
+                  type="date"
+                  [max]="fechaMaximaResolucion"
+                  [(ngModel)]="fechaResolucionEdicion"
+                  required>
+
+                <label for="archivoResolucionEdicion">Nuevo PDF (opcional, máximo 5 MB)</label>
+                <input
+                  id="archivoResolucionEdicion"
+                  name="archivoResolucionEdicion"
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  (change)="seleccionarResolucionEdicion($event)">
+
+                <div class="recognition-form-actions">
+                  <button
+                    type="button"
+                    class="recognition-cancel"
+                    [disabled]="actualizandoDistincion"
+                    (click)="cancelarEdicionDistincion()">
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    class="recognition-submit"
+                    [disabled]="actualizandoDistincion">
+                    {{ actualizandoDistincion ? 'Actualizando…' : 'Actualizar distinción' }}
+                  </button>
+                </div>
+              </form>
+
               <button
-                *ngIf="esCoordinador && !tieneTodasLasDistinciones"
+                *ngIf="esCoordinador && !tieneTodasLasDistinciones && !tipoDistincionEdicion"
                 type="button"
                 class="recognition-form-toggle"
-                (click)="mostrarFormularioDistincion = !mostrarFormularioDistincion">
+                (click)="alternarFormularioRegistro()">
                 {{ mostrarFormularioDistincion ? 'Cancelar registro' : 'Registrar distinción' }}
               </button>
 
@@ -801,5 +881,46 @@
       <button type="button" aria-label="Cerrar visor" (click)="cerrarVisorResolucion()">×</button>
     </header>
     <embed [src]="urlResolucion" type="application/pdf">
+  </section>
+</div>
+
+<div
+  class="overlay"
+  *ngIf="tipoDistincionEliminacion"
+  (click)="cancelarEliminacionDistincion()">
+  <section class="confirmation-dialog" (click)="$event.stopPropagation()">
+    <header class="dialog-header">
+      <h2>Eliminar distinción</h2>
+      <button
+        type="button"
+        class="close-button"
+        aria-label="Cerrar confirmación"
+        [disabled]="eliminandoDistincion"
+        (click)="cancelarEliminacionDistincion()">×</button>
+    </header>
+    <div class="dialog-content">
+      <i class="pi pi-exclamation-triangle"></i>
+      <p>
+        Se eliminarán la distinción
+        <strong>{{ nombreTipoDistincion(tipoDistincionEliminacion) }}</strong>
+        y su resolución PDF. Esta acción no se puede deshacer.
+      </p>
+    </div>
+    <footer class="dialog-actions">
+      <button
+        type="button"
+        class="dialog-button no-button"
+        [disabled]="eliminandoDistincion"
+        (click)="cancelarEliminacionDistincion()">
+        Cancelar
+      </button>
+      <button
+        type="button"
+        class="dialog-button delete-confirm-button"
+        [disabled]="eliminandoDistincion"
+        (click)="confirmarEliminacionDistincion()">
+        {{ eliminandoDistincion ? 'Eliminando…' : 'Eliminar' }}
+      </button>
+    </footer>
   </section>
 </div>
