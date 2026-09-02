@@ -41,6 +41,35 @@ export class InformacionService {
     );
   }
 
+  editarDistincion(
+    codigoEstudiante: string,
+    tipo: TipoDistincionAcademica,
+    numeroResolucion: string,
+    fechaResolucion: string,
+    resolucion?: File | null
+  ): Observable<void> {
+    const formData = new FormData();
+    formData.append('numeroResolucion', numeroResolucion.trim());
+    formData.append('fechaResolucion', fechaResolucion);
+    if (resolucion) {
+      formData.append('resolucion', resolucion, resolucion.name);
+    }
+
+    return this.http.put<void>(
+      `${this.apiUrl}/${encodeURIComponent(codigoEstudiante)}/distinciones/${tipo}`,
+      formData
+    );
+  }
+
+  eliminarDistincion(
+    codigoEstudiante: string,
+    tipo: TipoDistincionAcademica
+  ): Observable<void> {
+    return this.http.delete<void>(
+      `${this.apiUrl}/${encodeURIComponent(codigoEstudiante)}/distinciones/${tipo}`
+    );
+  }
+
   obtenerResolucionDistincion(
     codigoEstudiante: string,
     tipo: TipoDistincionAcademica

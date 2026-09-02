@@ -985,6 +985,32 @@
   opacity: 0.65;
 }
 
+.recognition-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.edit-distinction-button,
+.delete-distinction-button {
+  border-radius: 8px;
+  background: #ffffff;
+  padding: 7px 10px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.edit-distinction-button {
+  border: 1px solid #8ba9df;
+  color: #2458a6;
+}
+
+.delete-distinction-button {
+  border: 1px solid #e2a4a4;
+  color: #b42323;
+}
+
 .recognition-feedback {
   margin-top: 12px;
   border-radius: 10px;
@@ -1037,6 +1063,21 @@
   font-weight: 700;
 }
 
+.recognition-form-heading {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.recognition-form-heading strong {
+  color: #6f4b00;
+}
+
+.recognition-form-heading small {
+  color: #806d3b;
+  line-height: 1.4;
+}
+
 .recognition-form input,
 .recognition-form select {
   width: 100%;
@@ -1054,6 +1095,40 @@
 }
 
 .recognition-submit:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.recognition-edit-form {
+  border: 1px solid #ead9a9;
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.recognition-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.recognition-form-actions .recognition-submit,
+.recognition-cancel {
+  width: auto;
+  margin-top: 0;
+  border-radius: 9px;
+  padding: 9px 12px;
+  font-weight: 700;
+}
+
+.recognition-cancel {
+  border: 1px solid #cbd4e2;
+  background: #ffffff;
+  color: #43516c;
+  cursor: pointer;
+}
+
+.recognition-cancel:disabled {
   cursor: wait;
   opacity: 0.65;
 }
@@ -1209,6 +1284,17 @@
 .yes-button {
   background: var(--primary-0);
   color: #ffffff;
+}
+
+.delete-confirm-button {
+  background: #b42323;
+  color: #ffffff;
+}
+
+.dialog-button:disabled,
+.close-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 @media (max-width: 1200px) {

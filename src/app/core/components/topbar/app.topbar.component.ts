@@ -107,6 +107,30 @@ export class AppTopBarComponent implements OnInit {
 
     filterMenuItems(user: Usuario | null) {
         this.items = this.items.filter((item) => {
+            if (item.label === 'HOJA DE VIDA') {
+                if (!user) {
+                    return false;
+                }
+
+                if (user.role.includes('ROLE_COORDINADOR')) {
+                    item.routerLink = '/gestion-hoja-de-vida';
+                    return true;
+                }
+
+                if (
+                    user.role.includes('ROLE_ESTUDIANTE') &&
+                    user.academicCode
+                ) {
+                    item.routerLink =
+                        `/gestion-hoja-de-vida/info-estudiante/${encodeURIComponent(
+                            user.academicCode
+                        )}`;
+                    return true;
+                }
+
+                return false;
+            }
+
             if (item.label === 'GESTIÓN') {
                 if (!user) {
                     // No mostrar el elemento GESTIÓN si no hay usuario
