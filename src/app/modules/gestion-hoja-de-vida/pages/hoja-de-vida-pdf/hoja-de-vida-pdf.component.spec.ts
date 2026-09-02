@@ -1,23 +1,31 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ChangeDetectorRef } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
+import { InformacionService } from '../../services/informacion.service';
 import { HojaDeVidaPdfComponent } from './hoja-de-vida-pdf.component';
 
 describe('HojaDeVidaPdfComponent', () => {
-  let component: HojaDeVidaPdfComponent;
-  let fixture: ComponentFixture<HojaDeVidaPdfComponent>;
+  it('debe crearse', () => {
+    const route = {
+      snapshot: {
+        paramMap: { get: () => '2024001' }
+      }
+    } as unknown as ActivatedRoute;
+    const informacionService = jasmine.createSpyObj<InformacionService>(
+      'InformacionService',
+      ['getHistoriaAcademica']
+    );
+    const changeDetector = jasmine.createSpyObj<ChangeDetectorRef>(
+      'ChangeDetectorRef',
+      ['detectChanges']
+    );
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ HojaDeVidaPdfComponent ]
-    })
-    .compileComponents();
+    const component = new HojaDeVidaPdfComponent(
+      route,
+      informacionService,
+      changeDetector
+    );
 
-    fixture = TestBed.createComponent(HojaDeVidaPdfComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
     expect(component).toBeTruthy();
   });
 });

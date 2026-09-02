@@ -716,7 +716,7 @@
               </div>
 
               <button
-                *ngIf="!tieneTodasLasDistinciones"
+                *ngIf="esCoordinador && !tieneTodasLasDistinciones"
                 type="button"
                 class="recognition-form-toggle"
                 (click)="mostrarFormularioDistincion = !mostrarFormularioDistincion">
@@ -724,7 +724,7 @@
               </button>
 
               <form
-                *ngIf="mostrarFormularioDistincion && !tieneTodasLasDistinciones"
+                *ngIf="esCoordinador && mostrarFormularioDistincion && !tieneTodasLasDistinciones"
                 class="recognition-form"
                 (ngSubmit)="registrarDistincion()">
                 <label for="tipoDistincion">Tipo de distinción</label>

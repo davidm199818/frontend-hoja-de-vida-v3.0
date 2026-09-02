@@ -8,6 +8,7 @@ import {
   TipoDistincionAcademica
 } from '../../services/informacion.service';
 import { Publicacion } from '../../models/Publicacion';
+import { AutenticacionService } from '../../../gestion-autenticacion/services/autenticacion.service';
 interface TableRow {
   periodo: string;
   codigo: string;
@@ -60,7 +61,8 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private infoService: InformacionService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private autenticacion: AutenticacionService
   ) {}
 
   ngOnInit(): void {
@@ -79,7 +81,13 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   volver(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(
+      this.esCoordinador ? ['/gestion-hoja-de-vida'] : ['/']
+    );
+  }
+
+  get esCoordinador(): boolean {
+    return this.autenticacion.hasRole('ROLE_COORDINADOR');
   }
 
   cargarHistoriaAcademica(): void {
@@ -199,6 +207,11 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   registrarDistincion(): void {
     this.mensajeDistincion = '';
     this.errorDistincion = '';
+
+    if (!this.esCoordinador) {
+      this.errorDistincion = 'No tiene permisos para registrar distinciones.';
+      return;
+    }
 
     if (!this.tipoDistincion || !this.numeroResolucion.trim()
       || !this.fechaResolucion || !this.archivoResolucion) {

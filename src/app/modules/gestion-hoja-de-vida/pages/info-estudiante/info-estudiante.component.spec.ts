@@ -1,25 +1,62 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { DomSanitizer } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { of } from 'rxjs';
 
+import { AutenticacionService } from '../../../gestion-autenticacion/services/autenticacion.service';
+import { InformacionService } from '../../services/informacion.service';
 import { InfoEstudianteComponent } from './info-estudiante.component';
 
 describe('InfoEstudianteComponent', () => {
   let component: InfoEstudianteComponent;
-  let fixture: ComponentFixture<InfoEstudianteComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ InfoEstudianteComponent ]
-    })
-    .compileComponents();
-  });
+  let router: jasmine.SpyObj<Router>;
+  let informacionService: jasmine.SpyObj<InformacionService>;
+  let autenticacion: jasmine.SpyObj<AutenticacionService>;
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(InfoEstudianteComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    const route = {
+      snapshot: {
+        paramMap: { get: () => '2024001' }
+      }
+    } as unknown as ActivatedRoute;
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    informacionService = jasmine.createSpyObj<InformacionService>(
+      'InformacionService',
+      ['getHistoriaAcademica', 'registrarDistincion', 'obtenerResolucionDistincion']
+    );
+    informacionService.getHistoriaAcademica.and.returnValue(of({} as any));
+    autenticacion = jasmine.createSpyObj<AutenticacionService>(
+      'AutenticacionService',
+      ['hasRole']
+    );
+
+    component = new InfoEstudianteComponent(
+      route,
+      router,
+      informacionService,
+      {} as DomSanitizer,
+      autenticacion
+    );
   });
 
-  it('should create', () => {
+  it('debe crearse', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('debe identificar al coordinador', () => {
+    autenticacion.hasRole.and.returnValue(true);
+
+    expect(component.esCoordinador).toBeTrue();
+    expect(autenticacion.hasRole).toHaveBeenCalledOnceWith('ROLE_COORDINADOR');
+  });
+
+  it('debe impedir que un estudiante registre distinciones', () => {
+    autenticacion.hasRole.and.returnValue(false);
+
+    component.registrarDistincion();
+
+    expect(component.errorDistincion).toBe(
+      'No tiene permisos para registrar distinciones.'
+    );
+    expect(informacionService.registrarDistincion).not.toHaveBeenCalled();
   });
 });
