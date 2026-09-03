@@ -46,6 +46,7 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   numeroResolucionEdicion = '';
   fechaResolucionEdicion = '';
   archivoResolucionEdicion: File | null = null;
+  cargandoDetalleDistincion: TipoDistincionAcademica | null = null;
   actualizandoDistincion = false;
   tipoDistincionEliminacion: TipoDistincionAcademica | null = null;
   eliminandoDistincion = false;
@@ -270,14 +271,30 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.cargandoDetalleDistincion) {
+      return;
+    }
+
     this.mostrarFormularioDistincion = false;
     this.limpiarFormularioDistincion();
-    this.tipoDistincionEdicion = tipo;
-    this.numeroResolucionEdicion = '';
-    this.fechaResolucionEdicion = '';
-    this.archivoResolucionEdicion = null;
+    this.limpiarFormularioEdicion();
     this.mensajeDistincion = '';
     this.errorDistincion = '';
+    this.cargandoDetalleDistincion = tipo;
+
+    this.infoService.obtenerDetalleDistincion(this.codigoEstudiante, tipo).subscribe({
+      next: (detalle) => {
+        this.cargandoDetalleDistincion = null;
+        this.tipoDistincionEdicion = detalle.tipo;
+        this.numeroResolucionEdicion = detalle.numeroResolucion;
+        this.fechaResolucionEdicion = detalle.fechaResolucion;
+      },
+      error: (error) => {
+        this.cargandoDetalleDistincion = null;
+        this.errorDistincion = error?.error?.mensaje
+          ?? 'No fue posible consultar los datos de la distinción.';
+      }
+    });
   }
 
   cancelarEdicionDistincion(): void {

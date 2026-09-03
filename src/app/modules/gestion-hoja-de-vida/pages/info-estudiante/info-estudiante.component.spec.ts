@@ -21,7 +21,12 @@ describe('InfoEstudianteComponent', () => {
     router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     informacionService = jasmine.createSpyObj<InformacionService>(
       'InformacionService',
-      ['getHistoriaAcademica', 'registrarDistincion', 'obtenerResolucionDistincion']
+      [
+        'getHistoriaAcademica',
+        'registrarDistincion',
+        'obtenerDetalleDistincion',
+        'obtenerResolucionDistincion'
+      ]
     );
     informacionService.getHistoriaAcademica.and.returnValue(of({} as any));
     autenticacion = jasmine.createSpyObj<AutenticacionService>(
@@ -58,5 +63,22 @@ describe('InfoEstudianteComponent', () => {
       'No tiene permisos para registrar distinciones.'
     );
     expect(informacionService.registrarDistincion).not.toHaveBeenCalled();
+  });
+
+  it('debe cargar los datos guardados al editar una distinción', () => {
+    autenticacion.hasRole.and.returnValue(true);
+    informacionService.obtenerDetalleDistincion.and.returnValue(of({
+      tipo: 'EXCELENCIA_ACADEMICA',
+      numeroResolucion: 'RES-EXC-001',
+      fechaResolucion: '2025-01-15'
+    }));
+
+    component.abrirFormularioEdicion('EXCELENCIA_ACADEMICA');
+
+    expect(informacionService.obtenerDetalleDistincion)
+      .toHaveBeenCalledOnceWith('2024001', 'EXCELENCIA_ACADEMICA');
+    expect(component.tipoDistincionEdicion).toBe('EXCELENCIA_ACADEMICA');
+    expect(component.numeroResolucionEdicion).toBe('RES-EXC-001');
+    expect(component.fechaResolucionEdicion).toBe('2025-01-15');
   });
 });

@@ -1011,6 +1011,11 @@
   color: #b42323;
 }
 
+.edit-distinction-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .recognition-feedback {
   margin-top: 12px;
   border-radius: 10px;

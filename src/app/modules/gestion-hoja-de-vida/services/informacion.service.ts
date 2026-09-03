@@ -7,6 +7,12 @@ export type TipoDistincionAcademica =
   | 'EXCELENCIA_ACADEMICA'
   | 'MENCION_HONOR_TRABAJO_GRADO';
 
+export interface DistincionAcademicaDetalle {
+  tipo: TipoDistincionAcademica;
+  numeroResolucion: string;
+  fechaResolucion: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -58,6 +64,15 @@ export class InformacionService {
     return this.http.put<void>(
       `${this.apiUrl}/${encodeURIComponent(codigoEstudiante)}/distinciones/${tipo}`,
       formData
+    );
+  }
+
+  obtenerDetalleDistincion(
+    codigoEstudiante: string,
+    tipo: TipoDistincionAcademica
+  ): Observable<DistincionAcademicaDetalle> {
+    return this.http.get<DistincionAcademicaDetalle>(
+      `${this.apiUrl}/${encodeURIComponent(codigoEstudiante)}/distinciones/${tipo}`
     );
   }
 

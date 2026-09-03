@@ -677,8 +677,9 @@
                       <button
                         type="button"
                         class="edit-distinction-button"
+                        [disabled]="cargandoDetalleDistincion !== null"
                         (click)="abrirFormularioEdicion('EXCELENCIA_ACADEMICA')">
-                        Editar
+                        {{ cargandoDetalleDistincion === 'EXCELENCIA_ACADEMICA' ? 'Cargando…' : 'Editar' }}
                       </button>
                       <button
                         type="button"
@@ -722,8 +723,9 @@
                       <button
                         type="button"
                         class="edit-distinction-button"
+                        [disabled]="cargandoDetalleDistincion !== null"
                         (click)="abrirFormularioEdicion('MENCION_HONOR_TRABAJO_GRADO')">
-                        Editar
+                        {{ cargandoDetalleDistincion === 'MENCION_HONOR_TRABAJO_GRADO' ? 'Cargando…' : 'Editar' }}
                       </button>
                       <button
                         type="button"
@@ -749,7 +751,7 @@
                 (ngSubmit)="editarDistincion()">
                 <div class="recognition-form-heading">
                   <strong>Editar {{ nombreTipoDistincion(tipoDistincionEdicion) }}</strong>
-                  <small>Ingresa los nuevos datos. El PDF es opcional si deseas conservar el actual.</small>
+                  <small>Modifica los datos necesarios. El PDF es opcional si deseas conservar el actual.</small>
                 </div>
 
                 <label for="numeroResolucionEdicion">Número de resolución</label>
@@ -796,7 +798,8 @@
               </form>
 
               <button
-                *ngIf="esCoordinador && !tieneTodasLasDistinciones && !tipoDistincionEdicion"
+                *ngIf="esCoordinador && !tieneTodasLasDistinciones
+                  && !tipoDistincionEdicion && !cargandoDetalleDistincion"
                 type="button"
                 class="recognition-form-toggle"
                 (click)="alternarFormularioRegistro()">
