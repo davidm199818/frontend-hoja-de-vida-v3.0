@@ -881,7 +881,22 @@
   <section class="pdf-viewer-dialog" (click)="$event.stopPropagation()">
     <header>
       <h2>{{ tituloResolucion }}</h2>
-      <button type="button" aria-label="Cerrar visor" (click)="cerrarVisorResolucion()">×</button>
+      <div class="pdf-viewer-actions">
+        <button
+          *ngIf="urlDescargaResolucion"
+          type="button"
+          class="pdf-download-icon"
+          title="Descargar {{ nombreArchivoResolucion }}"
+          aria-label="Descargar resolución PDF"
+          (click)="descargarResolucionActual()">
+          <i class="pi pi-download" aria-hidden="true"></i>
+        </button>
+        <button
+          type="button"
+          class="pdf-viewer-close-button"
+          aria-label="Cerrar visor"
+          (click)="cerrarVisorResolucion()">×</button>
+      </div>
     </header>
     <embed [src]="urlResolucion" type="application/pdf">
   </section>

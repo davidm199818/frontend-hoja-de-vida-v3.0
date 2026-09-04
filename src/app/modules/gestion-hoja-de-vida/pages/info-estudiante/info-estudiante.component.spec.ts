@@ -1,4 +1,5 @@
-import { DomSanitizer } from '@angular/platform-browser';
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
 
@@ -11,6 +12,7 @@ describe('InfoEstudianteComponent', () => {
   let router: jasmine.SpyObj<Router>;
   let informacionService: jasmine.SpyObj<InformacionService>;
   let autenticacion: jasmine.SpyObj<AutenticacionService>;
+  let sanitizer: jasmine.SpyObj<DomSanitizer>;
 
   beforeEach(() => {
     const route = {
@@ -33,12 +35,19 @@ describe('InfoEstudianteComponent', () => {
       'AutenticacionService',
       ['hasRole']
     );
+    sanitizer = jasmine.createSpyObj<DomSanitizer>(
+      'DomSanitizer',
+      ['bypassSecurityTrustResourceUrl']
+    );
+    sanitizer.bypassSecurityTrustResourceUrl.and.returnValue(
+      'blob:resolucion' as unknown as SafeResourceUrl
+    );
 
     component = new InfoEstudianteComponent(
       route,
       router,
       informacionService,
-      {} as DomSanitizer,
+      sanitizer,
       autenticacion
     );
   });
@@ -80,5 +89,22 @@ describe('InfoEstudianteComponent', () => {
     expect(component.tipoDistincionEdicion).toBe('EXCELENCIA_ACADEMICA');
     expect(component.numeroResolucionEdicion).toBe('RES-EXC-001');
     expect(component.fechaResolucionEdicion).toBe('2025-01-15');
+  });
+
+  it('debe usar el número de resolución como nombre de descarga', () => {
+    spyOn(URL, 'createObjectURL').and.returnValue('blob:resolucion');
+    informacionService.obtenerResolucionDistincion.and.returnValue(of(
+      new HttpResponse({
+        body: new Blob(['%PDF-prueba'], { type: 'application/pdf' }),
+        headers: new HttpHeaders({
+          'Content-Disposition': 'inline; filename="RES-EXC-001.pdf"'
+        })
+      })
+    ));
+
+    component.verResolucion('EXCELENCIA_ACADEMICA');
+
+    expect(component.nombreArchivoResolucion).toBe('RES-EXC-001.pdf');
+    expect(component.urlDescargaResolucion).toBe('blob:resolucion');
   });
 });

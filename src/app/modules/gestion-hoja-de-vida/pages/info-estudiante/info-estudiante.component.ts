@@ -57,8 +57,10 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   private inputResolucionEdicion: HTMLInputElement | null = null;
   urlResolucion: SafeResourceUrl | null = null;
   tituloResolucion = '';
+  nombreArchivoResolucion = '';
   cargandoResolucion: TipoDistincionAcademica | null = null;
-  private urlObjetoResolucion: string | null = null;
+  urlDescargaResolucion: string | null = null;
+  private archivoResolucionVisualizado: Blob | null = null;
 
   fundamentacionData: TableRow[] = [];
   electivasData: TableRow[] = [];
@@ -394,13 +396,22 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
 
     this.infoService.obtenerResolucionDistincion(this.codigoEstudiante, tipo)
       .subscribe({
-        next: (resolucion) => {
+        next: (respuesta) => {
+          const resolucion = respuesta.body;
+          if (!resolucion) {
+            this.cargandoResolucion = null;
+            this.errorDistincion = 'La resolución registrada no contiene un PDF.';
+            return;
+          }
+
           this.liberarUrlResolucion();
-          this.urlObjetoResolucion = URL.createObjectURL(
-            new Blob([resolucion], { type: 'application/pdf' })
-          );
+          this.archivoResolucionVisualizado = resolucion;
+          this.urlDescargaResolucion = URL.createObjectURL(resolucion);
           this.urlResolucion = this.sanitizer.bypassSecurityTrustResourceUrl(
-            this.urlObjetoResolucion
+            `${this.urlDescargaResolucion}#toolbar=0&navpanes=0`
+          );
+          this.nombreArchivoResolucion = this.extraerNombreArchivo(
+            respuesta.headers.get('Content-Disposition')
           );
           this.tituloResolucion = tipo === 'EXCELENCIA_ACADEMICA'
             ? 'Resolución de excelencia académica'
@@ -414,9 +425,27 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
       });
   }
 
+  descargarResolucionActual(): void {
+    if (!this.archivoResolucionVisualizado || !this.nombreArchivoResolucion) {
+      this.errorDistincion = 'No hay una resolución disponible para descargar.';
+      return;
+    }
+
+    const urlDescarga = URL.createObjectURL(this.archivoResolucionVisualizado);
+    const enlace = document.createElement('a');
+    enlace.href = urlDescarga;
+    enlace.download = this.nombreArchivoResolucion;
+    enlace.style.display = 'none';
+    document.body.appendChild(enlace);
+    enlace.click();
+    enlace.remove();
+    window.setTimeout(() => URL.revokeObjectURL(urlDescarga), 1000);
+  }
+
   cerrarVisorResolucion(): void {
     this.urlResolucion = null;
     this.tituloResolucion = '';
+    this.nombreArchivoResolucion = '';
     this.liberarUrlResolucion();
   }
 
@@ -540,9 +569,15 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   private liberarUrlResolucion(): void {
-    if (this.urlObjetoResolucion) {
-      URL.revokeObjectURL(this.urlObjetoResolucion);
-      this.urlObjetoResolucion = null;
+    if (this.urlDescargaResolucion) {
+      URL.revokeObjectURL(this.urlDescargaResolucion);
+      this.urlDescargaResolucion = null;
     }
+    this.archivoResolucionVisualizado = null;
+  }
+
+  private extraerNombreArchivo(contentDisposition: string | null): string {
+    const coincidencia = contentDisposition?.match(/filename="([^"]+)"/i);
+    return coincidencia?.[1] ?? 'resolucion.pdf';
   }
 }
