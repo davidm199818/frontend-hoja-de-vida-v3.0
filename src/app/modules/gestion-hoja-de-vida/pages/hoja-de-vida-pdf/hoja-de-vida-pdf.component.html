@@ -92,7 +92,7 @@
         </div>
     </section>
     <!-- DOS COLUMNAS -->
-    <div class="row two-columns">
+    <div class="row two-columns pdf-avoid-break">
         <div class="col-md-6">
             <section class="detail-card">
                 <div class="section-title compact-title">Proyecto de Grado</div>
@@ -148,8 +148,29 @@
             </section>
         </div>
     </div>
+
+    <section class="recognitions-section pdf-avoid-break" *ngIf="tieneDistincionesAcademicas">
+        <div class="section-title">Reconocimientos y Menciones</div>
+        <div class="recognitions-grid">
+            <article class="recognition-item" *ngIf="tieneReconocimientoPromedio">
+                <img src="assets/layout/images/medalla4.8.png" alt="Medalla de excelencia académica">
+                <div>
+                    <strong>Reconocimiento por excelencia académica</strong>
+                    <p>Distinción otorgada por alcanzar un promedio acumulado igual o superior a 4.8.</p>
+                </div>
+            </article>
+            <article class="recognition-item" *ngIf="tieneMencionHonorTrabajoGrado">
+                <img src="assets/layout/images/medallaTrabajoDeGrado.png" alt="Medalla por mención de honor por trabajo de grado">
+                <div>
+                    <strong>Mención de honor por trabajo de grado</strong>
+                    <p>Distinción otorgada por la calidad del trabajo de grado.</p>
+                </div>
+            </article>
+        </div>
+    </section>
+
     <!-- FIRMA -->
-    <div class="signature">
+    <div class="signature pdf-avoid-break">
         <img src="assets/layout/images/firma.png" alt="Firma coordinador" width="200">
         <div class="signature-line">
             Coordinador: Hugo Ordoñez<br>
