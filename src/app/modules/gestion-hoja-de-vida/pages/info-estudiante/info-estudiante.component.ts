@@ -31,8 +31,8 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   currentTable: string | null = null;
 
   expandedMenu: { [key: string]: boolean } = {
-    investigacion: true,
-    complementacion: true
+    investigacion: false,
+    complementacion: false
   };
 
   mostrarDialogoConfirmacionGenerarHojaDeVida = false;
@@ -114,8 +114,8 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     });
   }
 
-  toggleSubmenu(menu: string): void {
-    this.expandedMenu[menu] = true;
+  toggleSubmenu(menu: 'investigacion' | 'complementacion'): void {
+    this.expandedMenu[menu] = !this.expandedMenu[menu];
   }
 
   selectMenuItem(item: string): void {

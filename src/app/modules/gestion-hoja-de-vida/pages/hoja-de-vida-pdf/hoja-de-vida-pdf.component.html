@@ -1,7 +1,4 @@
 <div class="pdf-actions no-print" *ngIf="historia">
-    <button class="btn btn-outline-primary me-2" (click)="previsualizarPdf()">
-        <i class="fa fa-eye me-1"></i> Previsualizar PDF
-    </button>
     <button class="btn btn-primary" (click)="descargarPdf()" [disabled]="generandoPdf">
         <i class="fa fa-download me-1"></i>
         {{ generandoPdf ? 'Generando...' : 'Descargar' }}
@@ -153,14 +150,18 @@
         <div class="section-title">Reconocimientos y Menciones</div>
         <div class="recognitions-grid">
             <article class="recognition-item" *ngIf="tieneReconocimientoPromedio">
-                <img src="assets/layout/images/medalla4.8.png" alt="Medalla de excelencia académica">
+                <div class="recognition-medal">
+                    <img src="assets/layout/images/medalla4.8.png" alt="Medalla de excelencia académica">
+                </div>
                 <div>
                     <strong>Reconocimiento por excelencia académica</strong>
                     <p>Distinción otorgada por alcanzar un promedio acumulado igual o superior a 4.8.</p>
                 </div>
             </article>
             <article class="recognition-item" *ngIf="tieneMencionHonorTrabajoGrado">
-                <img src="assets/layout/images/medallaTrabajoDeGrado.png" alt="Medalla por mención de honor por trabajo de grado">
+                <div class="recognition-medal">
+                    <img src="assets/layout/images/medallaTrabajoDeGrado.png" alt="Medalla por mención de honor por trabajo de grado">
+                </div>
                 <div>
                     <strong>Mención de honor por trabajo de grado</strong>
                     <p>Distinción otorgada por la calidad del trabajo de grado.</p>
@@ -171,12 +172,16 @@
 
     <!-- FIRMA -->
     <div class="signature pdf-avoid-break">
-        <img src="assets/layout/images/firma.png" alt="Firma coordinador" width="200">
+        <img
+            class="signature-image"
+            src="assets/layout/images/firma.png"
+            alt="Firma del coordinador">
         <div class="signature-line">
-            Coordinador: Hugo Ordoñez<br>
-            Programa de Maestría en Computación<br>
-            Facultad de Ingeniería Electrónica y Telecomunicaciones<br>
-            Universidad del Cauca
+            <strong>Hugo Armando Ordóñez Erazo</strong>
+            <span class="signature-role">Coordinador</span>
+            <span>Programa de Maestría en Computación</span>
+            <span>Facultad de Ingeniería Electrónica y Telecomunicaciones</span>
+            <span>Universidad del Cauca</span>
             <div class="generation-info" *ngIf="fechaHoraGeneracion">
                 Generado el {{ fechaHoraGeneracion }}
             </div>

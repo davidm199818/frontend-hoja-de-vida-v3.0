@@ -102,16 +102,21 @@
           Área de Electivas <i class="pi pi-angle-right"></i>
         </div>
 
-        <div class="menu-item" [ngClass]="{ expanded: expandedMenu['investigacion'] }"
+        <button
+          type="button"
+          class="menu-item menu-toggle"
+          [ngClass]="{ expanded: expandedMenu['investigacion'] }"
+          [attr.aria-expanded]="expandedMenu['investigacion']"
+          aria-controls="submenu-investigacion"
           (click)="toggleSubmenu('investigacion')">
           Área de Investigación
           <i class="pi" [ngClass]="{
                             'pi-angle-down': expandedMenu['investigacion'],
                             'pi-angle-right': !expandedMenu['investigacion']
                         }"></i>
-        </div>
+        </button>
 
-        <div class="submenu" *ngIf="expandedMenu['investigacion']">
+        <div id="submenu-investigacion" class="submenu" *ngIf="expandedMenu['investigacion']">
           <div class="submenu-item" [ngClass]="{
                             active: activeMenuItem === 'asignaturasVistas'
                         }" (click)="selectMenuItem('asignaturasVistas')">
@@ -128,16 +133,21 @@
           </div>
         </div>
 
-        <div class="menu-item" [ngClass]="{ expanded: expandedMenu['complementacion'] }"
+        <button
+          type="button"
+          class="menu-item menu-toggle"
+          [ngClass]="{ expanded: expandedMenu['complementacion'] }"
+          [attr.aria-expanded]="expandedMenu['complementacion']"
+          aria-controls="submenu-complementacion"
           (click)="toggleSubmenu('complementacion')">
           Área de Complementación
           <i class="pi" [ngClass]="{
                             'pi-angle-down': expandedMenu['complementacion'],
                             'pi-angle-right': !expandedMenu['complementacion']
                         }"></i>
-        </div>
+        </button>
 
-        <div class="submenu" *ngIf="expandedMenu['complementacion']">
+        <div id="submenu-complementacion" class="submenu" *ngIf="expandedMenu['complementacion']">
           <div class="submenu-item" [ngClass]="{
                             active: activeMenuItem === 'practicaDocente'
                         }" (click)="selectMenuItem('practicaDocente')">
@@ -577,8 +587,11 @@
                 <div class="status failure">Sin publicaciones registradas.</div>
               </ng-template>
 
-              <div class="status" [ngClass]="tienePublicacionesRegistradas ? 'success' : 'failure'">
-                {{ tienePublicacionesRegistradas ? 'Cumple requisito' : 'No cumple los requisitos' }}
+              <div class="publication-requirement-status">
+                <span>Cumplimiento</span>
+                <strong [ngClass]="tienePublicacionesRegistradas ? 'success' : 'pending'">
+                  {{ tienePublicacionesRegistradas ? 'Requisito cumplido' : 'Requisito pendiente' }}
+                </strong>
               </div>
             </div>
             <div class="requirement language">
@@ -593,16 +606,15 @@
                   <span class="detail-label">Estado</span>
                   <div class="language-status" [ngClass]="claseEstadoPruebaIdiomaExtranjero">
                     <span class="language-dot"></span>
-                    <span class="language-icon">
-                      {{ estadoPruebaIdiomaExtranjero === 'Aprobada' ? '✓' : (estadoPruebaIdiomaExtranjero === 'No aprobada' ? '!' : '•') }}
-                    </span>
                     {{ estadoPruebaIdiomaExtranjero }}
                   </div>
                 </div>
                 <div class="language-detail-item">
                   <span class="detail-label">Cumplimiento</span>
-                  <strong [class.failure-text]="!cumplePruebaIdiomaExtranjero">
-                    {{ cumplePruebaIdiomaExtranjero ? 'Cumple requisito' : 'No cumple los requisitos' }}
+                  <strong
+                    [class.success-text]="cumplePruebaIdiomaExtranjero"
+                    [class.pending-text]="!cumplePruebaIdiomaExtranjero">
+                    {{ cumplePruebaIdiomaExtranjero ? 'Requisito cumplido' : 'Requisito pendiente' }}
                   </strong>
                   <small class="language-note" *ngIf="!cumplePruebaIdiomaExtranjero">
                     Debe aprobar la prueba para completar este requisito.
@@ -886,8 +898,8 @@
           *ngIf="urlDescargaResolucion"
           type="button"
           class="pdf-download-icon"
-          title="Descargar {{ nombreArchivoResolucion }}"
-          aria-label="Descargar resolución PDF"
+          [attr.title]="'Descargar ' + nombreArchivoResolucion"
+          [attr.aria-label]="'Descargar ' + nombreArchivoResolucion"
           (click)="descargarResolucionActual()">
           <i class="pi pi-download" aria-hidden="true"></i>
         </button>

@@ -63,6 +63,23 @@ describe('InfoEstudianteComponent', () => {
     expect(autenticacion.hasRole).toHaveBeenCalledOnceWith('ROLE_COORDINADOR');
   });
 
+  it('debe abrir y cerrar las áreas desplegables', () => {
+    expect(component.expandedMenu['investigacion']).toBeFalse();
+    expect(component.expandedMenu['complementacion']).toBeFalse();
+
+    component.toggleSubmenu('investigacion');
+    component.toggleSubmenu('complementacion');
+
+    expect(component.expandedMenu['investigacion']).toBeTrue();
+    expect(component.expandedMenu['complementacion']).toBeTrue();
+
+    component.toggleSubmenu('investigacion');
+    component.toggleSubmenu('complementacion');
+
+    expect(component.expandedMenu['investigacion']).toBeFalse();
+    expect(component.expandedMenu['complementacion']).toBeFalse();
+  });
+
   it('debe impedir que un estudiante registre distinciones', () => {
     autenticacion.hasRole.and.returnValue(false);
 
