@@ -1,11 +1,17 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { HistoriaAcademica } from '../models/Historia-Academica';
 
 export type TipoDistincionAcademica =
   | 'EXCELENCIA_ACADEMICA'
   | 'MENCION_HONOR_TRABAJO_GRADO';
+
+export interface DistincionAcademicaDetalle {
+  tipo: TipoDistincionAcademica;
+  numeroResolucion: string;
+  fechaResolucion: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +39,11 @@ export class InformacionService {
     formData.append('tipo', tipo);
     formData.append('numeroResolucion', numeroResolucion.trim());
     formData.append('fechaResolucion', fechaResolucion);
-    formData.append('resolucion', resolucion, resolucion.name);
+    formData.append(
+      'resolucion',
+      resolucion,
+      this.crearNombreArchivoResolucion(numeroResolucion)
+    );
 
     return this.http.post<void>(
       `${this.apiUrl}/${encodeURIComponent(codigoEstudiante)}/distinciones`,
@@ -52,12 +62,25 @@ export class InformacionService {
     formData.append('numeroResolucion', numeroResolucion.trim());
     formData.append('fechaResolucion', fechaResolucion);
     if (resolucion) {
-      formData.append('resolucion', resolucion, resolucion.name);
+      formData.append(
+        'resolucion',
+        resolucion,
+        this.crearNombreArchivoResolucion(numeroResolucion)
+      );
     }
 
     return this.http.put<void>(
       `${this.apiUrl}/${encodeURIComponent(codigoEstudiante)}/distinciones/${tipo}`,
       formData
+    );
+  }
+
+  obtenerDetalleDistincion(
+    codigoEstudiante: string,
+    tipo: TipoDistincionAcademica
+  ): Observable<DistincionAcademicaDetalle> {
+    return this.http.get<DistincionAcademicaDetalle>(
+      `${this.apiUrl}/${encodeURIComponent(codigoEstudiante)}/distinciones/${tipo}`
     );
   }
 
@@ -73,11 +96,22 @@ export class InformacionService {
   obtenerResolucionDistincion(
     codigoEstudiante: string,
     tipo: TipoDistincionAcademica
-  ): Observable<Blob> {
+  ): Observable<HttpResponse<Blob>> {
     return this.http.get(
       `${this.apiUrl}/${encodeURIComponent(codigoEstudiante)}/distinciones/${tipo}/resolucion`,
-      { responseType: 'blob' }
+      { responseType: 'blob', observe: 'response' }
     );
+  }
+
+  private crearNombreArchivoResolucion(numeroResolucion: string): string {
+    const codigo = numeroResolucion
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^A-Za-z0-9._-]+/g, '-')
+      .replace(/^[.-]+|[.-]+$/g, '');
+
+    return `${codigo || 'resolucion'}.pdf`;
   }
 
 }

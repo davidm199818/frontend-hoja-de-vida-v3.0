@@ -290,6 +290,53 @@ body {
     color: #1f3c68;
 }
 
+/* RECONOCIMIENTOS */
+.recognitions-section {
+    margin-top: 36px;
+}
+
+.recognitions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.recognition-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid #d6dfeb;
+    border-radius: 10px;
+    background: #fbfdff;
+    break-inside: avoid;
+}
+
+.recognition-item img {
+    width: 68px;
+    height: 68px;
+    object-fit: contain;
+    flex: 0 0 auto;
+}
+
+.recognition-item strong {
+    display: block;
+    color: #1f3c68;
+    font-size: 14px;
+}
+
+.recognition-item p {
+    margin: 5px 0 0;
+    color: #4f6488;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.pdf-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
 /* FIRMA */
 .signature {
     margin-top: 80px;

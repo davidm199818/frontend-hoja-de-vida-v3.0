@@ -1011,6 +1011,11 @@
   color: #b42323;
 }
 
+.edit-distinction-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
 .recognition-feedback {
   margin-top: 12px;
   border-radius: 10px;
@@ -1168,7 +1173,30 @@
   font-size: 1rem;
 }
 
-.pdf-viewer-dialog header button {
+.pdf-viewer-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pdf-download-icon {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: var(--primary-0);
+  color: #ffffff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.pdf-download-icon:hover {
+  background: var(--primary-1);
+}
+
+.pdf-viewer-close-button {
   border: none;
   background: transparent;
   color: var(--ink-2);

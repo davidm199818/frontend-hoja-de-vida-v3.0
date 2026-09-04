@@ -91,6 +91,18 @@ export class HojaDeVidaPdfComponent implements OnInit {
     return this.historia?.historiaAcademica?.investigacion?.publicaciones ?? [];
   }
 
+  get tieneReconocimientoPromedio(): boolean {
+    return this.tieneDistincion('EXCELENCIA_ACADEMICA');
+  }
+
+  get tieneMencionHonorTrabajoGrado(): boolean {
+    return this.tieneDistincion('MENCION_HONOR_TRABAJO_GRADO');
+  }
+
+  get tieneDistincionesAcademicas(): boolean {
+    return this.tieneReconocimientoPromedio || this.tieneMencionHonorTrabajoGrado;
+  }
+
   get seccionesMaterias(): TableSection[] {
     return [
       { area: 'Area de Fundamentacion', materias: this.fundamentacionData },
@@ -98,6 +110,12 @@ export class HojaDeVidaPdfComponent implements OnInit {
       { area: 'Area de Investigacion', materias: this.investigacionData },
       { area: 'Area de Complementacion', materias: this.complementacionData }
     ];
+  }
+
+  private tieneDistincion(tipo: string): boolean {
+    const distinciones = this.historia?.historiaAcademica
+      ?.informacionAdicional?.distincionesAcademicas ?? [];
+    return distinciones.includes(tipo);
   }
 
   previsualizarPdf(): void {
@@ -139,20 +157,7 @@ export class HojaDeVidaPdfComponent implements OnInit {
         scrollY: -window.scrollY
       });
 
-      const imgData = canvas.toDataURL('image/png');
-      const imgHeight = (canvas.height * usableWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let yPosition = margin;
-
-      doc.addImage(imgData, 'PNG', margin, yPosition, usableWidth, imgHeight);
-      heightLeft -= usableHeight;
-
-      while (heightLeft > 0) {
-        doc.addPage();
-        yPosition = margin - (imgHeight - heightLeft);
-        doc.addImage(imgData, 'PNG', margin, yPosition, usableWidth, imgHeight);
-        heightLeft -= usableHeight;
-      }
+      this.agregarPaginasAlPdf(doc, content, canvas, margin, usableWidth, usableHeight);
 
       doc.save(`hoja-de-vida-${this.codigoEstudiante || 'estudiante'}.pdf`);
     } finally {
@@ -169,5 +174,76 @@ export class HojaDeVidaPdfComponent implements OnInit {
       minute: '2-digit',
       hour12: true
     }).format(new Date());
+  }
+
+  private agregarPaginasAlPdf(
+    doc: jsPDF,
+    content: HTMLElement,
+    canvas: HTMLCanvasElement,
+    margin: number,
+    usableWidth: number,
+    usableHeight: number
+  ): void {
+    const maxAlturaFragmento = Math.floor((usableHeight * canvas.width) / usableWidth);
+    const seccionesProtegidas = this.obtenerSeccionesProtegidas(content, canvas);
+    let posicionOrigen = 0;
+    let numeroPagina = 0;
+
+    while (posicionOrigen < canvas.height) {
+      const limitePagina = Math.min(posicionOrigen + maxAlturaFragmento, canvas.height);
+      const seccionQueNoCabe = seccionesProtegidas.find(
+        seccion => seccion.inicio > posicionOrigen + 10
+          && seccion.inicio < limitePagina
+          && seccion.fin > limitePagina
+          && seccion.fin - seccion.inicio <= maxAlturaFragmento
+      );
+      const alturaFragmento = seccionQueNoCabe
+        ? seccionQueNoCabe.inicio - posicionOrigen
+        : limitePagina - posicionOrigen;
+
+      if (numeroPagina > 0) {
+        doc.addPage();
+      }
+
+      const fragmento = document.createElement('canvas');
+      fragmento.width = canvas.width;
+      fragmento.height = alturaFragmento;
+      fragmento.getContext('2d')?.drawImage(
+        canvas,
+        0,
+        posicionOrigen,
+        canvas.width,
+        alturaFragmento,
+        0,
+        0,
+        canvas.width,
+        alturaFragmento
+      );
+
+      const alturaEnPdf = (alturaFragmento * usableWidth) / canvas.width;
+      doc.addImage(fragmento.toDataURL('image/png'), 'PNG', margin, margin, usableWidth, alturaEnPdf);
+
+      posicionOrigen += alturaFragmento;
+      numeroPagina++;
+    }
+  }
+
+  private obtenerSeccionesProtegidas(
+    content: HTMLElement,
+    canvas: HTMLCanvasElement
+  ): Array<{ inicio: number; fin: number }> {
+    const rectanguloContenido = content.getBoundingClientRect();
+    const escalaCanvas = canvas.height / rectanguloContenido.height;
+
+    return Array.from(content.querySelectorAll<HTMLElement>('.pdf-avoid-break'))
+      .map(elemento => {
+        const rectanguloElemento = elemento.getBoundingClientRect();
+        return {
+          inicio: Math.round((rectanguloElemento.top - rectanguloContenido.top) * escalaCanvas),
+          fin: Math.round((rectanguloElemento.bottom - rectanguloContenido.top) * escalaCanvas)
+        };
+      })
+      .filter(seccion => seccion.inicio > 0 && seccion.fin <= canvas.height)
+      .sort((primera, segunda) => primera.inicio - segunda.inicio);
   }
 }
