@@ -84,6 +84,20 @@
               historia.estudiante.periodoIngreso
               }}</span>
           </div>
+          <div class="detail-item">
+            <span class="detail-label">Estado en la maestría</span>
+            <span class="detail-value">{{ estadoMaestriaLabel }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Modalidad</span>
+            <span class="detail-value">{{ modalidadAcademicaLabel }}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Grupo de investigación</span>
+            <span class="detail-value">{{
+              historia.estudiante.grupoInvestigacion?.nombre || 'Sin registrar'
+              }}</span>
+          </div>
         </div>
       </div>
     </section>
@@ -181,7 +195,7 @@
                                 else emptyFundamentacion
                             ">
               <div class="table-scroll">
-                <table class="data-table">
+                <table class="data-table academic-table">
                   <thead>
                     <tr>
                       <th>Periodo</th>
@@ -224,7 +238,7 @@
                                 else emptyElectivas
                             ">
               <div class="table-scroll">
-                <table class="data-table">
+                <table class="data-table academic-table">
                   <thead>
                     <tr>
                       <th>Periodo</th>
@@ -268,7 +282,7 @@
                                 else emptyAsignaturasInvestigacion
                             ">
               <div class="table-scroll">
-                <table class="data-table">
+                <table class="data-table academic-table">
                   <thead>
                     <tr>
                       <th>Periodo</th>
@@ -316,13 +330,14 @@
                                 else emptyPasantias
                             ">
               <div class="table-scroll">
-                <table class="data-table">
+                <table class="data-table internship-table">
                   <thead>
                     <tr>
                       <th>Créditos Asignados</th>
                       <th>Acta</th>
                       <th>Fecha de Acta</th>
                       <th>Informe</th>
+                      <th>Ubicación</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -339,6 +354,7 @@
                       <td>
                         {{ pasantia.informePasantia }}
                       </td>
+                      <td>{{ pasantia.lugarPasantia || 'Sin registrar' }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -368,15 +384,18 @@
                                 else emptyPublicaciones
                             ">
               <div class="table-scroll">
-                <table class="data-table">
+                <table class="data-table publications-table">
                   <thead>
                     <tr>
+                      <th>Código</th>
                       <th>Créditos Asignados</th>
                       <th>Acta</th>
                       <th>Nombre Publicación</th>
+                      <th>Revista</th>
                       <th>Tipo de Publicación</th>
                       <th>Categoría Indexada</th>
                       <th>Fecha de Aceptación</th>
+                      <th>Enlace de publicación</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -385,6 +404,7 @@
                                                     .historiaAcademica
                                                     .investigacion.publicaciones
                                             ">
+                      <td>{{ publicacion.codigoPublicacion }}</td>
                       <td>
                         {{
                         publicacion.creditosAsignados
@@ -396,6 +416,7 @@
                         publicacion.nombrePublicacion
                         }}
                       </td>
+                      <td>{{ publicacion.nombreRevista }}</td>
                       <td>
                         {{
                         publicacion.tipoPublicacion
@@ -411,6 +432,17 @@
                         {{
                         publicacion.fechaAceptacion
                         }}
+                      </td>
+                      <td>
+                        <a
+                          *ngIf="publicacion.urlPublicacion; else enlaceNoRegistrado"
+                          class="publication-link"
+                          [href]="publicacion.urlPublicacion"
+                          target="_blank"
+                          rel="noopener noreferrer">
+                          {{ publicacion.urlPublicacion }}
+                        </a>
+                        <ng-template #enlaceNoRegistrado>NR</ng-template>
                       </td>
                     </tr>
                   </tbody>
@@ -441,12 +473,15 @@
                                 else emptyPracticaDocente
                             ">
               <div class="table-scroll">
-                <table class="data-table">
+                <table class="data-table teaching-practice-table">
                   <thead>
                     <tr>
                       <th>Créditos Asignados</th>
                       <th>Acta</th>
+                      <th>Fecha de Acta</th>
                       <th>Horas</th>
+                      <th>Tipo de actividad</th>
+                      <th>Actividad realizada</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -460,7 +495,24 @@
                         {{ practica.creditosAsignados }}
                       </td>
                       <td>{{ practica.acta }}</td>
+                      <td>{{ practica.fechaActa || 'NR' }}</td>
                       <td>{{ practica.horas }}</td>
+                      <td>
+                        <ng-container *ngIf="practica.actividades?.length; else tiposNoRegistrados">
+                          <div *ngFor="let actividad of practica.actividades">
+                            {{ actividad.tipoActividad }}
+                          </div>
+                        </ng-container>
+                        <ng-template #tiposNoRegistrados>NR</ng-template>
+                      </td>
+                      <td>
+                        <ng-container *ngIf="practica.actividades?.length; else actividadesNoRegistradas">
+                          <div *ngFor="let actividad of practica.actividades">
+                            {{ actividad.nombreActividad }}
+                          </div>
+                        </ng-container>
+                        <ng-template #actividadesNoRegistradas>NR</ng-template>
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -488,7 +540,7 @@
                                 else emptyEmpresariales
                             ">
               <div class="table-scroll">
-                <table class="data-table">
+                <table class="data-table academic-table">
                   <thead>
                     <tr>
                       <th>Periodo</th>

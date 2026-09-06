@@ -101,6 +101,35 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     return this.autenticacion.hasRole('ROLE_COORDINADOR');
   }
 
+  get modalidadAcademicaLabel(): string {
+    const modalidad = this.historia?.estudiante.modalidadAcademica;
+
+    if (modalidad === 'INVESTIGACION') {
+      return 'Investigación';
+    }
+    if (modalidad === 'PROFUNDIZACION') {
+      return 'Profundización';
+    }
+    return 'Sin registrar';
+  }
+
+  get estadoMaestriaLabel(): string {
+    const estado = this.historia?.estudiante.estadoMaestria;
+
+    switch (estado) {
+      case 'ACTIVO':
+        return 'Cursando';
+      case 'MAESTRIA_FINALIZADA':
+        return 'Egresado';
+      case 'RETIRADO':
+        return 'Retirado';
+      case 'EN_SUSPENCION':
+        return 'En suspensión';
+      default:
+        return 'Sin registrar';
+    }
+  }
+
   cargarHistoriaAcademica(): void {
     this.infoService.getHistoriaAcademica(this.codigoEstudiante).subscribe(data => {
       this.historia = data;

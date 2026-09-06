@@ -265,15 +265,20 @@
 
 .student-details {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
 }
 
 .detail-item {
+  grid-column: span 2;
   border: 1px solid var(--line);
   background: var(--surface-soft);
   border-radius: 12px;
   padding: 10px 12px;
+}
+
+.detail-item-half-row {
+  grid-column: span 3;
 }
 
 .detail-label {
@@ -451,6 +456,27 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   z-index: 1;
+}
+
+.academic-table th:nth-child(1),
+.academic-table td:nth-child(1),
+.academic-table th:nth-child(2),
+.academic-table td:nth-child(2),
+.academic-table th:nth-child(4),
+.academic-table td:nth-child(4),
+.academic-table th:nth-child(5),
+.academic-table td:nth-child(5),
+.internship-table th:nth-child(1),
+.internship-table td:nth-child(1),
+.publications-table th:nth-child(1),
+.publications-table td:nth-child(1),
+.publications-table th:nth-child(2),
+.publications-table td:nth-child(2),
+.teaching-practice-table th:nth-child(1),
+.teaching-practice-table td:nth-child(1),
+.teaching-practice-table th:nth-child(4),
+.teaching-practice-table td:nth-child(4) {
+  text-align: center;
 }
 
 .data-table tbody tr:nth-child(even) {
@@ -1409,6 +1435,11 @@
   .student-details {
     width: 100%;
     grid-template-columns: 1fr;
+  }
+
+  .detail-item,
+  .detail-item-half-row {
+    grid-column: auto;
   }
 
   .summary {
