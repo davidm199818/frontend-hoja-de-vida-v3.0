@@ -4,8 +4,13 @@ import { BuscarEstudianteComponent } from './pages/buscar-estudiante/buscar-estu
 import { InfoEstudianteComponent } from './pages/info-estudiante/info-estudiante.component';
 import { HojaDeVidaPdfComponent } from './pages/hoja-de-vida-pdf/hoja-de-vida-pdf.component';
 import { HojaVidaAccessGuard } from './guards/hoja-vida-access.guard';
+import { AccesoDemoComponent } from './pages/acceso-demo/acceso-demo.component';
 
 const routes: Routes = [
+  {
+    path: 'demo',
+    component: AccesoDemoComponent
+  },
   {
     path: '',
     component: BuscarEstudianteComponent,

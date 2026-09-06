@@ -1,0 +1,65 @@
+<main class="demo-page">
+    <section class="demo-card" aria-labelledby="demo-title">
+        <div class="demo-badge">
+            <i class="fa-solid fa-flask" aria-hidden="true"></i>
+            Entorno temporal de validación
+        </div>
+
+        <h1 id="demo-title">Selecciona cómo deseas ingresar</h1>
+        <p class="demo-intro">
+            Este acceso se utiliza exclusivamente para probar el módulo de
+            gestión académica e información básica de la hoja de vida.
+        </p>
+
+        <div *ngIf="cargandoPerfiles" class="demo-status" role="status">
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            Cargando perfiles disponibles…
+        </div>
+
+        <div *ngIf="error" class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+
+        <div
+            *ngIf="!cargandoPerfiles && perfiles.length > 0"
+            class="profiles-grid"
+        >
+            <article class="profile-card" *ngFor="let perfil of perfiles">
+                <div class="profile-icon" aria-hidden="true">
+                    <i [class]="icono(perfil.perfil)"></i>
+                </div>
+
+                <div class="profile-content">
+                    <h2>
+                        {{ perfil.perfil === 'COORDINADOR' ? 'Coordinador' : 'Estudiante' }}
+                    </h2>
+                    <p>{{ descripcion(perfil.perfil) }}</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="btn btn-primary profile-action"
+                    [disabled]="perfilEnProceso !== null"
+                    (click)="ingresar(perfil)"
+                >
+                    <span
+                        *ngIf="perfilEnProceso === perfil.perfil"
+                        class="spinner-border spinner-border-sm me-2"
+                        aria-hidden="true"
+                    ></span>
+                    <i
+                        *ngIf="perfilEnProceso !== perfil.perfil"
+                        class="fa-solid fa-arrow-right-to-bracket me-2"
+                        aria-hidden="true"
+                    ></i>
+                    Ingresar
+                </button>
+            </article>
+        </div>
+
+        <p class="demo-note">
+            No se solicitan credenciales y los datos utilizados corresponden al
+            ambiente de pruebas.
+        </p>
+    </section>
+</main>

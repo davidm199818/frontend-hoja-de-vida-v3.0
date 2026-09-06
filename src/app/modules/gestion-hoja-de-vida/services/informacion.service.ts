@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { HistoriaAcademica } from '../models/Historia-Academica';
+import { gestion_hoja_vida } from 'src/environments/environment';
 
 export type TipoDistincionAcademica =
   | 'EXCELENCIA_ACADEMICA'
@@ -18,7 +19,7 @@ export interface DistincionAcademicaDetalle {
 })
 export class InformacionService {
 
-  private apiUrl = 'http://localhost:8080/api/hoja-vida/estudiantes';
+  private readonly apiUrl = `${gestion_hoja_vida.api_url}/hoja-vida/estudiantes`;
 
   constructor(private http: HttpClient) {}
 

@@ -7,6 +7,7 @@ import {
 } from '@angular/router';
 
 import { AutenticacionService } from '../../gestion-autenticacion/services/autenticacion.service';
+import { gestion_hoja_vida } from 'src/environments/environment';
 
 type TipoAccesoHojaVida = 'buscar' | 'consultar';
 
@@ -23,6 +24,11 @@ export class HojaVidaAccessGuard implements CanActivate {
 
     canActivate(route: ActivatedRouteSnapshot): boolean | UrlTree {
         if (!this.autenticacion.isLoggedIn()) {
+            if (gestion_hoja_vida.demo_auth_enabled) {
+                return this.router.createUrlTree([
+                    '/gestion-hoja-de-vida/demo',
+                ]);
+            }
             this.autenticacion.login();
             return false;
         }

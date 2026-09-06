@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Estudiante } from '../models/Estudiantehv';
+import { gestion_hoja_vida } from 'src/environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class HojaDeVidaService {
 
-    private apiUrl = 'http://localhost:8080/api/hoja-vida/estudiantes';
+    private readonly apiUrl = `${gestion_hoja_vida.api_url}/hoja-vida/estudiantes`;
 
     constructor(private http: HttpClient) { }
 

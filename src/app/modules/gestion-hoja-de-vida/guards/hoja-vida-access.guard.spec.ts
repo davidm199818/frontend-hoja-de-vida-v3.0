@@ -2,6 +2,7 @@ import { ActivatedRouteSnapshot, Router, UrlTree } from '@angular/router';
 
 import { AutenticacionService } from '../../gestion-autenticacion/services/autenticacion.service';
 import { HojaVidaAccessGuard } from './hoja-vida-access.guard';
+import { gestion_hoja_vida } from 'src/environments/environment';
 
 describe('HojaVidaAccessGuard', () => {
     let autenticacion: jasmine.SpyObj<AutenticacionService>;
@@ -19,6 +20,23 @@ describe('HojaVidaAccessGuard', () => {
         ]);
         guard = new HojaVidaAccessGuard(autenticacion, router);
         autenticacion.isLoggedIn.and.returnValue(true);
+    });
+
+    afterEach(() => {
+        gestion_hoja_vida.demo_auth_enabled = false;
+    });
+
+    it('redirige al selector demo cuando no existe una sesión', () => {
+        const redireccion = {} as UrlTree;
+        gestion_hoja_vida.demo_auth_enabled = true;
+        autenticacion.isLoggedIn.and.returnValue(false);
+        router.createUrlTree.and.returnValue(redireccion);
+
+        expect(guard.canActivate(ruta('buscar'))).toBe(redireccion);
+        expect(router.createUrlTree).toHaveBeenCalledOnceWith([
+            '/gestion-hoja-de-vida/demo',
+        ]);
+        expect(autenticacion.login).not.toHaveBeenCalled();
     });
 
     it('permite al coordinador abrir el buscador', () => {

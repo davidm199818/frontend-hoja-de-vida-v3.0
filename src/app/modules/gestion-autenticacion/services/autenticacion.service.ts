@@ -1,4 +1,7 @@
-import { gestion_autenticacion } from 'src/environments/environment';
+import {
+    gestion_autenticacion,
+    gestion_hoja_vida,
+} from 'src/environments/environment';
 import { Injectable, EventEmitter } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import firebase from 'firebase/compat/app';
@@ -24,6 +27,9 @@ interface Usuario {
     providedIn: 'root',
 })
 export class AutenticacionService {
+    private static readonly DEMO_SESSION_KEY = 'hojaVidaDemoSession';
+    private static readonly DEMO_EXPIRATION_KEY = 'hojaVidaDemoExpiresAt';
+
     private isLoggedInStatus: boolean = false;
     private userRole: string = '';
     private loggedInUser: Usuario | null = null;
@@ -38,6 +44,10 @@ export class AutenticacionService {
         private menuService: MenuService,
         private router: Router
     ) {
+        if (this.esSesionDemoAlmacenada() && !this.esSesionDemoVigente()) {
+            this.limpiarSesionLocal();
+        }
+
         // Recuperar el usuario autenticado del localStorage al iniciar
         const storedUser = localStorage.getItem('loggedInUser');
         if (storedUser) {
@@ -47,6 +57,10 @@ export class AutenticacionService {
 
         // Suscribirse al estado de autenticación sin sobrescribir loggedInUser
         this.afAuth.authState.subscribe((user) => {
+            if (this.esSesionDemoVigente()) {
+                return;
+            }
+
             if (user && user.email?.endsWith('@unicauca.edu.co')) {
                 this.isLoggedInStatus = true;
 
@@ -78,6 +92,11 @@ export class AutenticacionService {
     }
 
     login(): void {
+        if (gestion_hoja_vida.demo_auth_enabled) {
+            this.router.navigate(['/gestion-hoja-de-vida/demo']);
+            return;
+        }
+
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({
             prompt: 'select_account', // Forzar el selector de cuenta
@@ -115,6 +134,12 @@ export class AutenticacionService {
                     // Almacenar el beared token proporcionado por el backend
                     const tokenOriginal = response.tokenOriginal;
                     localStorage.setItem('token', tokenOriginal);
+                    localStorage.removeItem(
+                        AutenticacionService.DEMO_SESSION_KEY
+                    );
+                    localStorage.removeItem(
+                        AutenticacionService.DEMO_EXPIRATION_KEY
+                    );
 
                     this.isLoggedInStatus = true;
 
@@ -147,15 +172,58 @@ export class AutenticacionService {
             );
     }
 
+    establecerSesionDemo(
+        accessToken: string,
+        expiresAt: string,
+        nombre: string,
+        rol: string,
+        codigoAcademico: string | null
+    ): void {
+        const partesNombre = nombre.trim().split(/\s+/);
+
+        this.loggedInUser = {
+            username: nombre,
+            email: '',
+            role: [rol],
+            phoneNumber: '',
+            academicCode: codigoAcademico || '',
+            firstName: partesNombre[0] || 'Usuario',
+            lastName: 'Demo',
+            idType: '',
+            idNumber: '',
+        };
+        this.isLoggedInStatus = true;
+
+        localStorage.setItem('token', accessToken);
+        localStorage.setItem(
+            'loggedInUser',
+            JSON.stringify(this.loggedInUser)
+        );
+        localStorage.setItem(
+            AutenticacionService.DEMO_SESSION_KEY,
+            'true'
+        );
+        localStorage.setItem(
+            AutenticacionService.DEMO_EXPIRATION_KEY,
+            expiresAt
+        );
+
+        this.menuService.emitAlertLogin();
+        this.loginSuccess$.emit();
+    }
+
     logout(): void {
+        const eraSesionDemo = this.esSesionDemoAlmacenada();
+
+        if (eraSesionDemo && gestion_hoja_vida.demo_auth_enabled) {
+            this.limpiarSesionLocal();
+            this.router.navigate(['/gestion-hoja-de-vida/demo']);
+            this.logoutSuccess$.emit();
+            return;
+        }
+
         this.afAuth.signOut().then(() => {
-            this.isLoggedInStatus = false;
-            this.loggedInUser = null;
-            // Limpiar el localStorage de los datos requeridos
-            localStorage.removeItem('loggedInUser');
-            localStorage.removeItem('token');
-            localStorage.removeItem('est');
-            localStorage.removeItem('estEgresado');
+            this.limpiarSesionLocal();
             this.router.navigate(['']);
 
             // Emitir evento de logout
@@ -164,6 +232,10 @@ export class AutenticacionService {
     }
 
     isLoggedIn(): boolean {
+        if (this.esSesionDemoAlmacenada() && !this.esSesionDemoVigente()) {
+            this.limpiarSesionLocal();
+            return false;
+        }
         return this.isLoggedInStatus;
     }
 
@@ -191,5 +263,36 @@ export class AutenticacionService {
 
     getToken(): string | null {
         return localStorage.getItem('token');
+    }
+
+    private esSesionDemoAlmacenada(): boolean {
+        return (
+            localStorage.getItem(AutenticacionService.DEMO_SESSION_KEY) ===
+            'true'
+        );
+    }
+
+    private esSesionDemoVigente(): boolean {
+        if (!this.esSesionDemoAlmacenada() || !this.getToken()) {
+            return false;
+        }
+
+        const expiracion = localStorage.getItem(
+            AutenticacionService.DEMO_EXPIRATION_KEY
+        );
+        const instanteExpiracion = expiracion ? Date.parse(expiracion) : NaN;
+        return Number.isFinite(instanteExpiracion)
+            && instanteExpiracion > Date.now();
+    }
+
+    private limpiarSesionLocal(): void {
+        this.isLoggedInStatus = false;
+        this.loggedInUser = null;
+        localStorage.removeItem('loggedInUser');
+        localStorage.removeItem('token');
+        localStorage.removeItem('est');
+        localStorage.removeItem('estEgresado');
+        localStorage.removeItem(AutenticacionService.DEMO_SESSION_KEY);
+        localStorage.removeItem(AutenticacionService.DEMO_EXPIRATION_KEY);
     }
 }

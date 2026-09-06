@@ -22,6 +22,14 @@ export const gestion_autenticacion = {
     api_url: 'https://apptest.unicauca.edu.co:4410/api/auth/google',
 };
 
+export const gestion_hoja_vida = {
+    production: true,
+    api_url: (window['env']?.HOJA_VIDA_API_URL || '/api').replace(/\/+$/, ''),
+    demo_auth_enabled:
+        String(window['env']?.HOJA_VIDA_DEMO_AUTH_ENABLED).toLowerCase() ===
+        'true',
+};
+
 export const gestion_expertos = {
     production: true,
     api_url: 'https://apptest.unicauca.edu.co:4414/api/',

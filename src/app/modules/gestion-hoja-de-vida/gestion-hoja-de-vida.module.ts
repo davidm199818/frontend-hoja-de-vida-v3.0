@@ -11,6 +11,7 @@ import { GestionHojaDeVidaRoutingModule } from './gestion-hoja-de-vida-routing.m
 import { BuscarEstudianteComponent } from './pages/buscar-estudiante/buscar-estudiante.component';
 import { InfoEstudianteComponent } from './pages/info-estudiante/info-estudiante.component';
 import { HojaDeVidaPdfComponent } from './pages/hoja-de-vida-pdf/hoja-de-vida-pdf.component';
+import { AccesoDemoComponent } from './pages/acceso-demo/acceso-demo.component';
 import { FormsModule } from '@angular/forms';
 
 
@@ -18,7 +19,8 @@ import { FormsModule } from '@angular/forms';
   declarations: [
     BuscarEstudianteComponent,
     InfoEstudianteComponent,
-    HojaDeVidaPdfComponent
+    HojaDeVidaPdfComponent,
+    AccesoDemoComponent
   ],
   imports: [
     CommonModule,

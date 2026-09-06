@@ -17,8 +17,9 @@ export class AuthInterceptor implements HttpInterceptor {
         next: HttpHandler
     ): Observable<HttpEvent<any>> {
         const token = this.authService.getToken();
+        const esEndpointAccesoDemo = request.url.includes('/api/demo/auth/');
 
-        if (token) {
+        if (token && !esEndpointAccesoDemo) {
             request = request.clone({
                 setHeaders: {
                     Authorization: `Bearer ${token}`,

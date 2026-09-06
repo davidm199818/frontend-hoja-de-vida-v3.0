@@ -4,6 +4,7 @@ import { MenuItem } from 'primeng/api';
 import { menuItems as originalMenuItems } from '../../constants/menu-items';
 import { MenuService } from '../../services/app.menu.service';
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
+import { gestion_hoja_vida } from 'src/environments/environment';
 
 interface Usuario {
     username: string;
@@ -82,6 +83,14 @@ export class AppTopBarComponent implements OnInit {
             // Actualizar el menú para mostrar el nombre del usuario y opción de cerrar sesión
             this.items = this.items.map((item) => {
                 if (item.label === 'LOGIN') {
+                    if (gestion_hoja_vida.demo_auth_enabled) {
+                        return {
+                            label: 'CERRAR SESIÓN',
+                            icon: 'pi pi-fw pi-sign-out',
+                            command: () => this.logout(),
+                        };
+                    }
+
                     return {
                         label: `${user.firstName
                             .split(' ')[0]
@@ -106,6 +115,15 @@ export class AppTopBarComponent implements OnInit {
     }
 
     filterMenuItems(user: Usuario | null) {
+        if (gestion_hoja_vida.demo_auth_enabled) {
+            this.items = this.items.filter(
+                (item) =>
+                    item.label === 'LOGIN' ||
+                    item.label === 'HOJA DE VIDA' ||
+                    item.label === 'CERRAR SESIÓN'
+            );
+        }
+
         this.items = this.items.filter((item) => {
             if (item.label === 'HOJA DE VIDA') {
                 if (!user) {
