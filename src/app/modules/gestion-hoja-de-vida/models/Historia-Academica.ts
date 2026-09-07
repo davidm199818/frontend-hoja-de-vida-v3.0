@@ -23,6 +23,7 @@ export interface EstudianteHistoriaAcademica {
   codigoEstudiante: string;
   nombreCompleto: string;
   correoUniversidad: string;
+  periodoIngreso?: string | null;
   promedioCarrera?: number | string | null;
   estadoMaestria?: EstadoMaestria | null;
   modalidadAcademica?: ModalidadAcademica | null;
