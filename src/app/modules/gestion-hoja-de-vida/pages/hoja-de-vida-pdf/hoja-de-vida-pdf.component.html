@@ -18,22 +18,37 @@
             {{ historia.estudiante.nombreCompleto }}
         </div>
 
-        <div class="student-info">
-            Maestría en Computación  -  Universidad del Cauca
-        </div>
-
-        <div class="student-info">
-            Código: {{ historia.estudiante.codigoEstudiante }}
-        </div>
-
-        <div class="contact-info">
-            {{ historia.estudiante.correoUniversidad }}
+        <div class="student-info-grid">
+            <div class="student-info-item">
+                <span class="student-info-label">Código</span>
+                <span class="student-info-value">{{ historia.estudiante.codigoEstudiante }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Estado</span>
+                <span class="student-info-value">{{ estadoMaestriaLabel }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Correo</span>
+                <span class="student-info-value">{{ historia.estudiante.correoUniversidad }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Modalidad</span>
+                <span class="student-info-value">{{ modalidadAcademicaLabel }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Periodo de ingreso</span>
+                <span class="student-info-value">{{ historia.estudiante.periodoIngreso || 'Sin registrar' }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Grupo de investigación</span>
+                <span class="student-info-value">{{ grupoInvestigacionLabel }}</span>
+            </div>
         </div>
 
     </div>
 
     <!-- FORMACIÓN -->
-    <div class="section-title">Formación Académica</div>
+    <div class="section-title">Historial Académico</div>
 
     <section class="table-card">
         <div class="table-card-head">
@@ -177,11 +192,11 @@
             src="assets/layout/images/firma.png"
             alt="Firma del coordinador">
         <div class="signature-line">
-            <strong>Hugo Armando Ordóñez Erazo</strong>
+            <strong class="coordinator-name">Hugo Armando Ordóñez Erazo, PhD.</strong>
             <span class="signature-role">Coordinador</span>
-            <span>Programa de Maestría en Computación</span>
-            <span>Facultad de Ingeniería Electrónica y Telecomunicaciones</span>
-            <span>Universidad del Cauca</span>
+            <span class="coordinator-program">Programa de Maestría en Computación</span>
+            <span class="coordinator-institution">Facultad de Ingeniería Electrónica y Telecomunicaciones</span>
+            <span class="coordinator-institution">Universidad del Cauca</span>
             <div class="generation-info" *ngIf="fechaHoraGeneracion">
                 Generado el {{ fechaHoraGeneracion }}
             </div>
@@ -194,6 +209,3 @@
     </div>
 
 </div>
-
-
-
