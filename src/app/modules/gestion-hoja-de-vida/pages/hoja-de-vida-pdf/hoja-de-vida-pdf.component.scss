@@ -318,6 +318,22 @@ body {
     word-break: break-word;
 }
 
+.activity-location {
+    margin: 8px 0 0;
+    color: #4f6488;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.activity-separator {
+    margin: 0 6px;
+    color: #8b9bb5;
+}
+
+.practice-activities .pub-title:last-child {
+    margin-bottom: 6px;
+}
+
 .empty-note {
     margin: 0;
     border: 1px dashed #cbd8ea;
