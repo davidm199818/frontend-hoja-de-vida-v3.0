@@ -19,6 +19,7 @@ export class BuscarEstudianteComponent implements OnInit {
     error = '';
     page = 0;
     size = 10;
+    readonly semestresDisponibles = [1, 2, 3, 4];
 
 
     constructor(
@@ -78,6 +79,12 @@ export class BuscarEstudianteComponent implements OnInit {
         }
 
         this.criterio = '';
+
+        if (this.cantidadFiltrosActivos === 0) {
+            this.cargarEstudiantes();
+            return;
+        }
+
         this.page = 0;
         this.cargando = true;
         this.error = '';
@@ -104,14 +111,58 @@ export class BuscarEstudianteComponent implements OnInit {
         this.cargarEstudiantes();
     }
 
+    exportarResultados(): void {
+        if (this.estudiantes.length === 0) {
+            return;
+        }
+
+        const encabezados = [
+            'Nombres',
+            'Apellidos',
+            'Código',
+            'Identificación',
+            'Periodo de ingreso',
+            'Semestre actual'
+        ];
+        const filas = this.estudiantes.map(estudiante => [
+            estudiante.nombre,
+            estudiante.apellido,
+            estudiante.codigo,
+            estudiante.identificacion,
+            estudiante.periodoIngreso,
+            estudiante.semestreActual
+        ]);
+        const contenido = [encabezados, ...filas]
+            .map(fila => fila.map(valor => this.formatearValorCsv(valor)).join(';'))
+            .join('\r\n');
+        const archivo = new Blob([`\uFEFF${contenido}`], {
+            type: 'text/csv;charset=utf-8;'
+        });
+        const url = URL.createObjectURL(archivo);
+        const enlace = document.createElement('a');
+
+        enlace.href = url;
+        enlace.download = `estudiantes-${new Date().toISOString().slice(0, 10)}.csv`;
+        enlace.style.display = 'none';
+        document.body.appendChild(enlace);
+        enlace.click();
+        enlace.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }
+
     get semestreInvalido(): boolean {
         return this.semestreActual !== null
-            && (!Number.isInteger(this.semestreActual) || this.semestreActual <= 0);
+            && (!Number.isInteger(this.semestreActual)
+                || !this.semestresDisponibles.includes(this.semestreActual));
+    }
+
+    get cantidadFiltrosActivos(): number {
+        return Number(this.suficienciaIdiomaAprobada !== null)
+            + Number(this.semestreActual !== null);
     }
 
     get puedeAplicarFiltros(): boolean {
-        const hayFiltro = this.suficienciaIdiomaAprobada !== null || this.semestreActual !== null;
-        return hayFiltro && !this.semestreInvalido && !this.cargando;
+        return !this.semestreInvalido && !this.cargando;
     }
 
     seleccionarEstudiante(codigo: string | undefined): void {
@@ -144,6 +195,12 @@ export class BuscarEstudianteComponent implements OnInit {
         if (this.page > 0) {
             this.page--;
         }
+    }
+
+    private formatearValorCsv(valor: string | number | null | undefined): string {
+        const texto = String(valor ?? '');
+        const textoSeguro = /^[=+\-@]/.test(texto) ? `'${texto}` : texto;
+        return `"${textoSeguro.replace(/"/g, '""')}"`;
     }
 
 }

@@ -17,7 +17,40 @@ body {
     max-width: 1180px;
     margin: 24px auto 0;
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.back-button {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    color: #0f2f72;
+    font-weight: 600;
+}
+
+.download-button {
+    border: 1px solid #0b4cc0;
+    border-radius: 10px;
+    padding: 9px 18px;
+    background: linear-gradient(135deg, #0f2f72, #0b4cc0);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 7px 16px rgba(11, 76, 192, 0.24);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.download-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0b4cc0, #2f6edf);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 9px 20px rgba(11, 76, 192, 0.3);
+}
+
+.download-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
 }
 
 /* HEADER */
@@ -493,6 +526,10 @@ body {
 }
 
 @media (max-width: 700px) {
+    .pdf-actions {
+        margin-inline: 14px;
+    }
+
     .student-info-grid {
         grid-template-columns: 1fr;
     }

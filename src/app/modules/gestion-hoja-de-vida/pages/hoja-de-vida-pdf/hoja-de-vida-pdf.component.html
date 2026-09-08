@@ -1,7 +1,11 @@
 <div class="pdf-actions no-print" *ngIf="historia">
-    <button class="btn btn-primary" (click)="descargarPdf()" [disabled]="generandoPdf">
+    <button type="button" class="btn btn-light shadow-sm back-button" (click)="volver()">
+        <i class="fa fa-arrow-left me-2"></i>
+        Atrás
+    </button>
+    <button type="button" class="btn download-button" (click)="descargarPdf()" [disabled]="generandoPdf">
         <i class="fa fa-download me-1"></i>
-        {{ generandoPdf ? 'Generando...' : 'Descargar' }}
+        {{ generandoPdf ? 'Generando...' : 'Descargar PDF' }}
     </button>
 </div>
 
