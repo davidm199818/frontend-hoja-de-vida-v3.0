@@ -154,13 +154,74 @@
                 </ng-template>
 
                 <div class="extra-checks">
-                    <p *ngIf="estudiante?.pasantia">
-                        <strong>Pasantía:</strong> Pasantía de investigación y docencia.
-                    </p>
                     <p *ngIf="estudiante?.idiomaExtranjeroAprobado">
                         <strong>Idioma:</strong> Prueba de suficiencia en idioma extranjero aprobada.
                     </p>
                 </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="row two-columns activity-cards pdf-avoid-break">
+        <div class="col-md-6">
+            <section class="detail-card">
+                <div class="section-title compact-title">Pasantías de Investigación</div>
+
+                <ul class="publication-list" *ngIf="pasantiasInvestigacion.length > 0; else sinPasantias">
+                    <li *ngFor="let pasantia of pasantiasInvestigacion">
+                        <span class="pub-title">{{ pasantia.informePasantia || 'Informe sin registrar' }}</span>
+                        <div class="pub-meta">
+                            <span class="pub-tag">Acta: {{ pasantia.acta || 'NR' }}</span>
+                            <span class="pub-tag">Fecha: {{ pasantia.fechaActa || 'NR' }}</span>
+                            <span class="pub-tag">Créditos: {{ pasantia.creditosAsignados ?? 'NR' }}</span>
+                        </div>
+                        <p class="activity-location">
+                            <strong>Ubicación:</strong> {{ pasantia.lugarPasantia || 'Sin registrar' }}
+                        </p>
+                    </li>
+                </ul>
+
+                <ng-template #sinPasantias>
+                    <p class="empty-note">No hay pasantías de investigación registradas.</p>
+                </ng-template>
+            </section>
+        </div>
+
+        <div class="col-md-6">
+            <section class="detail-card">
+                <div class="section-title compact-title">Práctica Docente</div>
+
+                <ul class="publication-list" *ngIf="practicasDocentes.length > 0; else sinPracticasDocentes">
+                    <li *ngFor="let practica of practicasDocentes">
+                        <div class="practice-activities" *ngIf="practica.actividades?.length; else actividadNoRegistrada">
+                            <span class="pub-title" *ngFor="let actividad of practica.actividades">
+                                {{ actividad.nombreActividad || 'Actividad sin registrar' }}
+                            </span>
+                        </div>
+                        <ng-template #actividadNoRegistrada>
+                            <span class="pub-title">Actividad sin registrar</span>
+                        </ng-template>
+
+                        <div class="pub-meta">
+                            <ng-container *ngIf="practica.actividades?.length">
+                                <span class="pub-tag" *ngFor="let actividad of practica.actividades">
+                                    {{ actividad.tipoActividad || 'Sin tipo' }}
+                                </span>
+                            </ng-container>
+                            <span class="pub-tag">Horas: {{ practica.horas ?? 'NR' }}</span>
+                            <span class="pub-tag">Créditos: {{ practica.creditosAsignados ?? 'NR' }}</span>
+                        </div>
+                        <p class="activity-location">
+                            <strong>Acta:</strong> {{ practica.acta || 'NR' }}
+                            <span class="activity-separator">·</span>
+                            <strong>Fecha:</strong> {{ practica.fechaActa || 'NR' }}
+                        </p>
+                    </li>
+                </ul>
+
+                <ng-template #sinPracticasDocentes>
+                    <p class="empty-note">No hay registros de práctica docente.</p>
+                </ng-template>
             </section>
         </div>
     </div>

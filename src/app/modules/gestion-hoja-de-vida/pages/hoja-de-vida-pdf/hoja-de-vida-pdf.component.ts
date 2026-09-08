@@ -4,6 +4,8 @@ import { InformacionService } from '../../services/informacion.service';
 import { HistoriaAcademica } from '../../models/Historia-Academica';
 import { Asignatura } from '../../models/Asignatura';
 import { Publicacion } from '../../models/Publicacion';
+import { PasantiaInvestigacion } from '../../models/PasantiaInvestigacion';
+import { PracticaDocente } from '../../models/PracticaDocente';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -90,6 +92,14 @@ export class HojaDeVidaPdfComponent implements OnInit {
   }
   get publicacionesInvestigacion(): Publicacion[] {
     return this.historia?.historiaAcademica?.investigacion?.publicaciones ?? [];
+  }
+
+  get pasantiasInvestigacion(): PasantiaInvestigacion[] {
+    return this.historia?.historiaAcademica?.investigacion?.pasantias ?? [];
+  }
+
+  get practicasDocentes(): PracticaDocente[] {
+    return this.historia?.historiaAcademica?.complementacion?.practicasDocentes ?? [];
   }
 
   get estadoMaestriaLabel(): string {

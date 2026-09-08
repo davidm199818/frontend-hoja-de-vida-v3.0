@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Asignatura } from '../../models/Asignatura';
-import { HistoriaAcademica, HistoriaAcademicaData } from '../../models/Historia-Academica';
+import { HistoriaAcademica } from '../../models/Historia-Academica';
 import {
   InformacionService,
   TipoDistincionAcademica
@@ -29,8 +29,6 @@ interface AcademicPeriodGroup {
   styleUrls: ['./info-estudiante.component.scss']
 })
 export class InfoEstudianteComponent implements OnInit, OnDestroy {
-  private readonly usarDatosTemporalesVisualizacion = true;
-
   codigoEstudiante = '';
   historia!: HistoriaAcademica;
 
@@ -147,13 +145,6 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
       this.historia = data;
       const historiaAcademica = data.historiaAcademica;
 
-      if (
-        this.usarDatosTemporalesVisualizacion
-        && data.estudiante.codigoEstudiante === 'IS20260157'
-      ) {
-        this.aplicarDatosTemporalesVisualizacion(historiaAcademica);
-      }
-
       this.fundamentacionData = this.mapAsignaturas(historiaAcademica.fundamentacion.asignaturas);
       this.electivasData = this.mapAsignaturas(historiaAcademica.electivas.asignaturas);
       this.asignaturasVistasData = this.mapAsignaturas(historiaAcademica.investigacion.asignaturas);
@@ -162,66 +153,6 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
       this.historiaConsolidadaData = this.construirHistoriaConsolidada();
       this.historiaConsolidadaPorPeriodo = this.agruparHistoriaPorPeriodo();
     });
-  }
-
-  private aplicarDatosTemporalesVisualizacion(historiaAcademica: HistoriaAcademicaData): void {
-    historiaAcademica.investigacion.publicaciones = [
-      {
-        codigoPublicacion: '10.0000/demo-hv-001',
-        creditosAsignados: 3,
-        acta: 'ACTA-DEMO-001',
-        nombrePublicacion: 'Aplicación de inteligencia artificial en procesos educativos',
-        tipoPublicacion: 'Artículo de investigación',
-        nombreRevista: 'Revista Colombiana de Computación',
-        categoriaIndexada: 'A1',
-        urlPublicacion: 'https://doi.org/10.0000/demo-hv-001',
-        fechaAceptacion: '2025-03-15'
-      },
-      {
-        codigoPublicacion: '10.0000/demo-hv-002',
-        creditosAsignados: 2,
-        acta: 'ACTA-DEMO-002',
-        nombrePublicacion: 'Arquitecturas de software para sistemas académicos distribuidos',
-        tipoPublicacion: 'Artículo de reflexión',
-        nombreRevista: 'Ingeniería e Innovación',
-        categoriaIndexada: 'B',
-        urlPublicacion: 'https://doi.org/10.0000/demo-hv-002',
-        fechaAceptacion: '2025-08-20'
-      }
-    ];
-
-    historiaAcademica.complementacion.practicasDocentes = [
-      {
-        creditosAsignados: 1,
-        acta: 'ACTA-PD-DEMO-001',
-        fechaActa: '2025-05-30',
-        horas: 48,
-        actividades: [{
-          tipoActividad: 'Docencia',
-          nombreActividad: 'Docencia en pregrado'
-        }]
-      },
-      {
-        creditosAsignados: 1,
-        acta: 'ACTA-PD-DEMO-002',
-        fechaActa: '2025-11-28',
-        horas: 24,
-        actividades: [{
-          tipoActividad: 'Apoyo docente',
-          nombreActividad: 'Elaboración de material de apoyo'
-        }]
-      },
-      {
-        creditosAsignados: 1,
-        acta: 'ACTA-PD-DEMO-003',
-        fechaActa: '2026-04-24',
-        horas: 24,
-        actividades: [{
-          tipoActividad: 'Evaluación académica',
-          nombreActividad: 'Evaluación de anteproyecto de pregrado'
-        }]
-      }
-    ];
   }
 
   toggleSubmenu(menu: 'investigacion' | 'complementacion'): void {
