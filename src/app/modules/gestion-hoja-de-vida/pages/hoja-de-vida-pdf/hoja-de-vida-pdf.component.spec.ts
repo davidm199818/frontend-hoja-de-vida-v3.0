@@ -1,5 +1,5 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 import { InformacionService } from '../../services/informacion.service';
 import { HistoriaAcademica } from '../../models/Historia-Academica';
@@ -7,6 +7,7 @@ import { HojaDeVidaPdfComponent } from './hoja-de-vida-pdf.component';
 
 describe('HojaDeVidaPdfComponent', () => {
   let component: HojaDeVidaPdfComponent;
+  let router: jasmine.SpyObj<Router>;
 
   beforeEach(() => {
     const route = {
@@ -18,6 +19,7 @@ describe('HojaDeVidaPdfComponent', () => {
       'InformacionService',
       ['getHistoriaAcademica']
     );
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
     const changeDetector = jasmine.createSpyObj<ChangeDetectorRef>(
       'ChangeDetectorRef',
       ['detectChanges']
@@ -25,6 +27,7 @@ describe('HojaDeVidaPdfComponent', () => {
 
     component = new HojaDeVidaPdfComponent(
       route,
+      router,
       informacionService,
       changeDetector
     );
@@ -32,6 +35,17 @@ describe('HojaDeVidaPdfComponent', () => {
 
   it('debe crearse', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('debe volver a la información del estudiante consultado', () => {
+    component.codigoEstudiante = '2024001';
+
+    component.volver();
+
+    expect(router.navigate).toHaveBeenCalledWith([
+      '/gestion-hoja-de-vida/info-estudiante',
+      '2024001'
+    ]);
   });
 
   it('debe mostrar la información académica del estudiante activo', () => {

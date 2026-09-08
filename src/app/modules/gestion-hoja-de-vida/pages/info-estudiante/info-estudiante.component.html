@@ -102,8 +102,30 @@
       </div>
     </section>
 
-    <section class="menu-and-table-section">
-      <aside class="sidebar">
+    <section class="history-view-toolbar" aria-label="Modo de visualización de la historia académica">
+      <div class="history-view-control">
+        <div class="history-view-heading">
+          <i class="pi pi-eye" aria-hidden="true"></i>
+          <h2>Visualización</h2>
+        </div>
+
+        <div class="history-view-switch" role="group" aria-label="Cambiar vista de la historia académica">
+          <button type="button" [class.active]="historyViewMode === 'areas'"
+            [attr.aria-pressed]="historyViewMode === 'areas'" (click)="selectHistoryView('areas')">
+            <i class="pi pi-sitemap" aria-hidden="true"></i>
+            Por áreas
+          </button>
+          <button type="button" [class.active]="historyViewMode === 'consolidated'"
+            [attr.aria-pressed]="historyViewMode === 'consolidated'" (click)="selectHistoryView('consolidated')">
+            <i class="pi pi-calendar" aria-hidden="true"></i>
+            Consolidada
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="menu-and-table-section" [class.consolidated-view]="historyViewMode === 'consolidated'">
+      <aside class="sidebar" *ngIf="historyViewMode === 'areas'">
         <div class="sidebar-title">Navegación académica</div>
 
         <div class="menu-item" [ngClass]="{ active: activeMenuItem === 'fundamentacion' }"
@@ -184,7 +206,76 @@
       </aside>
 
       <div class="content-area">
-        <div class="table-container" *ngIf="activeMenuItem === 'fundamentacion'">
+        <div class="consolidated-history" *ngIf="historyViewMode === 'consolidated'">
+          <article class="consolidated-summary card">
+            <div class="consolidated-summary-icon" aria-hidden="true">
+              <i class="pi pi-book"></i>
+            </div>
+            <div>
+              <span>Trayectoria completa</span>
+              <h2>Historia académica consolidada</h2>
+              <p>Las asignaturas están organizadas según el periodo en que fueron cursadas.</p>
+            </div>
+            <div class="consolidated-totals">
+              <div>
+                <strong>{{ historiaConsolidadaPorPeriodo.length }}</strong>
+                <span>Periodos</span>
+              </div>
+              <div>
+                <strong>{{ historiaConsolidadaData.length }}</strong>
+                <span>Asignaturas</span>
+              </div>
+            </div>
+          </article>
+
+          <ng-container *ngTemplateOutlet="informacionAdicionalTemplate"></ng-container>
+
+          <div class="period-timeline" *ngIf="historiaConsolidadaPorPeriodo.length > 0; else emptyHistoriaConsolidada">
+            <article class="period-card card" *ngFor="let grupo of historiaConsolidadaPorPeriodo">
+              <header class="period-card-header">
+                <div class="period-connector" aria-hidden="true"></div>
+                <div class="period-marker" aria-hidden="true"></div>
+                <div>
+                  <span>Periodo académico</span>
+                  <h3>{{ grupo.periodo }}</h3>
+                </div>
+                <div class="period-stats">
+                  <span>{{ grupo.asignaturas.length }} asignaturas</span>
+                  <span>{{ grupo.totalCreditos }} créditos</span>
+                </div>
+              </header>
+
+              <div class="period-course-list">
+                <div class="period-course-head" aria-hidden="true">
+                  <span>Código</span>
+                  <span>Asignatura</span>
+                  <span>Créditos</span>
+                  <span>Nota</span>
+                </div>
+                <div class="period-course" *ngFor="let asignatura of grupo.asignaturas">
+                  <span class="course-code">{{ asignatura.codigo }}</span>
+                  <strong class="course-name">{{ asignatura.nombre }}</strong>
+                  <div class="course-value">
+                    <span>Créditos</span>
+                    <strong>{{ asignatura.creditos }}</strong>
+                  </div>
+                  <div class="course-value course-grade">
+                    <span>Nota</span>
+                    <strong>{{ asignatura.nota }}</strong>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+
+            <ng-template #emptyHistoriaConsolidada>
+              <div class="empty-state">
+                No hay asignaturas registradas en la historia académica.
+              </div>
+            </ng-template>
+        </div>
+
+        <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'fundamentacion'">
           <article class="data-panel card">
             <header class="panel-topbar">
               <h2>Área de Fundamentación</h2>
@@ -227,7 +318,7 @@
           </article>
         </div>
 
-        <div class="table-container" *ngIf="activeMenuItem === 'electivas'">
+        <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'electivas'">
           <article class="data-panel card">
             <header class="panel-topbar">
               <h2>Área de Electivas</h2>
@@ -268,7 +359,7 @@
           </article>
         </div>
 
-        <div class="table-container" *ngIf="activeMenuItem === 'asignaturasVistas'">
+        <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'asignaturasVistas'">
           <article class="data-panel card">
             <header class="panel-topbar">
               <h2>Asignaturas de Investigación</h2>
@@ -314,7 +405,7 @@
           </article>
         </div>
 
-        <div class="table-container" *ngIf="activeMenuItem === 'pasantias'">
+        <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'pasantias'">
           <article class="data-panel card">
             <header class="panel-topbar">
               <h2>Pasantías de Investigación</h2>
@@ -368,7 +459,7 @@
           </article>
         </div>
 
-        <div class="table-container" *ngIf="activeMenuItem === 'publicaciones'">
+        <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'publicaciones'">
           <article class="data-panel card">
             <header class="panel-topbar">
               <h2>Publicaciones</h2>
@@ -387,7 +478,7 @@
                 <table class="data-table publications-table">
                   <thead>
                     <tr>
-                      <th>Código</th>
+                      <th>DOI</th>
                       <th>Créditos Asignados</th>
                       <th>Acta</th>
                       <th>Nombre Publicación</th>
@@ -457,7 +548,7 @@
           </article>
         </div>
 
-        <div class="table-container" *ngIf="activeMenuItem === 'practicaDocente'">
+        <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'practicaDocente'">
           <article class="data-panel card">
             <header class="panel-topbar">
               <h2>Práctica Docente</h2>
@@ -467,6 +558,35 @@
                 }}
                 registros</span>
             </header>
+            <section class="teaching-progress" aria-label="Progreso de práctica docente">
+              <div class="teaching-progress-icon" aria-hidden="true">
+                <i class="pi pi-clock"></i>
+              </div>
+              <div class="teaching-progress-content">
+                <div class="teaching-progress-heading">
+                  <div>
+                    <span>Progreso de práctica docente</span>
+                    <strong>
+                      {{ horasPracticaDocenteCumplidas }} de {{ horasPracticaDocenteRequeridas }} horas
+                    </strong>
+                  </div>
+                  <span class="teaching-status" [class.completed]="cumplePracticaDocente">
+                    {{ cumplePracticaDocente ? 'Requisito cumplido' : 'En progreso' }}
+                  </span>
+                </div>
+                <div class="teaching-progress-track" role="progressbar"
+                  [attr.aria-valuenow]="progresoPracticaDocente" aria-valuemin="0" aria-valuemax="100">
+                  <div class="teaching-progress-fill" [style.width.%]="progresoPracticaDocente"></div>
+                </div>
+                <div class="teaching-progress-detail">
+                  <span>{{ progresoPracticaDocente }}% completado</span>
+                  <span *ngIf="!cumplePracticaDocente">
+                    Faltan {{ horasPracticaDocentePendientes }} horas
+                  </span>
+                  <span *ngIf="cumplePracticaDocente">Total requerido completado</span>
+                </div>
+              </div>
+            </section>
             <div class="table-shell" *ngIf="
                                 historia.historiaAcademica.complementacion
                                     .practicasDocentes.length > 0;
@@ -526,7 +646,7 @@
           </article>
         </div>
 
-        <div class="table-container" *ngIf="activeMenuItem === 'competenciasEmpresariales'">
+        <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'competenciasEmpresariales'">
           <article class="data-panel card">
             <header class="panel-topbar">
               <h2>Competencias Empresariales</h2>
@@ -572,48 +692,103 @@
           </article>
         </div>
 
-        <div class="dashboard" *ngIf="activeMenuItem === 'informacionAcademica'">
-          <header class="dashboard-header">
-            <div>
-              <h1>Información Adicional</h1>
-              <p>Seguimiento oficial de requisitos de grado.</p>
+        <ng-container *ngIf="historyViewMode === 'areas' && activeMenuItem === 'informacionAcademica'">
+          <ng-container *ngTemplateOutlet="informacionAdicionalTemplate"></ng-container>
+        </ng-container>
+
+        <ng-template #informacionAdicionalTemplate>
+        <div class="dashboard">
+          <header class="dashboard-header" *ngIf="historyViewMode === 'areas'">
+            <div class="dashboard-title-block">
+              <div class="dashboard-title-icon" aria-hidden="true">
+                <i class="pi pi-info-circle"></i>
+              </div>
+              <div>
+                <h1>Información Adicional</h1>
+                <p>Resumen del avance en el cumplimiento de los requisitos del programa.</p>
+              </div>
             </div>
 
             <div class="completion-status" [ngClass]="{ incomplete: !cumpleRequisitosAcademicos }">
               <span class="dot"></span>
-              {{ cumpleRequisitosAcademicos ? 'Requisitos completos' : 'No cumple los requisitos' }}
+              {{ cumpleRequisitosAcademicos
+                ? 'Requisitos completos'
+                : cantidadRequisitosCumplidos + ' de ' + totalRequisitosAcademicos + ' requisitos cumplidos' }}
             </div>
           </header>
 
-          <section class="summary">
-            <div class="summary-left">
-              <h2>{{ creditosCumplidos }}</h2>
-              <span>Créditos aprobados</span>
-            </div>
-
-            <div class="summary-right">
-              <div class="progress-labels">
-                <span>Progreso total</span>
-                <strong>{{ progresoCreditos }}%</strong>
+          <section class="academic-progress-grid">
+            <article class="teaching-progress academic-progress credit-progress">
+              <div class="teaching-progress-icon" aria-hidden="true">
+                <i class="pi pi-book"></i>
               </div>
-
-              <div class="progress-line">
-                <div class="progress-fill" [style.width.%]="progresoCreditos"></div>
+              <div class="teaching-progress-content">
+                <div class="teaching-progress-heading">
+                  <div>
+                    <span>Créditos académicos</span>
+                    <strong>{{ creditosCumplidos }} de {{ creditosRequeridos }} créditos</strong>
+                  </div>
+                  <span class="teaching-status" [class.completed]="cumpleCreditosAcademicos">
+                    {{ cumpleCreditosAcademicos ? 'Requisito cumplido' : 'En progreso' }}
+                  </span>
+                </div>
+                <div class="teaching-progress-track" role="progressbar"
+                  [attr.aria-valuenow]="progresoCreditos" aria-valuemin="0" aria-valuemax="100">
+                  <div class="teaching-progress-fill" [style.width.%]="progresoCreditos"></div>
+                </div>
+                <div class="teaching-progress-detail">
+                  <span>{{ progresoCreditos }}% completado</span>
+                  <span *ngIf="!cumpleCreditosAcademicos">Faltan {{ creditosPendientes }} créditos</span>
+                  <span *ngIf="cumpleCreditosAcademicos">Total requerido completado</span>
+                </div>
               </div>
+            </article>
 
-              <small>{{ creditosRequeridos }} créditos
-                requeridos</small>
-            </div>
+            <article class="teaching-progress academic-progress">
+              <div class="teaching-progress-icon" aria-hidden="true">
+                <i class="pi pi-clock"></i>
+              </div>
+              <div class="teaching-progress-content">
+                <div class="teaching-progress-heading">
+                  <div>
+                    <span>Práctica docente</span>
+                    <strong>
+                      {{ horasPracticaDocenteCumplidas }} de {{ horasPracticaDocenteRequeridas }} horas
+                    </strong>
+                  </div>
+                  <span class="teaching-status" [class.completed]="cumplePracticaDocente">
+                    {{ cumplePracticaDocente ? 'Requisito cumplido' : 'En progreso' }}
+                  </span>
+                </div>
+                <div class="teaching-progress-track" role="progressbar"
+                  [attr.aria-valuenow]="progresoPracticaDocente" aria-valuemin="0" aria-valuemax="100">
+                  <div class="teaching-progress-fill" [style.width.%]="progresoPracticaDocente"></div>
+                </div>
+                <div class="teaching-progress-detail">
+                  <span>{{ progresoPracticaDocente }}% completado</span>
+                  <span *ngIf="!cumplePracticaDocente">Faltan {{ horasPracticaDocentePendientes }} horas</span>
+                  <span *ngIf="cumplePracticaDocente">Total requerido completado</span>
+                </div>
+              </div>
+            </article>
           </section>
 
           <section class="requirements">
             <div class="requirement publication">
-              <h3>Publicación Académica</h3>
+              <div class="requirement-card-header">
+                <div class="requirement-card-title">
+                  <span class="requirement-card-icon"><i class="pi pi-file"></i></span>
+                  <h3>Publicación académica</h3>
+                </div>
+                <span class="requirement-state" [class.completed]="tienePublicacionesRegistradas">
+                  {{ tienePublicacionesRegistradas ? 'Cumplido' : 'Pendiente' }}
+                </span>
+              </div>
 
-              <p>
-                Mínimo un artículo en revista categoría A, B o
-                C.
-              </p>
+              <div class="requirement-rule">
+                <i class="pi pi-info-circle" aria-hidden="true"></i>
+                <span>Un artículo en revista categoría A, B o C</span>
+              </div>
 
               <ng-container *ngIf="publicacionesInvestigacion.length > 0; else sinPublicaciones">
                 <div class="publication-item" *ngFor="let publicacion of publicacionesInvestigacion">
@@ -639,19 +814,21 @@
                 <div class="status failure">Sin publicaciones registradas.</div>
               </ng-template>
 
-              <div class="publication-requirement-status">
-                <span>Cumplimiento</span>
-                <strong [ngClass]="tienePublicacionesRegistradas ? 'success' : 'pending'">
-                  {{ tienePublicacionesRegistradas ? 'Requisito cumplido' : 'Requisito pendiente' }}
-                </strong>
-              </div>
             </div>
             <div class="requirement language">
-              <div class="language-head">
-                <h3>Prueba de Suficiencia Idioma Extranjero</h3>
-                <span class="language-pill">Segunda lengua</span>
+              <div class="requirement-card-header">
+                <div class="requirement-card-title">
+                  <span class="requirement-card-icon"><i class="pi pi-globe"></i></span>
+                  <h3>Suficiencia en idioma extranjero</h3>
+                </div>
+                <span class="requirement-state" [class.completed]="cumplePruebaIdiomaExtranjero">
+                  {{ cumplePruebaIdiomaExtranjero ? 'Cumplido' : 'Pendiente' }}
+                </span>
               </div>
-              <p>Validación del requisito institucional de segunda lengua.</p>
+              <div class="requirement-rule">
+                <i class="pi pi-info-circle" aria-hidden="true"></i>
+                <span>Aprobación de la Prueba de Suficiencia en Idioma Extranjero</span>
+              </div>
 
               <div class="language-detail-grid">
                 <div class="language-detail-item">
@@ -660,17 +837,6 @@
                     <span class="language-dot"></span>
                     {{ estadoPruebaIdiomaExtranjero }}
                   </div>
-                </div>
-                <div class="language-detail-item">
-                  <span class="detail-label">Cumplimiento</span>
-                  <strong
-                    [class.success-text]="cumplePruebaIdiomaExtranjero"
-                    [class.pending-text]="!cumplePruebaIdiomaExtranjero">
-                    {{ cumplePruebaIdiomaExtranjero ? 'Requisito cumplido' : 'Requisito pendiente' }}
-                  </strong>
-                  <small class="language-note" *ngIf="!cumplePruebaIdiomaExtranjero">
-                    Debe aprobar la prueba para completar este requisito.
-                  </small>
                 </div>
               </div>
             </div>
@@ -724,10 +890,10 @@
                     </span>
                     <small>
                       {{ tieneReconocimientoPromedio
-                      ? 'Distinción registrada para este estudiante.'
-                      : (esElegibleExcelenciaAcademica
-                        ? 'El estudiante cumple el promedio mínimo de 4.8; falta registrar la resolución.'
-                        : 'Requiere un promedio igual o superior a 4.8.') }}
+                        ? 'Distinción registrada para este estudiante.'
+                        : (esElegibleExcelenciaAcademica
+                          ? 'El estudiante cumple el promedio mínimo de 4.8; falta registrar la resolución.'
+                          : 'Requiere un promedio igual o superior a 4.8.') }}
                     </small>
                     <button
                       *ngIf="tieneReconocimientoPromedio"
@@ -800,6 +966,10 @@
                     </div>
                   </div>
                 </div>
+              </div>
+
+              <div class="recognition-scroll-hint" aria-hidden="true">
+                <i class="pi pi-arrow-right"></i>
               </div>
 
               <div class="recognition-feedback success" *ngIf="mensajeDistincion">
@@ -930,6 +1100,7 @@
             </article>
           </section>
         </div>
+        </ng-template>
       </div>
     </section>
   </div>

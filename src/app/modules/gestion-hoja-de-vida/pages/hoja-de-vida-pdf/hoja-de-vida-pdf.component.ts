@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { InformacionService } from '../../services/informacion.service';
 import { HistoriaAcademica } from '../../models/Historia-Academica';
 import { Asignatura } from '../../models/Asignatura';
@@ -40,6 +40,7 @@ export class HojaDeVidaPdfComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private infoService: InformacionService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -156,8 +157,11 @@ export class HojaDeVidaPdfComponent implements OnInit {
     return distinciones.includes(tipo);
   }
 
-  previsualizarPdf(): void {
-    window.print();
+  volver(): void {
+    this.router.navigate([
+      '/gestion-hoja-de-vida/info-estudiante',
+      this.codigoEstudiante
+    ]);
   }
 
   async descargarPdf(): Promise<void> {

@@ -1,5 +1,5 @@
 export interface Publicacion {
-  codigoPublicacion: number;
+  codigoPublicacion: number | string;
   creditosAsignados: number;
   acta: string;
   nombrePublicacion: string;
