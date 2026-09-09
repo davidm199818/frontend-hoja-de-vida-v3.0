@@ -49,15 +49,6 @@
                     </div>
                 </div>
 
-                <button
-                    type="button"
-                    class="filters-clear"
-                    (click)="limpiarFiltros()"
-                    [disabled]="cargando || cantidadFiltrosActivos === 0"
-                >
-                    <i class="fa fa-undo me-1"></i>
-                    Limpiar filtros
-                </button>
             </div>
 
             <div class="filters-grid">
@@ -71,17 +62,17 @@
                     <div class="filter-options" role="group" aria-label="Filtrar por suficiencia en idioma extranjero">
                         <button type="button" [class.active]="suficienciaIdiomaAprobada === null"
                             [attr.aria-pressed]="suficienciaIdiomaAprobada === null"
-                            (click)="suficienciaIdiomaAprobada = null">
+                            (click)="seleccionarSuficiencia(null)">
                             Todos
                         </button>
                         <button type="button" [class.active]="suficienciaIdiomaAprobada === true"
                             [attr.aria-pressed]="suficienciaIdiomaAprobada === true"
-                            (click)="suficienciaIdiomaAprobada = true">
+                            (click)="seleccionarSuficiencia(true)">
                             Aprobada
                         </button>
                         <button type="button" [class.active]="suficienciaIdiomaAprobada === false"
                             [attr.aria-pressed]="suficienciaIdiomaAprobada === false"
-                            (click)="suficienciaIdiomaAprobada = false">
+                            (click)="seleccionarSuficiencia(false)">
                             Pendiente
                         </button>
                     </div>
@@ -96,12 +87,12 @@
                     </div>
                     <div class="filter-options semester-options" role="group" aria-label="Filtrar por semestre actual">
                         <button type="button" [class.active]="semestreActual === null"
-                            [attr.aria-pressed]="semestreActual === null" (click)="semestreActual = null">
+                            [attr.aria-pressed]="semestreActual === null" (click)="seleccionarSemestre(null)">
                             Todos
                         </button>
                         <button type="button" *ngFor="let semestre of semestresDisponibles"
                             [class.active]="semestreActual === semestre"
-                            [attr.aria-pressed]="semestreActual === semestre" (click)="semestreActual = semestre">
+                            [attr.aria-pressed]="semestreActual === semestre" (click)="seleccionarSemestre(semestre)">
                             {{ semestre }}
                         </button>
                     </div>
@@ -122,15 +113,6 @@
                     >
                         <i class="fa fa-download me-1"></i>
                         Exportar resultados
-                    </button>
-                    <button
-                        type="button"
-                        class="btn btn-primary"
-                        (click)="aplicarFiltros()"
-                        [disabled]="!puedeAplicarFiltros"
-                    >
-                        <i class="fa fa-filter me-1"></i>
-                        Aplicar filtros
                     </button>
                 </div>
             </div>

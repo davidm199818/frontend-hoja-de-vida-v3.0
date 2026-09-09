@@ -20,6 +20,7 @@ export class BuscarEstudianteComponent implements OnInit {
     page = 0;
     size = 10;
     readonly semestresDisponibles = [1, 2, 3, 4];
+    private solicitudListadoActual = 0;
 
 
     constructor(
@@ -43,13 +44,20 @@ export class BuscarEstudianteComponent implements OnInit {
         this.cargando = true;
         this.error = '';
         this.estudiantes = [];
+        const solicitudId = ++this.solicitudListadoActual;
 
         this.hojaDeVidaService.buscar(criterio).subscribe({
             next: (data) => {
+                if (solicitudId !== this.solicitudListadoActual) {
+                    return;
+                }
                 this.estudiantes = data;
                 this.cargando = false;
             },
             error: () => {
+                if (solicitudId !== this.solicitudListadoActual) {
+                    return;
+                }
                 this.error = 'Error al buscar estudiantes';
                 this.cargando = false;
             }
@@ -60,21 +68,38 @@ export class BuscarEstudianteComponent implements OnInit {
         this.page = 0;
         this.cargando = true;
         this.error = '';
+        const solicitudId = ++this.solicitudListadoActual;
 
         this.hojaDeVidaService.listarEstudiantes().subscribe({
             next: (data) => {
+                if (solicitudId !== this.solicitudListadoActual) {
+                    return;
+                }
                 this.estudiantes = data;
                 this.cargando = false;
             },
             error: () => {
+                if (solicitudId !== this.solicitudListadoActual) {
+                    return;
+                }
                 this.error = 'Error al cargar los estudiantes';
                 this.cargando = false;
             }
         });
     }
 
+    seleccionarSuficiencia(valor: boolean | null): void {
+        this.suficienciaIdiomaAprobada = valor;
+        this.aplicarFiltros();
+    }
+
+    seleccionarSemestre(valor: number | null): void {
+        this.semestreActual = valor;
+        this.aplicarFiltros();
+    }
+
     aplicarFiltros(): void {
-        if (!this.puedeAplicarFiltros) {
+        if (this.semestreInvalido) {
             return;
         }
 
@@ -89,15 +114,22 @@ export class BuscarEstudianteComponent implements OnInit {
         this.cargando = true;
         this.error = '';
         this.estudiantes = [];
+        const solicitudId = ++this.solicitudListadoActual;
 
         this.hojaDeVidaService
             .filtrar(this.suficienciaIdiomaAprobada, this.semestreActual)
             .subscribe({
                 next: (data) => {
+                    if (solicitudId !== this.solicitudListadoActual) {
+                        return;
+                    }
                     this.estudiantes = data;
                     this.cargando = false;
                 },
                 error: () => {
+                    if (solicitudId !== this.solicitudListadoActual) {
+                        return;
+                    }
                     this.error = 'Error al filtrar los estudiantes';
                     this.cargando = false;
                 }
@@ -159,10 +191,6 @@ export class BuscarEstudianteComponent implements OnInit {
     get cantidadFiltrosActivos(): number {
         return Number(this.suficienciaIdiomaAprobada !== null)
             + Number(this.semestreActual !== null);
-    }
-
-    get puedeAplicarFiltros(): boolean {
-        return !this.semestreInvalido && !this.cargando;
     }
 
     seleccionarEstudiante(codigo: string | undefined): void {
