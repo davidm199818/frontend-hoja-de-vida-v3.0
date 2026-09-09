@@ -7,11 +7,27 @@ export interface AreaAcademica {
   asignaturas: Asignatura[];
 }
 
+export type ModalidadAcademica = 'INVESTIGACION' | 'PROFUNDIZACION';
+export type EstadoMaestria =
+  | 'ACTIVO'
+  | 'MAESTRIA_FINALIZADA'
+  | 'RETIRADO'
+  | 'EN_SUSPENCION';
+
+export interface GrupoInvestigacion {
+  sigla: string;
+  nombre: string;
+}
+
 export interface EstudianteHistoriaAcademica {
   codigoEstudiante: string;
   nombreCompleto: string;
   correoUniversidad: string;
+  periodoIngreso?: string | null;
   promedioCarrera?: number | string | null;
+  estadoMaestria?: EstadoMaestria | null;
+  modalidadAcademica?: ModalidadAcademica | null;
+  grupoInvestigacion?: GrupoInvestigacion | null;
 }
 
 export interface HistoriaAcademicaData {

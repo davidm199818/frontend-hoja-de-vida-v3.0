@@ -1,9 +1,11 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { InformacionService } from '../../services/informacion.service';
 import { HistoriaAcademica } from '../../models/Historia-Academica';
 import { Asignatura } from '../../models/Asignatura';
 import { Publicacion } from '../../models/Publicacion';
+import { PasantiaInvestigacion } from '../../models/PasantiaInvestigacion';
+import { PracticaDocente } from '../../models/PracticaDocente';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -40,6 +42,7 @@ export class HojaDeVidaPdfComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private infoService: InformacionService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -91,6 +94,52 @@ export class HojaDeVidaPdfComponent implements OnInit {
     return this.historia?.historiaAcademica?.investigacion?.publicaciones ?? [];
   }
 
+  get pasantiasInvestigacion(): PasantiaInvestigacion[] {
+    return this.historia?.historiaAcademica?.investigacion?.pasantias ?? [];
+  }
+
+  get practicasDocentes(): PracticaDocente[] {
+    return this.historia?.historiaAcademica?.complementacion?.practicasDocentes ?? [];
+  }
+
+  get estadoMaestriaLabel(): string {
+    switch (this.historia?.estudiante?.estadoMaestria) {
+      case 'ACTIVO':
+        return 'Estudiante activo de la Maestría en Computación - Universidad del Cauca';
+      case 'MAESTRIA_FINALIZADA':
+        return 'Egresado de la Maestría en Computación';
+      case 'RETIRADO':
+        return 'Retirado';
+      case 'EN_SUSPENCION':
+        return 'En suspensión';
+      default:
+        return 'Sin registrar';
+    }
+  }
+
+  get modalidadAcademicaLabel(): string {
+    const modalidad = this.historia?.estudiante?.modalidadAcademica;
+
+    if (modalidad === 'INVESTIGACION') {
+      return 'Investigación';
+    }
+    if (modalidad === 'PROFUNDIZACION') {
+      return 'Profundización';
+    }
+    return 'Sin registrar';
+  }
+
+  get grupoInvestigacionLabel(): string {
+    const grupo = this.historia?.estudiante?.grupoInvestigacion;
+    const nombre = grupo?.nombre?.trim();
+    const sigla = grupo?.sigla?.trim();
+
+    if (nombre && sigla) {
+      return `${nombre} (${sigla})`;
+    }
+    return nombre || sigla || 'Sin registrar';
+  }
+
   get tieneReconocimientoPromedio(): boolean {
     return this.tieneDistincion('EXCELENCIA_ACADEMICA');
   }
@@ -118,8 +167,11 @@ export class HojaDeVidaPdfComponent implements OnInit {
     return distinciones.includes(tipo);
   }
 
-  previsualizarPdf(): void {
-    window.print();
+  volver(): void {
+    this.router.navigate([
+      '/gestion-hoja-de-vida/info-estudiante',
+      this.codigoEstudiante
+    ]);
   }
 
   async descargarPdf(): Promise<void> {

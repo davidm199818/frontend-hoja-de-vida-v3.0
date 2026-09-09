@@ -17,17 +17,23 @@ interface TableRow {
   nota: string;
 }
 
+interface AcademicPeriodGroup {
+  periodo: string;
+  asignaturas: TableRow[];
+  totalCreditos: number;
+}
+
 @Component({
   selector: 'app-info-estudiante',
   templateUrl: './info-estudiante.component.html',
   styleUrls: ['./info-estudiante.component.scss']
 })
 export class InfoEstudianteComponent implements OnInit, OnDestroy {
-
   codigoEstudiante = '';
   historia!: HistoriaAcademica;
 
   activeMenuItem = 'fundamentacion';
+  historyViewMode: 'areas' | 'consolidated' = 'areas';
   currentTable: string | null = null;
 
   expandedMenu: { [key: string]: boolean } = {
@@ -66,7 +72,11 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   electivasData: TableRow[] = [];
   asignaturasVistasData: TableRow[] = [];
   competenciasEmpresarialesData: TableRow[] = [];
+  historiaConsolidadaData: TableRow[] = [];
+  historiaConsolidadaPorPeriodo: AcademicPeriodGroup[] = [];
   readonly creditosRequeridos = 50;
+  readonly horasPracticaDocenteRequeridas = 96;
+  readonly totalRequisitosAcademicos = 4;
 
   constructor(
     private route: ActivatedRoute,
@@ -101,6 +111,35 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     return this.autenticacion.hasRole('ROLE_COORDINADOR');
   }
 
+  get modalidadAcademicaLabel(): string {
+    const modalidad = this.historia?.estudiante.modalidadAcademica;
+
+    if (modalidad === 'INVESTIGACION') {
+      return 'Investigación';
+    }
+    if (modalidad === 'PROFUNDIZACION') {
+      return 'Profundización';
+    }
+    return 'Sin registrar';
+  }
+
+  get estadoMaestriaLabel(): string {
+    const estado = this.historia?.estudiante.estadoMaestria;
+
+    switch (estado) {
+      case 'ACTIVO':
+        return 'Cursando';
+      case 'MAESTRIA_FINALIZADA':
+        return 'Egresado';
+      case 'RETIRADO':
+        return 'Retirado';
+      case 'EN_SUSPENCION':
+        return 'En suspensión';
+      default:
+        return 'Sin registrar';
+    }
+  }
+
   cargarHistoriaAcademica(): void {
     this.infoService.getHistoriaAcademica(this.codigoEstudiante).subscribe(data => {
       this.historia = data;
@@ -111,6 +150,8 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
       this.asignaturasVistasData = this.mapAsignaturas(historiaAcademica.investigacion.asignaturas);
       this.competenciasEmpresarialesData =
         this.mapAsignaturas(historiaAcademica.complementacion.competenciasEmpresariales.asignaturas);
+      this.historiaConsolidadaData = this.construirHistoriaConsolidada();
+      this.historiaConsolidadaPorPeriodo = this.agruparHistoriaPorPeriodo();
     });
   }
 
@@ -123,6 +164,10 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     this.currentTable = item;
   }
 
+  selectHistoryView(mode: 'areas' | 'consolidated'): void {
+    this.historyViewMode = mode;
+  }
+
   private mapAsignaturas(asignaturas: Asignatura[]): TableRow[] {
     return asignaturas.map((a) => ({
       periodo: a.periodoCursado,
@@ -130,6 +175,34 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
       nombre: a.nombreMateria,
       creditos: a.creditos,
       nota: a.notaDefinitiva?.toString() ?? 'NR'
+    }));
+  }
+
+  private construirHistoriaConsolidada(): TableRow[] {
+    return [
+      ...this.fundamentacionData,
+      ...this.electivasData,
+      ...this.asignaturasVistasData,
+      ...this.competenciasEmpresarialesData
+    ].sort((first, second) =>
+      first.periodo.localeCompare(second.periodo, 'es', { numeric: true })
+      || first.codigo.localeCompare(second.codigo, 'es', { numeric: true })
+    );
+  }
+
+  private agruparHistoriaPorPeriodo(): AcademicPeriodGroup[] {
+    const grupos = new Map<string, TableRow[]>();
+
+    this.historiaConsolidadaData.forEach(asignatura => {
+      const asignaturasPeriodo = grupos.get(asignatura.periodo) ?? [];
+      asignaturasPeriodo.push(asignatura);
+      grupos.set(asignatura.periodo, asignaturasPeriodo);
+    });
+
+    return Array.from(grupos, ([periodo, asignaturas]) => ({
+      periodo,
+      asignaturas,
+      totalCreditos: asignaturas.reduce((total, asignatura) => total + asignatura.creditos, 0)
     }));
   }
 
@@ -155,6 +228,41 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
 
   get creditosCumplidos(): number {
     return this.historia?.historiaAcademica?.informacionAdicional?.creditosCumplidos ?? 0;
+  }
+
+  get creditosPendientes(): number {
+    return Math.max(0, this.creditosRequeridos - this.creditosCumplidos);
+  }
+
+  get cumpleCreditosAcademicos(): boolean {
+    return this.creditosCumplidos >= this.creditosRequeridos;
+  }
+
+  get horasPracticaDocenteCumplidas(): number {
+    const practicas = this.historia?.historiaAcademica?.complementacion?.practicasDocentes ?? [];
+
+    return practicas.reduce((total, practica) => {
+      const horas = Number(practica.horas) || 0;
+      return total + Math.max(0, horas);
+    }, 0);
+  }
+
+  get progresoPracticaDocente(): number {
+    return Math.min(
+      100,
+      Math.round((this.horasPracticaDocenteCumplidas / this.horasPracticaDocenteRequeridas) * 100)
+    );
+  }
+
+  get horasPracticaDocentePendientes(): number {
+    return Math.max(
+      0,
+      this.horasPracticaDocenteRequeridas - this.horasPracticaDocenteCumplidas
+    );
+  }
+
+  get cumplePracticaDocente(): boolean {
+    return this.horasPracticaDocenteCumplidas >= this.horasPracticaDocenteRequeridas;
   }
 
   get tituloTesis(): string {
@@ -498,7 +606,16 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   get cumpleRequisitosAcademicos(): boolean {
-    return this.tienePublicacionesRegistradas && this.cumplePruebaIdiomaExtranjero;
+    return this.cantidadRequisitosCumplidos === this.totalRequisitosAcademicos;
+  }
+
+  get cantidadRequisitosCumplidos(): number {
+    return [
+      this.cumpleCreditosAcademicos,
+      this.cumplePracticaDocente,
+      this.tienePublicacionesRegistradas,
+      this.cumplePruebaIdiomaExtranjero
+    ].filter(Boolean).length;
   }
 
   private esPruebaIdioma(asignatura: Asignatura): boolean {

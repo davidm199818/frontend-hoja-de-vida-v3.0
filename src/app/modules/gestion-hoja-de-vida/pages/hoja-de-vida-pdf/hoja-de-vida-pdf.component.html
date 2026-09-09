@@ -1,7 +1,11 @@
 <div class="pdf-actions no-print" *ngIf="historia">
-    <button class="btn btn-primary" (click)="descargarPdf()" [disabled]="generandoPdf">
+    <button type="button" class="btn btn-light shadow-sm back-button" (click)="volver()">
+        <i class="fa fa-arrow-left me-2"></i>
+        Atrás
+    </button>
+    <button type="button" class="btn download-button" (click)="descargarPdf()" [disabled]="generandoPdf">
         <i class="fa fa-download me-1"></i>
-        {{ generandoPdf ? 'Generando...' : 'Descargar' }}
+        {{ generandoPdf ? 'Generando...' : 'Descargar PDF' }}
     </button>
 </div>
 
@@ -18,22 +22,37 @@
             {{ historia.estudiante.nombreCompleto }}
         </div>
 
-        <div class="student-info">
-            Maestría en Computación  -  Universidad del Cauca
-        </div>
-
-        <div class="student-info">
-            Código: {{ historia.estudiante.codigoEstudiante }}
-        </div>
-
-        <div class="contact-info">
-            {{ historia.estudiante.correoUniversidad }}
+        <div class="student-info-grid">
+            <div class="student-info-item">
+                <span class="student-info-label">Código</span>
+                <span class="student-info-value">{{ historia.estudiante.codigoEstudiante }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Estado</span>
+                <span class="student-info-value">{{ estadoMaestriaLabel }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Correo</span>
+                <span class="student-info-value">{{ historia.estudiante.correoUniversidad }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Modalidad</span>
+                <span class="student-info-value">{{ modalidadAcademicaLabel }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Periodo de ingreso</span>
+                <span class="student-info-value">{{ historia.estudiante.periodoIngreso || 'Sin registrar' }}</span>
+            </div>
+            <div class="student-info-item">
+                <span class="student-info-label">Grupo de investigación</span>
+                <span class="student-info-value">{{ grupoInvestigacionLabel }}</span>
+            </div>
         </div>
 
     </div>
 
     <!-- FORMACIÓN -->
-    <div class="section-title">Formación Académica</div>
+    <div class="section-title">Historial Académico</div>
 
     <section class="table-card">
         <div class="table-card-head">
@@ -135,13 +154,74 @@
                 </ng-template>
 
                 <div class="extra-checks">
-                    <p *ngIf="estudiante?.pasantia">
-                        <strong>Pasantía:</strong> Pasantía de investigación y docencia.
-                    </p>
                     <p *ngIf="estudiante?.idiomaExtranjeroAprobado">
                         <strong>Idioma:</strong> Prueba de suficiencia en idioma extranjero aprobada.
                     </p>
                 </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="row two-columns activity-cards pdf-avoid-break">
+        <div class="col-md-6">
+            <section class="detail-card">
+                <div class="section-title compact-title">Pasantías de Investigación</div>
+
+                <ul class="publication-list" *ngIf="pasantiasInvestigacion.length > 0; else sinPasantias">
+                    <li *ngFor="let pasantia of pasantiasInvestigacion">
+                        <span class="pub-title">{{ pasantia.informePasantia || 'Informe sin registrar' }}</span>
+                        <div class="pub-meta">
+                            <span class="pub-tag">Acta: {{ pasantia.acta || 'NR' }}</span>
+                            <span class="pub-tag">Fecha: {{ pasantia.fechaActa || 'NR' }}</span>
+                            <span class="pub-tag">Créditos: {{ pasantia.creditosAsignados ?? 'NR' }}</span>
+                        </div>
+                        <p class="activity-location">
+                            <strong>Ubicación:</strong> {{ pasantia.lugarPasantia || 'Sin registrar' }}
+                        </p>
+                    </li>
+                </ul>
+
+                <ng-template #sinPasantias>
+                    <p class="empty-note">No hay pasantías de investigación registradas.</p>
+                </ng-template>
+            </section>
+        </div>
+
+        <div class="col-md-6">
+            <section class="detail-card">
+                <div class="section-title compact-title">Práctica Docente</div>
+
+                <ul class="publication-list" *ngIf="practicasDocentes.length > 0; else sinPracticasDocentes">
+                    <li *ngFor="let practica of practicasDocentes">
+                        <div class="practice-activities" *ngIf="practica.actividades?.length; else actividadNoRegistrada">
+                            <span class="pub-title" *ngFor="let actividad of practica.actividades">
+                                {{ actividad.nombreActividad || 'Actividad sin registrar' }}
+                            </span>
+                        </div>
+                        <ng-template #actividadNoRegistrada>
+                            <span class="pub-title">Actividad sin registrar</span>
+                        </ng-template>
+
+                        <div class="pub-meta">
+                            <ng-container *ngIf="practica.actividades?.length">
+                                <span class="pub-tag" *ngFor="let actividad of practica.actividades">
+                                    {{ actividad.tipoActividad || 'Sin tipo' }}
+                                </span>
+                            </ng-container>
+                            <span class="pub-tag">Horas: {{ practica.horas ?? 'NR' }}</span>
+                            <span class="pub-tag">Créditos: {{ practica.creditosAsignados ?? 'NR' }}</span>
+                        </div>
+                        <p class="activity-location">
+                            <strong>Acta:</strong> {{ practica.acta || 'NR' }}
+                            <span class="activity-separator">·</span>
+                            <strong>Fecha:</strong> {{ practica.fechaActa || 'NR' }}
+                        </p>
+                    </li>
+                </ul>
+
+                <ng-template #sinPracticasDocentes>
+                    <p class="empty-note">No hay registros de práctica docente.</p>
+                </ng-template>
             </section>
         </div>
     </div>
@@ -177,11 +257,11 @@
             src="assets/layout/images/firma.png"
             alt="Firma del coordinador">
         <div class="signature-line">
-            <strong>Hugo Armando Ordóñez Erazo</strong>
+            <strong class="coordinator-name">Hugo Armando Ordóñez Erazo, PhD.</strong>
             <span class="signature-role">Coordinador</span>
-            <span>Programa de Maestría en Computación</span>
-            <span>Facultad de Ingeniería Electrónica y Telecomunicaciones</span>
-            <span>Universidad del Cauca</span>
+            <span class="coordinator-program">Programa de Maestría en Computación</span>
+            <span class="coordinator-institution">Facultad de Ingeniería Electrónica y Telecomunicaciones</span>
+            <span class="coordinator-institution">Universidad del Cauca</span>
             <div class="generation-info" *ngIf="fechaHoraGeneracion">
                 Generado el {{ fechaHoraGeneracion }}
             </div>
@@ -194,6 +274,3 @@
     </div>
 
 </div>
-
-
-

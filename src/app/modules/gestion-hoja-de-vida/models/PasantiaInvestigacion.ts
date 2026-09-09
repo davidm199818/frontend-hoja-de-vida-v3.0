@@ -3,4 +3,5 @@ export interface PasantiaInvestigacion {
   acta: string;
   fechaActa: string;
   informePasantia: string;
+  lugarPasantia?: string | null;
 }

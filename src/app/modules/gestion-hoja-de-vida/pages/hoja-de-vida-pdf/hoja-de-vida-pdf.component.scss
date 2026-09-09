@@ -17,7 +17,40 @@ body {
     max-width: 1180px;
     margin: 24px auto 0;
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.back-button {
+    border: none;
+    border-radius: 999px;
+    padding: 8px 16px;
+    color: #0f2f72;
+    font-weight: 600;
+}
+
+.download-button {
+    border: 1px solid #0b4cc0;
+    border-radius: 10px;
+    padding: 9px 18px;
+    background: linear-gradient(135deg, #0f2f72, #0b4cc0);
+    color: #ffffff;
+    font-weight: 700;
+    box-shadow: 0 7px 16px rgba(11, 76, 192, 0.24);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.download-button:hover:not(:disabled) {
+    background: linear-gradient(135deg, #0b4cc0, #2f6edf);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 9px 20px rgba(11, 76, 192, 0.3);
+}
+
+.download-button:disabled {
+    cursor: wait;
+    opacity: 0.65;
 }
 
 /* HEADER */
@@ -47,17 +80,39 @@ body {
     font-size: 32px;
     font-weight: 700;
     margin-bottom: 5px;
+    color: #0e2d6b;
 }
 
-.student-info {
-    font-size: 18px;
-    margin-bottom: 3px;
+.student-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 34px;
+    row-gap: 14px;
+    margin-top: 20px;
 }
 
-.contact-info {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #555;
+.student-info-item {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #d6dfeb;
+}
+
+.student-info-label {
+    color: #4f6488;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.student-info-value {
+    color: #1f3c68;
+    font-size: 15px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
 }
 
 /* TITULOS */
@@ -67,7 +122,8 @@ body {
     font-weight: 700;
     font-size: 22px;
     text-transform: uppercase;
-    border-bottom: 2px solid #1f3c68;
+    color: #0e2d6b;
+    border-bottom: 2px solid #0e2d6b;
     padding-bottom: 5px;
 }
 
@@ -262,6 +318,22 @@ body {
     word-break: break-word;
 }
 
+.activity-location {
+    margin: 8px 0 0;
+    color: #4f6488;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.activity-separator {
+    margin: 0 6px;
+    color: #8b9bb5;
+}
+
+.practice-activities .pub-title:last-child {
+    margin-bottom: 6px;
+}
+
 .empty-note {
     margin: 0;
     border: 1px dashed #cbd8ea;
@@ -359,7 +431,7 @@ body {
 .signature-line {
     color: #4f6488;
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.4;
 }
 
 .signature-line::before {
@@ -371,11 +443,12 @@ body {
     border-top: 1px solid #1f3c68;
 }
 
-.signature-line strong {
+.signature-line .coordinator-name {
     display: block;
-    margin-bottom: 3px;
-    color: #1f3c68;
-    font-size: 14px;
+    margin-bottom: 5px;
+    color: #0e2d6b;
+    font-size: 15px;
+    line-height: 1.3;
 }
 
 .signature-line span {
@@ -383,15 +456,29 @@ body {
 }
 
 .signature-line .signature-role {
-    margin-bottom: 3px;
+    margin-bottom: 6px;
     color: #1f3c68;
+    font-size: 14px;
     font-weight: 600;
 }
 
+.signature-line .coordinator-program {
+    margin-bottom: 3px;
+    color: #344b73;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.signature-line .coordinator-institution {
+    color: #5d6f8e;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
 .generation-info {
-    margin-top: 10px;
+    margin-top: 12px;
     color: #6880a5;
-    font-size: 10px;
+    font-size: 10.5px;
     font-weight: 600;
 }
 
@@ -452,4 +539,14 @@ body {
 .bottom-banner img {
   width: 100%;
   display: block;
+}
+
+@media (max-width: 700px) {
+    .pdf-actions {
+        margin-inline: 14px;
+    }
+
+    .student-info-grid {
+        grid-template-columns: 1fr;
+    }
 }
