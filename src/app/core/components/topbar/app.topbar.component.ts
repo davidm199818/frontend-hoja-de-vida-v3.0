@@ -4,7 +4,6 @@ import { MenuItem } from 'primeng/api';
 import { menuItems as originalMenuItems } from '../../constants/menu-items';
 import { MenuService } from '../../services/app.menu.service';
 import { AutenticacionService } from 'src/app/modules/gestion-autenticacion/services/autenticacion.service';
-import { environment } from 'src/environments/environment';
 
 interface Usuario {
     username: string;
@@ -65,32 +64,7 @@ export class AppTopBarComponent implements OnInit {
         // Asigna el comando de login al botón LOGIN
         this.items.forEach((item) => {
             if (item.label === 'LOGIN') {
-                if (environment.production) {
-                    item.command = () => this.autenticacion.login();
-                } else {
-                    item.items = [
-                        {
-                            label: 'Ana (Estudiante)',
-                            icon: 'pi pi-user',
-                            command: () => this.autenticacion.loginDevelopment('ANA'),
-                        },
-                        {
-                            label: 'Ricardo (Docente)',
-                            icon: 'pi pi-user-edit',
-                            command: () => this.autenticacion.loginDevelopment('RICARDO'),
-                        },
-                        {
-                            label: 'Hugo (Coordinador)',
-                            icon: 'pi pi-users',
-                            command: () => this.autenticacion.loginDevelopment('HUGO'),
-                        },
-                        {
-                            label: 'Google Unicauca',
-                            icon: 'pi pi-google',
-                            command: () => this.autenticacion.login(),
-                        },
-                    ];
-                }
+                item.command = () => this.autenticacion.login();
             }
         });
 

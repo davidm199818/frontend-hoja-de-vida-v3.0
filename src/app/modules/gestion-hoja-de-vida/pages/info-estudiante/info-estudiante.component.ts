@@ -71,8 +71,6 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   tituloResolucion = '';
   nombreArchivoResolucion = '';
   cargandoResolucion: TipoDistincionAcademica | null = null;
-  cargandoDocumentoSolicitud: number | null = null;
-  errorDocumentoSolicitud = '';
   urlDescargaResolucion: string | null = null;
   private archivoResolucionVisualizado: Blob | null = null;
 
@@ -589,46 +587,6 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
       });
   }
 
-  verDocumentoFirmado(cancelacion: AsignaturaCancelada): void {
-    if (!cancelacion.idSolicitud) {
-      this.errorDocumentoSolicitud = 'La cancelación no tiene una solicitud asociada.';
-      return;
-    }
-
-    this.errorDocumentoSolicitud = '';
-    this.cargandoDocumentoSolicitud = cancelacion.idSolicitud;
-    this.infoService.obtenerDocumentoFirmadoSolicitud(
-      this.codigoEstudiante,
-      cancelacion.idSolicitud
-    ).subscribe({
-      next: (respuesta) => {
-        const documento = respuesta.body;
-        if (!documento) {
-          this.cargandoDocumentoSolicitud = null;
-          this.errorDocumentoSolicitud = 'La solicitud no contiene un documento final firmado.';
-          return;
-        }
-
-        this.liberarUrlResolucion();
-        this.archivoResolucionVisualizado = documento;
-        this.urlDescargaResolucion = URL.createObjectURL(documento);
-        this.urlResolucion = this.sanitizer.bypassSecurityTrustResourceUrl(
-          `${this.urlDescargaResolucion}#toolbar=0&navpanes=0`
-        );
-        this.nombreArchivoResolucion = this.extraerNombreArchivo(
-          respuesta.headers.get('Content-Disposition'),
-          'solicitud-firmada.pdf'
-        );
-        this.tituloResolucion = `Documento final firmado · ${cancelacion.nombreAsignatura}`;
-        this.cargandoDocumentoSolicitud = null;
-      },
-      error: () => {
-        this.cargandoDocumentoSolicitud = null;
-        this.errorDocumentoSolicitud = 'No fue posible cargar el documento final firmado.';
-      }
-    });
-  }
-
   descargarResolucionActual(): void {
     if (!this.archivoResolucionVisualizado || !this.nombreArchivoResolucion) {
       this.errorDistincion = 'No hay una resolución disponible para descargar.';
@@ -789,11 +747,8 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     this.archivoResolucionVisualizado = null;
   }
 
-  private extraerNombreArchivo(
-    contentDisposition: string | null,
-    nombrePredeterminado = 'resolucion.pdf'
-  ): string {
+  private extraerNombreArchivo(contentDisposition: string | null): string {
     const coincidencia = contentDisposition?.match(/filename="([^"]+)"/i);
-    return coincidencia?.[1] ?? nombrePredeterminado;
+    return coincidencia?.[1] ?? 'resolucion.pdf';
   }
 }

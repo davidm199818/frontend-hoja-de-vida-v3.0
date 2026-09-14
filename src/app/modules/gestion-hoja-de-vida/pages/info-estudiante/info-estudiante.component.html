@@ -320,24 +320,8 @@
                       <span class="period-cancellation-group">
                         Grupo {{ cancelacion.grupo || 'sin registrar' }}
                       </span>
-                      <div class="period-cancellation-actions">
-                        <span class="period-cancellation-status">Cancelada</span>
-                        <button
-                          type="button"
-                          class="period-cancellation-document"
-                          [disabled]="!cancelacion.idSolicitud || cargandoDocumentoSolicitud === cancelacion.idSolicitud"
-                          (click)="verDocumentoFirmado(cancelacion)">
-                          <i
-                            class="pi"
-                            [ngClass]="cargandoDocumentoSolicitud === cancelacion.idSolicitud ? 'pi-spinner pi-spin' : 'pi-file-pdf'"
-                            aria-hidden="true"></i>
-                          {{ cargandoDocumentoSolicitud === cancelacion.idSolicitud ? 'Cargando…' : 'Ver documento firmado' }}
-                        </button>
-                      </div>
+                      <span class="period-cancellation-status">Cancelada</span>
                     </div>
-                    <p class="period-cancellation-error" *ngIf="errorDocumentoSolicitud">
-                      {{ errorDocumentoSolicitud }}
-                    </p>
                   </div>
                 </article>
               </div>

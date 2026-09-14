@@ -101,18 +101,6 @@ export class AutenticacionService {
             .catch((error) => {});
     }
 
-    loginDevelopment(mockProfile: 'ANA' | 'RICARDO' | 'HUGO'): void {
-        this.http
-            .post<{ token: string; tokenOriginal: string }>(
-                this.backendAuthUrl,
-                { token: 'local-development', mockProfile }
-            )
-            .subscribe(
-                (response) => this.procesarRespuestaAutenticacion(response),
-                () => this.logout()
-            );
-    }
-
     private sendTokenToBackend(authToken: AuthToken): void {
         this.http
             .post<{ token: string; tokenOriginal: string }>(
@@ -120,39 +108,43 @@ export class AutenticacionService {
                 authToken
             )
             .subscribe(
-                (response) => this.procesarRespuestaAutenticacion(response),
+                (response) => {
+                    const backendAuthToken = AuthToken.nuevoAuthToken(response);
+                    const jwtToken = backendAuthToken.token;
+
+                    // Almacenar el beared token proporcionado por el backend
+                    const tokenOriginal = response.tokenOriginal;
+                    localStorage.setItem('token', tokenOriginal);
+
+                    this.isLoggedInStatus = true;
+
+                    // Decodificar el token y extraer la información del usuario
+                    const decodedToken: any = jwt_decode(jwtToken);
+                    this.loggedInUser = {
+                        username: decodedToken.username,
+                        email: decodedToken.correo,
+                        role: decodedToken.rol || [],
+                        phoneNumber: decodedToken.telefono,
+                        academicCode: decodedToken.codigoAcademico,
+                        firstName: decodedToken.nombres,
+                        lastName: decodedToken.apellidos,
+                        idType: decodedToken.tipoIdentificacion,
+                        idNumber: decodedToken.numeroIdentificacion,
+                    };
+
+                    // Guardar el usuario decodificado en el localStorage
+                    localStorage.setItem(
+                        'loggedInUser',
+                        JSON.stringify(this.loggedInUser)
+                    );
+
+                    this.menuService.emitAlertLogin();
+                    this.loginSuccess$.emit();
+                },
                 (error) => {
                     this.logout();
                 }
             );
-    }
-
-    private procesarRespuestaAutenticacion(response: {
-        token: string;
-        tokenOriginal: string;
-    }): void {
-        const backendAuthToken = AuthToken.nuevoAuthToken(response);
-        const jwtToken = backendAuthToken.token;
-
-        localStorage.setItem('token', response.tokenOriginal);
-        this.isLoggedInStatus = true;
-
-        const decodedToken: any = jwt_decode(jwtToken);
-        this.loggedInUser = {
-            username: decodedToken.username,
-            email: decodedToken.correo,
-            role: decodedToken.rol || [],
-            phoneNumber: decodedToken.telefono,
-            academicCode: decodedToken.codigoAcademico,
-            firstName: decodedToken.nombres,
-            lastName: decodedToken.apellidos,
-            idType: decodedToken.tipoIdentificacion,
-            idNumber: decodedToken.numeroIdentificacion,
-        };
-
-        localStorage.setItem('loggedInUser', JSON.stringify(this.loggedInUser));
-        this.menuService.emitAlertLogin();
-        this.loginSuccess$.emit();
     }
 
     logout(): void {
