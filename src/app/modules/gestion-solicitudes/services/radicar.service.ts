@@ -46,6 +46,11 @@ export class RadicarService {
 
     firmaSolicitante: File = null;
     firmaSolicitanteUrl: SafeUrl = '';
+    firmaSolicitanteDatosPdf: {
+        data: Uint8ClampedArray;
+        width: number;
+        height: number;
+    } = null;
     firmaTutor: File = null;
     firmaTutorUrl: SafeUrl = '';
     firmaTutorPag: number = 0;
@@ -190,6 +195,7 @@ export class RadicarService {
         this.tituloPublicacion = '';
         this.firmaSolicitante = null;
         this.firmaSolicitanteUrl = '';
+        this.firmaSolicitanteDatosPdf = null;
         this.firmaTutor = null;
         this.firmaTutorUrl = '';
         this.firmaDirector = null;

@@ -9,6 +9,8 @@ import {
 } from '../../services/informacion.service';
 import { Publicacion } from '../../models/Publicacion';
 import { AutenticacionService } from '../../../gestion-autenticacion/services/autenticacion.service';
+import { AsignaturaHomologada } from '../../models/AsignaturaHomologada';
+import { AsignaturaCancelada } from '../../models/AsignaturaCancelada';
 interface TableRow {
   periodo: string;
   codigo: string;
@@ -20,6 +22,7 @@ interface TableRow {
 interface AcademicPeriodGroup {
   periodo: string;
   asignaturas: TableRow[];
+  cancelaciones: AsignaturaCancelada[];
   totalCreditos: number;
 }
 
@@ -34,6 +37,9 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
 
   activeMenuItem = 'fundamentacion';
   historyViewMode: 'areas' | 'consolidated' = 'areas';
+  trayectoriaPeriodosExpandida = false;
+  actividadesAcademicasConsolidadasExpandidas = false;
+  informacionAdicionalConsolidadaExpandida = false;
   currentTable: string | null = null;
 
   expandedMenu: { [key: string]: boolean } = {
@@ -111,6 +117,16 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     return this.autenticacion.hasRole('ROLE_COORDINADOR');
   }
 
+  get asignaturasHomologadas(): AsignaturaHomologada[] {
+    return this.historia?.historiaAcademica?.informacionAdicional
+      ?.asignaturasHomologadas ?? [];
+  }
+
+  get asignaturasCanceladas(): AsignaturaCancelada[] {
+    return this.historia?.historiaAcademica?.informacionAdicional
+      ?.asignaturasCanceladas ?? [];
+  }
+
   get modalidadAcademicaLabel(): string {
     const modalidad = this.historia?.estudiante.modalidadAcademica;
 
@@ -168,6 +184,25 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     this.historyViewMode = mode;
   }
 
+  toggleInformacionAdicionalConsolidada(): void {
+    this.informacionAdicionalConsolidadaExpandida = !this.informacionAdicionalConsolidadaExpandida;
+  }
+
+  toggleTrayectoriaPeriodos(): void {
+    this.trayectoriaPeriodosExpandida = !this.trayectoriaPeriodosExpandida;
+  }
+
+  toggleActividadesAcademicasConsolidadas(): void {
+    this.actividadesAcademicasConsolidadasExpandidas = !this.actividadesAcademicasConsolidadasExpandidas;
+  }
+
+  get totalActividadesAcademicasConsolidadas(): number {
+    const historiaAcademica = this.historia?.historiaAcademica;
+    return (historiaAcademica?.investigacion?.pasantias?.length ?? 0)
+      + (historiaAcademica?.investigacion?.publicaciones?.length ?? 0)
+      + (historiaAcademica?.complementacion?.practicasDocentes?.length ?? 0);
+  }
+
   private mapAsignaturas(asignaturas: Asignatura[]): TableRow[] {
     return asignaturas.map((a) => ({
       periodo: a.periodoCursado,
@@ -191,19 +226,38 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   private agruparHistoriaPorPeriodo(): AcademicPeriodGroup[] {
-    const grupos = new Map<string, TableRow[]>();
+    const grupos = new Map<string, {
+      asignaturas: TableRow[];
+      cancelaciones: AsignaturaCancelada[];
+    }>();
 
     this.historiaConsolidadaData.forEach(asignatura => {
-      const asignaturasPeriodo = grupos.get(asignatura.periodo) ?? [];
-      asignaturasPeriodo.push(asignatura);
-      grupos.set(asignatura.periodo, asignaturasPeriodo);
+      const grupo = grupos.get(asignatura.periodo) ?? { asignaturas: [], cancelaciones: [] };
+      grupo.asignaturas.push(asignatura);
+      grupos.set(asignatura.periodo, grupo);
     });
 
-    return Array.from(grupos, ([periodo, asignaturas]) => ({
+    this.asignaturasCanceladas.forEach(cancelacion => {
+      const periodo = cancelacion.periodoCancelacion || 'Periodo no registrado';
+      const grupo = grupos.get(periodo) ?? { asignaturas: [], cancelaciones: [] };
+      grupo.cancelaciones.push(cancelacion);
+      grupos.set(periodo, grupo);
+    });
+
+    return Array.from(grupos, ([periodo, grupo]) => ({
       periodo,
-      asignaturas,
-      totalCreditos: asignaturas.reduce((total, asignatura) => total + asignatura.creditos, 0)
-    }));
+      asignaturas: grupo.asignaturas,
+      cancelaciones: grupo.cancelaciones,
+      totalCreditos: grupo.asignaturas.reduce((total, asignatura) => total + asignatura.creditos, 0)
+    })).sort((first, second) => {
+      if (first.periodo === 'Periodo no registrado') {
+        return 1;
+      }
+      if (second.periodo === 'Periodo no registrado') {
+        return -1;
+      }
+      return first.periodo.localeCompare(second.periodo, 'es', { numeric: true });
+    });
   }
 
   mostrarConfirmacionGenerarHojaDeVida(): void {

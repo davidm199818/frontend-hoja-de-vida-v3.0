@@ -4,7 +4,7 @@ import { HttpService } from './http.service';
 import { RadicarService } from './radicar.service';
 import { HttpClient } from '@angular/common/http';
 import { InfoAsingAdicionCancelacion } from '../models/solicitudes/solicitud-adic-cancel-asig/infoAsignAdicionCancelacion';
-import { catchError, map, throwError } from 'rxjs';
+import { catchError, firstValueFrom, map, of, throwError } from 'rxjs';
 import { UtilidadesService } from './utilidades.service';
 
 @Injectable({
@@ -22,79 +22,50 @@ export class AlmacenarSolicitudService {
 
     // Almacena una solicitud en la base de datos y retorna el resultado como una promesa de tipo string.
     async almacenarSolicitudEnBD(): Promise<string> {
-        // Crear una nueva promesa que resuelve una cadena
-        return new Promise<string>(async (resolver, rechazar) => {
-            let resultado: string = null;
+        const mapaSolicitudes: Record<string, () => Promise<any>> = {
+            AD_ASIG: this.reunirDatosSolAdicion,
+            CA_ASIG: this.reunirDatosSolCancelAsig,
+            HO_ASIG_POS: this.reunirDatosSolHomolog,
+            HO_ASIG_ESP: this.reunirDatosSolHomolog,
+            AP_SEME: this.reunirDatosSolAplazamiento,
+            CU_ASIG: this.reunirDatosSolCurAsigExternas,
+            AV_PASA_INV: this.reunirDatosSolAvalPasant,
+            AP_ECON_INV: this.reunirDatosSolApoyoPasantia,
+            AP_ECON_ASI: this.reunirDatosSolApoyoCongreso,
+            PA_PUBL_EVE: this.reunirDatosSolApoyoPublicacionInscripcion,
+            RE_CRED_PR_DOC: this.reunirDatosSolRecCredPracticaDocente,
+            RE_CRED_PAS: this.reunirDatosSolRecCreditosPasantia,
+            RE_CRED_PUB: this.reunirDatosSolRecCreditosPublicacion,
+            AV_COMI_PR: this.reunirDatosAvalPractDocente,
+            SO_BECA: this.reunirDatosSolBecaDescuento,
+            CER_VOTO: this.reunirDatosCertificadoVoto,
+        };
 
-            // Función para manejar la respuesta del observable
-            const manejarRespuesta = (observable) => {
-                observable
-                    .pipe(
-                        map((respuesta: any) => {
-                            return typeof respuesta === 'string'
-                                ? respuesta
-                                : JSON.stringify(respuesta);
-                        }),
-                        catchError((error: any) => {
-                            if (error.error.text) {
-                                return [error.error.text];
-                            }
-                            return throwError(error);
-                        })
-                    )
-                    .subscribe({
-                        next: (respuesta: string) => {
-                            resultado = respuesta;
-                            resolver(resultado);
-                        },
-                        error: (error) => {
-                            rechazar(error);
-                        },
-                    });
-            };
+        const codigoSolicitud =
+            this.radicar.tipoSolicitudEscogida.codigoSolicitud;
+        const reunirDatosFn = mapaSolicitudes[codigoSolicitud];
 
-            // Función para manejar diferentes tipos de solicitudes
-            const manejarSolicitud = async (
-                reunirDatosFn: () => Promise<any>
-            ) => {
-                const datosSolicitud = await reunirDatosFn();
-                const observable = this.http.guardarSolicitud(datosSolicitud);
-                manejarRespuesta(observable);
-            };
+        if (!reunirDatosFn) {
+            return null;
+        }
 
-            // Diccionario para mapear códigos de solicitud a funciones de datos
-            const mapaSolicitudes = {
-                AD_ASIG: this.reunirDatosSolAdicion,
-                CA_ASIG: this.reunirDatosSolCancelAsig,
-                HO_ASIG_POS: this.reunirDatosSolHomolog,
-                HO_ASIG_ESP: this.reunirDatosSolHomolog,
-                AP_SEME: this.reunirDatosSolAplazamiento,
-                CU_ASIG: this.reunirDatosSolCurAsigExternas,
-                AV_PASA_INV: this.reunirDatosSolAvalPasant,
-                AP_ECON_INV: this.reunirDatosSolApoyoPasantia,
-                AP_ECON_ASI: this.reunirDatosSolApoyoCongreso,
-                PA_PUBL_EVE: this.reunirDatosSolApoyoPublicacionInscripcion,
-                RE_CRED_PR_DOC: this.reunirDatosSolRecCredPracticaDocente,
-                RE_CRED_PAS: this.reunirDatosSolRecCreditosPasantia,
-                RE_CRED_PUB: this.reunirDatosSolRecCreditosPublicacion,
-                AV_COMI_PR: this.reunirDatosAvalPractDocente,
-                SO_BECA: this.reunirDatosSolBecaDescuento,
-                CER_VOTO: this.reunirDatosCertificadoVoto,
-            };
+        const datosSolicitud = await reunirDatosFn.call(this);
 
-            // Obtener el código de solicitud actual
-            const codigoSolicitud =
-                this.radicar.tipoSolicitudEscogida.codigoSolicitud;
-
-            // Si el código de solicitud existe en el mapa, manejar la solicitud correspondiente
-            if (mapaSolicitudes[codigoSolicitud]) {
-                await manejarSolicitud(
-                    mapaSolicitudes[codigoSolicitud].bind(this)
-                );
-            } else {
-                resolver(resultado);
-            }
-        });
+        return firstValueFrom(
+            this.http.guardarSolicitud(datosSolicitud).pipe(
+                map((respuesta: any) =>
+                    typeof respuesta === 'string'
+                        ? respuesta
+                        : JSON.stringify(respuesta)
+                ),
+                catchError((error: any) => {
+                    if (error?.error?.text) {
+                        return of(error.error.text);
+                    }
+                    return throwError(() => error);
+                })
+            )
+        );
     }
 
     // Reúne los datos para una solicitud de adición de asignatura.
@@ -609,14 +580,9 @@ export class AlmacenarSolicitudService {
     }
 
     async convertirDocumentosAdjuntos(): Promise<string[]> {
-        const documentosAdjuntosPromises: Promise<string>[] =
-            this.radicar.documentosAdjuntos.map(async (adjunto) => {
-                if (adjunto instanceof File) {
-                    return await this.utilidades.convertirFileABase64(adjunto);
-                } else {
-                    return Promise.resolve(null);
-                }
-            });
+        const documentosAdjuntosPromises: Promise<string>[] = this.radicar.documentosAdjuntos
+            .filter((adjunto): adjunto is File => adjunto instanceof File)
+            .map((adjunto) => this.utilidades.convertirFileABase64(adjunto));
 
         return Promise.all(documentosAdjuntosPromises);
     }

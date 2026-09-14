@@ -34,6 +34,12 @@ interface AgregarVinetasOptions {
     watermark?: boolean;
 }
 
+interface ImagenFirmaPdf {
+    data: Uint8ClampedArray;
+    width: number;
+    height: number;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -420,7 +426,7 @@ export class PdfService {
     agregarFirma(
         doc: jsPDF,
         signatureType: 'Solicitante' | 'Tutor' | 'Director' | 'Coordinador',
-        signatureImage: string,
+        signatureImage: string | ImagenFirmaPdf | null,
         position: 'left' | 'right',
         signatureData: {
             name: string;
@@ -466,15 +472,31 @@ export class PdfService {
         // Ajustar la posición Y para la imagen de la firma dentro del bloque
         const adjustedImageY = cursorY + signatureHeight - imageOffset;
 
-        // Agregar imagen de la firma
-        doc.addImage(
-            signatureImage,
-            'PNG',
-            positionX,
-            adjustedImageY,
-            signatureWidth,
-            signatureHeight
-        );
+        // La imagen es opcional: para firmas pendientes se conserva únicamente
+        // el espacio, la línea y los datos del firmante.
+        if (signatureImage) {
+            if (typeof signatureImage === 'string') {
+                const signatureFormat = signatureImage.startsWith('data:image/jpeg')
+                    ? 'JPEG'
+                    : 'PNG';
+                doc.addImage(
+                    signatureImage,
+                    signatureFormat,
+                    positionX,
+                    adjustedImageY,
+                    signatureWidth,
+                    signatureHeight
+                );
+            } else {
+                doc.addImage(
+                    signatureImage,
+                    positionX,
+                    adjustedImageY,
+                    signatureWidth,
+                    signatureHeight
+                );
+            }
+        }
 
         // Línea de firma
         doc.setDrawColor(79, 79, 79);
@@ -744,9 +766,9 @@ export class PdfService {
         marcaDeAgua: boolean
     ) {
         // Definir datos de la firma
-        let firmaSolicitante = '../assets/layout/images/FirmaEnBlanco.png';
-        let firmaTutor = '../assets/layout/images/FirmaEnBlanco.png';
-        let firmaDirector = '../assets/layout/images/FirmaEnBlanco.png';
+        let firmaSolicitante: string | ImagenFirmaPdf | null = null;
+        const firmaTutor = null;
+        const firmaDirector = null;
 
         let nuevaPosicionY = posicionY;
 
@@ -764,8 +786,8 @@ export class PdfService {
         };
 
         if (this.servicioRadicar.firmaSolicitante) {
-            firmaSolicitante =
-                this.servicioRadicar.firmaSolicitanteUrl.toString();
+            firmaSolicitante = this.servicioRadicar.firmaSolicitanteDatosPdf
+                ?? this.servicioRadicar.firmaSolicitanteUrl.toString();
         }
 
         // Agregar la firma del solicitante

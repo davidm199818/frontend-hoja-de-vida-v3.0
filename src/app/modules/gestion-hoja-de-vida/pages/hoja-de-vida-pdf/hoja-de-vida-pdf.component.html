@@ -107,6 +107,36 @@
             </table>
         </div>
     </section>
+    <section class="table-card homologated-section pdf-avoid-break" *ngIf="asignaturasHomologadas.length > 0">
+        <div class="table-card-head">
+            <strong>Asignaturas homologadas</strong>
+        </div>
+        <div class="table-card-body">
+            <table class="table table-bordered academic-table academic-table-modern">
+                <thead class="table-primary">
+                    <tr>
+                        <th>Asignatura</th>
+                        <th>Institución</th>
+                        <th>Programa</th>
+                        <th>Créditos</th>
+                        <th>Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let asignatura of asignaturasHomologadas">
+                        <td>
+                            {{ asignatura.nombreAsignatura || 'NR' }}
+                            <span class="homologated-label">Homologada</span>
+                        </td>
+                        <td>{{ asignatura.institucionProcedencia || 'NR' }}</td>
+                        <td>{{ asignatura.programaProcedencia || 'NR' }}</td>
+                        <td>{{ asignatura.creditos ?? 'NR' }}</td>
+                        <td>{{ asignatura.calificacion ?? 'NR' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
     <!-- DOS COLUMNAS -->
     <div class="row two-columns pdf-avoid-break">
         <div class="col-md-6">
