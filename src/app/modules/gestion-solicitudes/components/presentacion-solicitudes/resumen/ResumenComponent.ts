@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, HostListener, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, HostListener, OnInit, Output } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 import { Router } from '@angular/router';
@@ -8,6 +8,15 @@ import { SafeResourceUrl } from '@angular/platform-browser';
 import { UtilidadesService } from '../../../services/utilidades.service';
 import { DocumentoPDFFactory } from '../../utilidades/documentos-pdf/documento-pdf-factory';
 
+interface FirmaNormalizada {
+    vistaPrevia: string;
+    datosPdf: {
+        data: Uint8ClampedArray;
+        width: number;
+        height: number;
+    };
+}
+
 @Component({
     selector: 'app-resumen',
     templateUrl: './resumen.component.html',
@@ -16,8 +25,6 @@ import { DocumentoPDFFactory } from '../../utilidades/documentos-pdf/documento-p
 })
 export class ResumenComponent implements OnInit {
     @Output() cambioDePaso = new EventEmitter<number>();
-
-    @ViewChild('firmaImage') firmaImage: ElementRef;
 
     codTipoSolicitudEscogida: string;
     urlVistaPreviaSolicitudPDF: SafeResourceUrl;
@@ -114,35 +121,73 @@ export class ResumenComponent implements OnInit {
         this.radicar.oficioDeSolicitud = pdfFileSinMarca;
     }
 
-    onUpload(event, firmante) {
-        this.radicar.firmaSolicitante = event.files[0];
-        this.renderizarImagen(this.radicar.firmaSolicitante);
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            this.firmaImage.nativeElement.src = e.target.result;
-        };
-        reader.readAsDataURL(this.radicar.firmaSolicitante);
+    async onUpload(event, firmante) {
+        const firma = event?.files?.[0] as File;
         firmante.clear();
-        this.mostrarBtnFirmar = true;
+
+        if (!firma) {
+            return;
+        }
+
+        if (!['image/png', 'image/jpeg'].includes(firma.type)) {
+            this.messageService.add({
+                severity: 'warn',
+                summary: 'Formato no permitido',
+                detail: 'La firma debe ser una imagen PNG o JPG.',
+            });
+            return;
+        }
+
+        this.mostrarBtnFirmar = false;
+        this.habilitarEnvio = false;
+        this.radicar.firmaSolicitanteUrl = '';
+        this.radicar.firmaSolicitanteDatosPdf = null;
+
+        try {
+            this.radicar.firmaSolicitante = firma;
+            await this.renderizarImagen(firma);
+            this.mostrarBtnFirmar = true;
+        } catch (error) {
+            this.radicar.firmaSolicitante = null;
+            this.radicar.firmaSolicitanteDatosPdf = null;
+            console.error('No fue posible cargar la firma:', error);
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error al cargar la firma',
+                detail: 'Seleccione nuevamente una imagen PNG o JPG.',
+            });
+        }
     }
 
-    firmarSolicitud() {
+    async firmarSolicitud() {
         if (this.firmaEnProceso) {
             return;
-        } else {
-            this.firmaEnProceso = true;
+        }
+
+        if (!this.radicar.firmaSolicitanteUrl) {
+            this.showWarn();
+            return;
+        }
+
+        this.firmaEnProceso = true;
+
+        try {
             this.cargarVistaPreviaPDF(this.codTipoSolicitudEscogida, 'carta-solicitud', true);
-
-            setTimeout(() => {
-                this.mostrarOficio = false;
-
-                setTimeout(() => {
-                    this.mostrarOficio = true;
-                    this.firmaEnProceso = false;
-                    this.mostrarBtnFirmar = false;
-                    this.habilitarEnvio = true;
-                }, 1000);
-            }, 100);
+            this.mostrarBtnFirmar = false;
+            this.habilitarEnvio = true;
+        } catch (error) {
+            this.habilitarEnvio = false;
+            console.error('No fue posible firmar el documento:', error);
+            const detalle = error && typeof error === 'object' && 'message' in error
+                ? String((error as { message: unknown }).message)
+                : String(error ?? 'Error desconocido');
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Error al firmar',
+                detail: `Detalle técnico: ${detalle}`,
+            });
+        } finally {
+            this.firmaEnProceso = false;
         }
     }
 
@@ -224,12 +269,69 @@ export class ResumenComponent implements OnInit {
         }
     }
 
-    renderizarImagen(imagen: File): void {
-        const reader = new FileReader();
-        reader.onload = () => {
-            this.radicar.firmaSolicitanteUrl = reader.result as string;
-        };
-        reader.readAsDataURL(imagen);
+    renderizarImagen(imagen: File): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => {
+                if (typeof reader.result !== 'string') {
+                    reject(new Error('No fue posible leer la imagen de la firma.'));
+                    return;
+                }
+
+                this.normalizarImagenFirma(reader.result)
+                    .then((firmaNormalizada) => {
+                        this.radicar.firmaSolicitanteUrl = firmaNormalizada.vistaPrevia;
+                        this.radicar.firmaSolicitanteDatosPdf = firmaNormalizada.datosPdf;
+                        resolve();
+                    })
+                    .catch(reject);
+            };
+            reader.onerror = () => reject(reader.error);
+            reader.readAsDataURL(imagen);
+        });
+    }
+
+    private normalizarImagenFirma(dataUrl: string): Promise<FirmaNormalizada> {
+        return new Promise<FirmaNormalizada>((resolve, reject) => {
+            const imagen = new Image();
+
+            imagen.onload = () => {
+                if (!imagen.naturalWidth || !imagen.naturalHeight) {
+                    reject(new Error('La imagen de la firma no tiene dimensiones válidas.'));
+                    return;
+                }
+
+                const anchoMaximo = 1200;
+                const altoMaximo = 600;
+                const escala = Math.min(
+                    1,
+                    anchoMaximo / imagen.naturalWidth,
+                    altoMaximo / imagen.naturalHeight
+                );
+                const canvas = document.createElement('canvas');
+                canvas.width = Math.max(1, Math.round(imagen.naturalWidth * escala));
+                canvas.height = Math.max(1, Math.round(imagen.naturalHeight * escala));
+
+                const contexto = canvas.getContext('2d');
+                if (!contexto) {
+                    reject(new Error('No fue posible procesar la imagen de la firma.'));
+                    return;
+                }
+
+                contexto.drawImage(imagen, 0, 0, canvas.width, canvas.height);
+                const datosImagen = contexto.getImageData(0, 0, canvas.width, canvas.height);
+                resolve({
+                    vistaPrevia: canvas.toDataURL('image/png'),
+                    datosPdf: {
+                        data: datosImagen.data,
+                        width: datosImagen.width,
+                        height: datosImagen.height,
+                    },
+                });
+            };
+            imagen.onerror = () => reject(new Error('La imagen de la firma está dañada o no es compatible.'));
+            imagen.src = dataUrl;
+        });
     }
 
     navigateToBack() {
