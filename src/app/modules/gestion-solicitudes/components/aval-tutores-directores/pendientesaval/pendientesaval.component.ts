@@ -58,7 +58,7 @@ export class PendientesavalComponent implements OnInit {
     cargarSolicitudes() {
         this.gestor.obtenerSolicitudesTutorDirector(this.auth.getLoggedInUser().email).subscribe(
             (solicitudes: SolicitudRecibida[]) => {
-                //this.solicitudes = solicitudes;
+                this.solicitudes = solicitudes;
                 this.cargando = false;
                 this.buzonVacio = solicitudes.length === 0;
             },

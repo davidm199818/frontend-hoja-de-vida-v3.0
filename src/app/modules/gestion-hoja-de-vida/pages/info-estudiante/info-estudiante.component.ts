@@ -9,6 +9,8 @@ import {
 } from '../../services/informacion.service';
 import { Publicacion } from '../../models/Publicacion';
 import { AutenticacionService } from '../../../gestion-autenticacion/services/autenticacion.service';
+import { AsignaturaHomologada } from '../../models/AsignaturaHomologada';
+import { AsignaturaCancelada } from '../../models/AsignaturaCancelada';
 interface TableRow {
   periodo: string;
   codigo: string;
@@ -20,6 +22,7 @@ interface TableRow {
 interface AcademicPeriodGroup {
   periodo: string;
   asignaturas: TableRow[];
+  cancelaciones: AsignaturaCancelada[];
   totalCreditos: number;
 }
 
@@ -34,6 +37,9 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
 
   activeMenuItem = 'fundamentacion';
   historyViewMode: 'areas' | 'consolidated' = 'areas';
+  trayectoriaPeriodosExpandida = false;
+  actividadesAcademicasConsolidadasExpandidas = false;
+  informacionAdicionalConsolidadaExpandida = false;
   currentTable: string | null = null;
 
   expandedMenu: { [key: string]: boolean } = {
@@ -65,6 +71,8 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   tituloResolucion = '';
   nombreArchivoResolucion = '';
   cargandoResolucion: TipoDistincionAcademica | null = null;
+  cargandoDocumentoSolicitud: number | null = null;
+  errorDocumentoSolicitud = '';
   urlDescargaResolucion: string | null = null;
   private archivoResolucionVisualizado: Blob | null = null;
 
@@ -109,6 +117,16 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
 
   get esCoordinador(): boolean {
     return this.autenticacion.hasRole('ROLE_COORDINADOR');
+  }
+
+  get asignaturasHomologadas(): AsignaturaHomologada[] {
+    return this.historia?.historiaAcademica?.informacionAdicional
+      ?.asignaturasHomologadas ?? [];
+  }
+
+  get asignaturasCanceladas(): AsignaturaCancelada[] {
+    return this.historia?.historiaAcademica?.informacionAdicional
+      ?.asignaturasCanceladas ?? [];
   }
 
   get modalidadAcademicaLabel(): string {
@@ -168,6 +186,25 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     this.historyViewMode = mode;
   }
 
+  toggleInformacionAdicionalConsolidada(): void {
+    this.informacionAdicionalConsolidadaExpandida = !this.informacionAdicionalConsolidadaExpandida;
+  }
+
+  toggleTrayectoriaPeriodos(): void {
+    this.trayectoriaPeriodosExpandida = !this.trayectoriaPeriodosExpandida;
+  }
+
+  toggleActividadesAcademicasConsolidadas(): void {
+    this.actividadesAcademicasConsolidadasExpandidas = !this.actividadesAcademicasConsolidadasExpandidas;
+  }
+
+  get totalActividadesAcademicasConsolidadas(): number {
+    const historiaAcademica = this.historia?.historiaAcademica;
+    return (historiaAcademica?.investigacion?.pasantias?.length ?? 0)
+      + (historiaAcademica?.investigacion?.publicaciones?.length ?? 0)
+      + (historiaAcademica?.complementacion?.practicasDocentes?.length ?? 0);
+  }
+
   private mapAsignaturas(asignaturas: Asignatura[]): TableRow[] {
     return asignaturas.map((a) => ({
       periodo: a.periodoCursado,
@@ -191,19 +228,38 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
   }
 
   private agruparHistoriaPorPeriodo(): AcademicPeriodGroup[] {
-    const grupos = new Map<string, TableRow[]>();
+    const grupos = new Map<string, {
+      asignaturas: TableRow[];
+      cancelaciones: AsignaturaCancelada[];
+    }>();
 
     this.historiaConsolidadaData.forEach(asignatura => {
-      const asignaturasPeriodo = grupos.get(asignatura.periodo) ?? [];
-      asignaturasPeriodo.push(asignatura);
-      grupos.set(asignatura.periodo, asignaturasPeriodo);
+      const grupo = grupos.get(asignatura.periodo) ?? { asignaturas: [], cancelaciones: [] };
+      grupo.asignaturas.push(asignatura);
+      grupos.set(asignatura.periodo, grupo);
     });
 
-    return Array.from(grupos, ([periodo, asignaturas]) => ({
+    this.asignaturasCanceladas.forEach(cancelacion => {
+      const periodo = cancelacion.periodoCancelacion || 'Periodo no registrado';
+      const grupo = grupos.get(periodo) ?? { asignaturas: [], cancelaciones: [] };
+      grupo.cancelaciones.push(cancelacion);
+      grupos.set(periodo, grupo);
+    });
+
+    return Array.from(grupos, ([periodo, grupo]) => ({
       periodo,
-      asignaturas,
-      totalCreditos: asignaturas.reduce((total, asignatura) => total + asignatura.creditos, 0)
-    }));
+      asignaturas: grupo.asignaturas,
+      cancelaciones: grupo.cancelaciones,
+      totalCreditos: grupo.asignaturas.reduce((total, asignatura) => total + asignatura.creditos, 0)
+    })).sort((first, second) => {
+      if (first.periodo === 'Periodo no registrado') {
+        return 1;
+      }
+      if (second.periodo === 'Periodo no registrado') {
+        return -1;
+      }
+      return first.periodo.localeCompare(second.periodo, 'es', { numeric: true });
+    });
   }
 
   mostrarConfirmacionGenerarHojaDeVida(): void {
@@ -533,6 +589,46 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
       });
   }
 
+  verDocumentoFirmado(cancelacion: AsignaturaCancelada): void {
+    if (!cancelacion.idSolicitud) {
+      this.errorDocumentoSolicitud = 'La cancelación no tiene una solicitud asociada.';
+      return;
+    }
+
+    this.errorDocumentoSolicitud = '';
+    this.cargandoDocumentoSolicitud = cancelacion.idSolicitud;
+    this.infoService.obtenerDocumentoFirmadoSolicitud(
+      this.codigoEstudiante,
+      cancelacion.idSolicitud
+    ).subscribe({
+      next: (respuesta) => {
+        const documento = respuesta.body;
+        if (!documento) {
+          this.cargandoDocumentoSolicitud = null;
+          this.errorDocumentoSolicitud = 'La solicitud no contiene un documento final firmado.';
+          return;
+        }
+
+        this.liberarUrlResolucion();
+        this.archivoResolucionVisualizado = documento;
+        this.urlDescargaResolucion = URL.createObjectURL(documento);
+        this.urlResolucion = this.sanitizer.bypassSecurityTrustResourceUrl(
+          `${this.urlDescargaResolucion}#toolbar=0&navpanes=0`
+        );
+        this.nombreArchivoResolucion = this.extraerNombreArchivo(
+          respuesta.headers.get('Content-Disposition'),
+          'solicitud-firmada.pdf'
+        );
+        this.tituloResolucion = `Documento final firmado · ${cancelacion.nombreAsignatura}`;
+        this.cargandoDocumentoSolicitud = null;
+      },
+      error: () => {
+        this.cargandoDocumentoSolicitud = null;
+        this.errorDocumentoSolicitud = 'No fue posible cargar el documento final firmado.';
+      }
+    });
+  }
+
   descargarResolucionActual(): void {
     if (!this.archivoResolucionVisualizado || !this.nombreArchivoResolucion) {
       this.errorDistincion = 'No hay una resolución disponible para descargar.';
@@ -693,8 +789,11 @@ export class InfoEstudianteComponent implements OnInit, OnDestroy {
     this.archivoResolucionVisualizado = null;
   }
 
-  private extraerNombreArchivo(contentDisposition: string | null): string {
+  private extraerNombreArchivo(
+    contentDisposition: string | null,
+    nombrePredeterminado = 'resolucion.pdf'
+  ): string {
     const coincidencia = contentDisposition?.match(/filename="([^"]+)"/i);
-    return coincidencia?.[1] ?? 'resolucion.pdf';
+    return coincidencia?.[1] ?? nombrePredeterminado;
   }
 }

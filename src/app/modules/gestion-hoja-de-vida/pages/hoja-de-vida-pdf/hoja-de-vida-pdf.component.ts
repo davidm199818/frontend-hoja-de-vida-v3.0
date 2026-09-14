@@ -6,6 +6,7 @@ import { Asignatura } from '../../models/Asignatura';
 import { Publicacion } from '../../models/Publicacion';
 import { PasantiaInvestigacion } from '../../models/PasantiaInvestigacion';
 import { PracticaDocente } from '../../models/PracticaDocente';
+import { AsignaturaHomologada } from '../../models/AsignaturaHomologada';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 
@@ -100,6 +101,11 @@ export class HojaDeVidaPdfComponent implements OnInit {
 
   get practicasDocentes(): PracticaDocente[] {
     return this.historia?.historiaAcademica?.complementacion?.practicasDocentes ?? [];
+  }
+
+  get asignaturasHomologadas(): AsignaturaHomologada[] {
+    return this.historia?.historiaAcademica?.informacionAdicional
+      ?.asignaturasHomologadas ?? [];
   }
 
   get estadoMaestriaLabel(): string {
@@ -253,10 +259,6 @@ export class HojaDeVidaPdfComponent implements OnInit {
         ? seccionQueNoCabe.inicio - posicionOrigen
         : limitePagina - posicionOrigen;
 
-      if (numeroPagina > 0) {
-        doc.addPage();
-      }
-
       const fragmento = document.createElement('canvas');
       fragmento.width = canvas.width;
       fragmento.height = alturaFragmento;
@@ -272,12 +274,47 @@ export class HojaDeVidaPdfComponent implements OnInit {
         alturaFragmento
       );
 
+      const esUltimoFragmento = posicionOrigen + alturaFragmento >= canvas.height;
+      if (numeroPagina > 0 && esUltimoFragmento && this.esFragmentoVacio(fragmento)) {
+        break;
+      }
+
+      if (numeroPagina > 0) {
+        doc.addPage();
+      }
+
       const alturaEnPdf = (alturaFragmento * usableWidth) / canvas.width;
       doc.addImage(fragmento.toDataURL('image/png'), 'PNG', margin, margin, usableWidth, alturaEnPdf);
 
       posicionOrigen += alturaFragmento;
       numeroPagina++;
     }
+  }
+
+  private esFragmentoVacio(fragmento: HTMLCanvasElement): boolean {
+    const contexto = fragmento.getContext('2d');
+    if (!contexto) {
+      return false;
+    }
+
+    const pixeles = contexto.getImageData(
+      0,
+      0,
+      fragmento.width,
+      fragmento.height
+    ).data;
+
+    for (let posicion = 0; posicion < pixeles.length; posicion += 4) {
+      const alfa = pixeles[posicion + 3];
+      const esBlanco = pixeles[posicion] >= 250
+        && pixeles[posicion + 1] >= 250
+        && pixeles[posicion + 2] >= 250;
+      if (alfa > 0 && !esBlanco) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   private obtenerSeccionesProtegidas(

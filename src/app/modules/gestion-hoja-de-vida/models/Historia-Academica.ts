@@ -2,6 +2,8 @@ import { Asignatura } from './Asignatura';
 import { PasantiaInvestigacion } from './PasantiaInvestigacion';
 import { Publicacion } from './Publicacion';
 import { PracticaDocente } from './PracticaDocente';
+import { AsignaturaHomologada } from './AsignaturaHomologada';
+import { AsignaturaCancelada } from './AsignaturaCancelada';
 
 export interface AreaAcademica {
   asignaturas: Asignatura[];
@@ -51,6 +53,8 @@ export interface HistoriaAcademicaData {
     directorTesis: string;
     codirectorTesis: string;
     asignaturas?: Asignatura[];
+    asignaturasHomologadas?: AsignaturaHomologada[];
+    asignaturasCanceladas?: AsignaturaCancelada[];
     distincionesAcademicas?: string[];
   };
 }

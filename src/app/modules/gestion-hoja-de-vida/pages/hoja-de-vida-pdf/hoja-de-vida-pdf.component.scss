@@ -491,6 +491,21 @@ body {
 }
 
 /* IMPRESIÓN */
+.homologated-section {
+    margin-top: 16px;
+}
+
+.homologated-label {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 9px;
+    font-weight: 700;
+}
+
 @media print {
     body {
         background: white;

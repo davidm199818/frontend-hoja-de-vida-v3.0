@@ -208,13 +208,14 @@
       <div class="content-area">
         <div class="consolidated-history" *ngIf="historyViewMode === 'consolidated'">
           <article class="consolidated-summary card">
-            <div class="consolidated-summary-icon" aria-hidden="true">
-              <i class="pi pi-book"></i>
-            </div>
-            <div>
-              <span>Trayectoria completa</span>
-              <h2>Historia académica consolidada</h2>
-              <p>Las asignaturas están organizadas según el periodo en que fueron cursadas.</p>
+            <div class="consolidated-summary-content">
+              <div class="consolidated-summary-icon" aria-hidden="true">
+                <i class="pi pi-book"></i>
+              </div>
+              <div class="consolidated-summary-copy">
+                <h2>Historia académica consolidada</h2>
+                <p>Asignaturas, actividades y requisitos del programa en un solo lugar.</p>
+              </div>
             </div>
             <div class="consolidated-totals">
               <div>
@@ -225,60 +226,366 @@
                 <strong>{{ historiaConsolidadaData.length }}</strong>
                 <span>Asignaturas</span>
               </div>
+              <div>
+                <strong>{{ creditosCumplidos }}</strong>
+                <span>Créditos cumplidos</span>
+              </div>
             </div>
           </article>
 
-          <ng-container *ngTemplateOutlet="informacionAdicionalTemplate"></ng-container>
+          <section class="consolidated-additional card">
+            <button
+              type="button"
+              class="consolidated-additional-toggle"
+              [class.expanded]="trayectoriaPeriodosExpandida"
+              [attr.aria-expanded]="trayectoriaPeriodosExpandida"
+              aria-controls="consolidated-periods-content"
+              (click)="toggleTrayectoriaPeriodos()">
+              <span class="consolidated-additional-heading">
+                <span class="consolidated-additional-icon" aria-hidden="true">
+                  <i class="pi pi-calendar"></i>
+                </span>
+                <span>
+                  <strong>Trayectoria por periodos</strong>
+                  <small>Asignaturas organizadas cronológicamente por periodo académico</small>
+                </span>
+              </span>
 
-          <div class="period-timeline" *ngIf="historiaConsolidadaPorPeriodo.length > 0; else emptyHistoriaConsolidada">
-            <article class="period-card card" *ngFor="let grupo of historiaConsolidadaPorPeriodo">
-              <header class="period-card-header">
-                <div class="period-connector" aria-hidden="true"></div>
-                <div class="period-marker" aria-hidden="true"></div>
-                <div>
-                  <span>Periodo académico</span>
-                  <h3>{{ grupo.periodo }}</h3>
-                </div>
-                <div class="period-stats">
-                  <span>{{ grupo.asignaturas.length }} asignaturas</span>
-                  <span>{{ grupo.totalCreditos }} créditos</span>
-                </div>
-              </header>
+              <span class="consolidated-additional-action">
+                <span class="consolidated-additional-summary">
+                  {{ historiaConsolidadaPorPeriodo.length }} periodos · {{ historiaConsolidadaData.length }} asignaturas
+                  <ng-container *ngIf="asignaturasCanceladas.length > 0">
+                    · {{ asignaturasCanceladas.length }} canceladas
+                  </ng-container>
+                </span>
+                <i
+                  class="pi consolidated-additional-chevron"
+                  [ngClass]="trayectoriaPeriodosExpandida ? 'pi-angle-up' : 'pi-angle-down'"
+                  aria-hidden="true"></i>
+              </span>
+            </button>
 
-              <div class="period-course-list">
-                <div class="period-course-head" aria-hidden="true">
-                  <span>Código</span>
-                  <span>Asignatura</span>
-                  <span>Créditos</span>
-                  <span>Nota</span>
-                </div>
-                <div class="period-course" *ngFor="let asignatura of grupo.asignaturas">
-                  <span class="course-code">{{ asignatura.codigo }}</span>
-                  <strong class="course-name">{{ asignatura.nombre }}</strong>
-                  <div class="course-value">
-                    <span>Créditos</span>
-                    <strong>{{ asignatura.creditos }}</strong>
+            <div
+              id="consolidated-periods-content"
+              class="consolidated-additional-content consolidated-periods-content"
+              *ngIf="trayectoriaPeriodosExpandida">
+              <div
+                class="period-timeline"
+                *ngIf="historiaConsolidadaPorPeriodo.length > 0; else emptyHistoriaConsolidada">
+                <article class="period-card card" *ngFor="let grupo of historiaConsolidadaPorPeriodo">
+                  <header class="period-card-header">
+                    <div class="period-connector" aria-hidden="true"></div>
+                    <div class="period-marker" aria-hidden="true"></div>
+                    <div>
+                      <span>Periodo académico</span>
+                      <h3>{{ grupo.periodo }}</h3>
+                    </div>
+                    <div class="period-stats">
+                      <span>{{ grupo.asignaturas.length }} asignaturas</span>
+                      <span class="period-cancelled-stat" *ngIf="grupo.cancelaciones.length > 0">
+                        {{ grupo.cancelaciones.length }} canceladas
+                      </span>
+                      <span>{{ grupo.totalCreditos }} créditos</span>
+                    </div>
+                  </header>
+
+                  <div class="period-course-list" *ngIf="grupo.asignaturas.length > 0">
+                    <div class="period-course-head" aria-hidden="true">
+                      <span>Código</span>
+                      <span>Asignatura</span>
+                      <span>Créditos</span>
+                      <span>Nota</span>
+                    </div>
+                    <div class="period-course" *ngFor="let asignatura of grupo.asignaturas">
+                      <span class="course-code">{{ asignatura.codigo }}</span>
+                      <strong class="course-name">{{ asignatura.nombre }}</strong>
+                      <div class="course-value">
+                        <span>Créditos</span>
+                        <strong>{{ asignatura.creditos }}</strong>
+                      </div>
+                      <div class="course-value course-grade">
+                        <span>Nota</span>
+                        <strong>{{ asignatura.nota }}</strong>
+                      </div>
+                    </div>
                   </div>
-                  <div class="course-value course-grade">
-                    <span>Nota</span>
-                    <strong>{{ asignatura.nota }}</strong>
-                  </div>
-                </div>
-              </div>
-            </article>
-          </div>
 
-            <ng-template #emptyHistoriaConsolidada>
-              <div class="empty-state">
-                No hay asignaturas registradas en la historia académica.
+                  <div class="period-cancellations" *ngIf="grupo.cancelaciones.length > 0">
+                    <div class="period-cancellations-heading">
+                      <i class="pi pi-ban" aria-hidden="true"></i>
+                      <span>Cancelaciones aprobadas</span>
+                    </div>
+                    <div class="period-cancellation" *ngFor="let cancelacion of grupo.cancelaciones">
+                      <strong>{{ cancelacion.nombreAsignatura }}</strong>
+                      <span class="period-cancellation-group">
+                        Grupo {{ cancelacion.grupo || 'sin registrar' }}
+                      </span>
+                      <div class="period-cancellation-actions">
+                        <span class="period-cancellation-status">Cancelada</span>
+                        <button
+                          type="button"
+                          class="period-cancellation-document"
+                          [disabled]="!cancelacion.idSolicitud || cargandoDocumentoSolicitud === cancelacion.idSolicitud"
+                          (click)="verDocumentoFirmado(cancelacion)">
+                          <i
+                            class="pi"
+                            [ngClass]="cargandoDocumentoSolicitud === cancelacion.idSolicitud ? 'pi-spinner pi-spin' : 'pi-file-pdf'"
+                            aria-hidden="true"></i>
+                          {{ cargandoDocumentoSolicitud === cancelacion.idSolicitud ? 'Cargando…' : 'Ver documento firmado' }}
+                        </button>
+                      </div>
+                    </div>
+                    <p class="period-cancellation-error" *ngIf="errorDocumentoSolicitud">
+                      {{ errorDocumentoSolicitud }}
+                    </p>
+                  </div>
+                </article>
               </div>
-            </ng-template>
+
+              <ng-template #emptyHistoriaConsolidada>
+                <div class="empty-state">No hay asignaturas registradas en la historia académica.</div>
+              </ng-template>
+            </div>
+          </section>
+
+          <section class="consolidated-additional card">
+            <button
+              type="button"
+              class="consolidated-additional-toggle"
+              [class.expanded]="actividadesAcademicasConsolidadasExpandidas"
+              [attr.aria-expanded]="actividadesAcademicasConsolidadasExpandidas"
+              aria-controls="consolidated-activities-content"
+              (click)="toggleActividadesAcademicasConsolidadas()">
+              <span class="consolidated-additional-heading">
+                <span class="consolidated-additional-icon consolidated-activities-icon" aria-hidden="true">
+                  <i class="pi pi-folder-open"></i>
+                </span>
+                <span>
+                  <strong>Actividades académicas</strong>
+                  <small>Pasantías, publicaciones y práctica docente</small>
+                </span>
+              </span>
+
+              <span class="consolidated-additional-action">
+                <span class="consolidated-additional-summary">
+                  {{ totalActividadesAcademicasConsolidadas }} registros
+                </span>
+                <i
+                  class="pi consolidated-additional-chevron"
+                  [ngClass]="actividadesAcademicasConsolidadasExpandidas ? 'pi-angle-up' : 'pi-angle-down'"
+                  aria-hidden="true"></i>
+              </span>
+            </button>
+
+            <div
+              id="consolidated-activities-content"
+              class="consolidated-additional-content"
+              *ngIf="actividadesAcademicasConsolidadasExpandidas">
+              <div class="consolidated-activities-list">
+                <article class="data-panel card consolidated-activity-panel">
+                  <header class="panel-topbar consolidated-activity-header">
+                    <div class="consolidated-activity-title">
+                      <i class="pi pi-map-marker" aria-hidden="true"></i>
+                      <h3>Pasantías de investigación</h3>
+                    </div>
+                    <span class="pill">
+                      {{ historia.historiaAcademica.investigacion.pasantias.length }} registros
+                    </span>
+                  </header>
+                  <div
+                    class="table-shell"
+                    *ngIf="historia.historiaAcademica.investigacion.pasantias.length > 0; else sinPasantiasConsolidadas">
+                    <div class="table-scroll">
+                      <table class="data-table internship-table">
+                        <thead>
+                          <tr>
+                            <th>Créditos asignados</th>
+                            <th>Acta</th>
+                            <th>Fecha de acta</th>
+                            <th>Informe</th>
+                            <th>Ubicación</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let pasantia of historia.historiaAcademica.investigacion.pasantias">
+                            <td>{{ pasantia.creditosAsignados }}</td>
+                            <td>{{ pasantia.acta }}</td>
+                            <td>{{ pasantia.fechaActa || 'NR' }}</td>
+                            <td>{{ pasantia.informePasantia || 'NR' }}</td>
+                            <td>{{ pasantia.lugarPasantia || 'Sin registrar' }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <ng-template #sinPasantiasConsolidadas>
+                    <div class="empty-state">No hay pasantías registradas.</div>
+                  </ng-template>
+                </article>
+
+                <article class="data-panel card consolidated-activity-panel">
+                  <header class="panel-topbar consolidated-activity-header">
+                    <div class="consolidated-activity-title">
+                      <i class="pi pi-file" aria-hidden="true"></i>
+                      <h3>Publicaciones</h3>
+                    </div>
+                    <span class="pill">
+                      {{ historia.historiaAcademica.investigacion.publicaciones.length }} registros
+                    </span>
+                  </header>
+                  <div
+                    class="table-shell"
+                    *ngIf="historia.historiaAcademica.investigacion.publicaciones.length > 0; else sinPublicacionesConsolidadas">
+                    <div class="table-scroll">
+                      <table class="data-table publications-table">
+                        <thead>
+                          <tr>
+                            <th>DOI</th>
+                            <th>Créditos asignados</th>
+                            <th>Acta</th>
+                            <th>Nombre publicación</th>
+                            <th>Revista</th>
+                            <th>Tipo</th>
+                            <th>Categoría</th>
+                            <th>Fecha de aceptación</th>
+                            <th>Enlace</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let publicacion of historia.historiaAcademica.investigacion.publicaciones">
+                            <td>{{ publicacion.codigoPublicacion || 'NR' }}</td>
+                            <td>{{ publicacion.creditosAsignados }}</td>
+                            <td>{{ publicacion.acta || 'NR' }}</td>
+                            <td>{{ publicacion.nombrePublicacion || 'NR' }}</td>
+                            <td>{{ publicacion.nombreRevista || 'NR' }}</td>
+                            <td>{{ publicacion.tipoPublicacion || 'NR' }}</td>
+                            <td>{{ publicacion.categoriaIndexada || 'NR' }}</td>
+                            <td>{{ publicacion.fechaAceptacion || 'NR' }}</td>
+                            <td>
+                              <a
+                                *ngIf="publicacion.urlPublicacion; else enlaceConsolidadoNoRegistrado"
+                                class="publication-link"
+                                [href]="publicacion.urlPublicacion"
+                                target="_blank"
+                                rel="noopener noreferrer">
+                                Ver publicación
+                              </a>
+                              <ng-template #enlaceConsolidadoNoRegistrado>NR</ng-template>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <ng-template #sinPublicacionesConsolidadas>
+                    <div class="empty-state">No hay publicaciones registradas.</div>
+                  </ng-template>
+                </article>
+
+                <article class="data-panel card consolidated-activity-panel">
+                  <header class="panel-topbar consolidated-activity-header">
+                    <div class="consolidated-activity-title">
+                      <i class="pi pi-users" aria-hidden="true"></i>
+                      <h3>Práctica docente</h3>
+                    </div>
+                    <span class="pill">
+                      {{ historia.historiaAcademica.complementacion.practicasDocentes.length }} registros
+                    </span>
+                  </header>
+                  <div
+                    class="table-shell"
+                    *ngIf="historia.historiaAcademica.complementacion.practicasDocentes.length > 0; else sinPracticasConsolidadas">
+                    <div class="table-scroll">
+                      <table class="data-table teaching-practice-table">
+                        <thead>
+                          <tr>
+                            <th>Créditos asignados</th>
+                            <th>Acta</th>
+                            <th>Fecha de acta</th>
+                            <th>Tipo de actividad</th>
+                            <th>Actividad realizada</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr *ngFor="let practica of historia.historiaAcademica.complementacion.practicasDocentes">
+                            <td>{{ practica.creditosAsignados }}</td>
+                            <td>{{ practica.acta }}</td>
+                            <td>{{ practica.fechaActa || 'NR' }}</td>
+                            <td>
+                              <ng-container *ngIf="practica.actividades?.length; else tiposConsolidadosNoRegistrados">
+                                <div *ngFor="let actividad of practica.actividades">
+                                  {{ actividad.tipoActividad }}
+                                </div>
+                              </ng-container>
+                              <ng-template #tiposConsolidadosNoRegistrados>NR</ng-template>
+                            </td>
+                            <td>
+                              <ng-container *ngIf="practica.actividades?.length; else actividadesConsolidadasNoRegistradas">
+                                <div *ngFor="let actividad of practica.actividades">
+                                  {{ actividad.nombreActividad }}
+                                </div>
+                              </ng-container>
+                              <ng-template #actividadesConsolidadasNoRegistradas>NR</ng-template>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <ng-template #sinPracticasConsolidadas>
+                    <div class="empty-state">No hay registros de práctica docente.</div>
+                  </ng-template>
+                </article>
+              </div>
+            </div>
+          </section>
+
+          <section class="consolidated-additional card">
+            <button
+              type="button"
+              class="consolidated-additional-toggle"
+              [class.expanded]="informacionAdicionalConsolidadaExpandida"
+              [attr.aria-expanded]="informacionAdicionalConsolidadaExpandida"
+              aria-controls="consolidated-additional-content"
+              (click)="toggleInformacionAdicionalConsolidada()">
+              <span class="consolidated-additional-heading">
+                <span class="consolidated-additional-icon" aria-hidden="true">
+                  <i class="pi pi-info-circle"></i>
+                </span>
+                <span>
+                  <strong>Información adicional</strong>
+                  <small>Créditos, requisitos, reconocimientos y trabajo de grado</small>
+                </span>
+              </span>
+
+              <span class="consolidated-additional-action">
+                <span class="consolidated-additional-summary">
+                  {{ cantidadRequisitosCumplidos }} de {{ totalRequisitosAcademicos }} requisitos
+                </span>
+                <i
+                  class="pi consolidated-additional-chevron"
+                  [ngClass]="informacionAdicionalConsolidadaExpandida ? 'pi-angle-up' : 'pi-angle-down'"
+                  aria-hidden="true"></i>
+              </span>
+            </button>
+
+            <div
+              id="consolidated-additional-content"
+              class="consolidated-additional-content"
+              *ngIf="informacionAdicionalConsolidadaExpandida">
+              <ng-container *ngTemplateOutlet="informacionAdicionalTemplate"></ng-container>
+            </div>
+          </section>
+
         </div>
 
         <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'fundamentacion'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Área de Fundamentación</h2>
+              <div class="area-panel-title">
+                <i class="pi pi-book" aria-hidden="true"></i>
+                <h2>Área de Fundamentación</h2>
+              </div>
               <span class="pill">{{ fundamentacionData.length }} registros</span>
             </header>
             <div class="table-shell" *ngIf="
@@ -321,7 +628,10 @@
         <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'electivas'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Área de Electivas</h2>
+              <div class="area-panel-title">
+                <i class="pi pi-bookmark" aria-hidden="true"></i>
+                <h2>Área de Electivas</h2>
+              </div>
               <span class="pill">{{ electivasData.length }} registros</span>
             </header>
             <div class="table-shell" *ngIf="
@@ -362,7 +672,10 @@
         <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'asignaturasVistas'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Asignaturas de Investigación</h2>
+              <div class="area-panel-title">
+                <i class="pi pi-search" aria-hidden="true"></i>
+                <h2>Asignaturas de Investigación</h2>
+              </div>
               <span class="pill">{{
                 asignaturasVistasData.length
                 }}
@@ -408,7 +721,10 @@
         <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'pasantias'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Pasantías de Investigación</h2>
+              <div class="area-panel-title">
+                <i class="pi pi-map-marker" aria-hidden="true"></i>
+                <h2>Pasantías de Investigación</h2>
+              </div>
               <span class="pill">{{
                 historia.historiaAcademica.investigacion
                 .pasantias.length
@@ -462,7 +778,10 @@
         <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'publicaciones'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Publicaciones</h2>
+              <div class="area-panel-title">
+                <i class="pi pi-file" aria-hidden="true"></i>
+                <h2>Publicaciones</h2>
+              </div>
               <span class="pill">{{
                 historia.historiaAcademica.investigacion
                 .publicaciones.length
@@ -551,7 +870,10 @@
         <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'practicaDocente'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Práctica Docente</h2>
+              <div class="area-panel-title">
+                <i class="pi pi-users" aria-hidden="true"></i>
+                <h2>Práctica Docente</h2>
+              </div>
               <span class="pill">{{
                 historia.historiaAcademica.complementacion
                 .practicasDocentes.length
@@ -649,7 +971,10 @@
         <div class="table-container" *ngIf="historyViewMode === 'areas' && activeMenuItem === 'competenciasEmpresariales'">
           <article class="data-panel card">
             <header class="panel-topbar">
-              <h2>Competencias Empresariales</h2>
+              <div class="area-panel-title">
+                <i class="pi pi-briefcase" aria-hidden="true"></i>
+                <h2>Competencias Empresariales</h2>
+              </div>
               <span class="pill">{{
                 competenciasEmpresarialesData.length
                 }}
@@ -772,6 +1097,67 @@
               </div>
             </article>
           </section>
+
+          <article class="data-panel card homologated-panel" *ngIf="asignaturasHomologadas.length > 0">
+            <header class="panel-topbar homologated-panel-header">
+              <div class="homologated-panel-title">
+                <span class="homologated-panel-icon" aria-hidden="true">
+                  <i class="pi pi-check-circle"></i>
+                </span>
+                <div>
+                  <h2>Asignaturas homologadas</h2>
+                  <p>Reconocimientos académicos aprobados</p>
+                </div>
+              </div>
+              <span class="pill">
+                {{ asignaturasHomologadas.length }}
+                {{ asignaturasHomologadas.length === 1 ? 'registro' : 'registros' }}
+              </span>
+            </header>
+
+            <div class="table-shell">
+              <div class="table-scroll">
+                <table class="data-table homologated-table">
+                  <thead>
+                    <tr>
+                      <th>Asignatura</th>
+                      <th>Institución</th>
+                      <th>Programa</th>
+                      <th>Créditos</th>
+                      <th>Nota</th>
+                      <th>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let asignatura of asignaturasHomologadas">
+                      <td>
+                        <div class="homologated-subject">
+                          <span class="homologated-subject-icon" aria-hidden="true">
+                            <i class="pi pi-book"></i>
+                          </span>
+                          <strong>{{ asignatura.nombreAsignatura || 'Sin registrar' }}</strong>
+                        </div>
+                      </td>
+                      <td>{{ asignatura.institucionProcedencia || 'Sin registrar' }}</td>
+                      <td>{{ asignatura.programaProcedencia || 'Sin registrar' }}</td>
+                      <td class="homologated-number">
+                        <strong>{{ asignatura.creditos ?? 'NR' }}</strong>
+                      </td>
+                      <td class="homologated-number homologated-grade">
+                        <strong>{{ asignatura.calificacion ?? 'NR' }}</strong>
+                      </td>
+                      <td>
+                        <span class="homologated-status">
+                          <span class="homologated-status-dot" aria-hidden="true"></span>
+                          Homologada
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </article>
 
           <section class="requirements">
             <div class="requirement publication">

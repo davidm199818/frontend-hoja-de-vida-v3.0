@@ -485,7 +485,17 @@ export class VisoravalComponent implements OnInit {
                     }
                 },
                 (error) => {
+                    this.avalEnProceso = false;
+                    this.deshabilitarRechazo = false;
                     console.error('Error al enviar la solicitud:', error);
+                    this.confirmationService.confirm({
+                        message: 'No fue posible avalar la solicitud. Revise el detalle en la terminal e intente nuevamente.',
+                        header: 'Error de aval',
+                        icon: 'pi pi-exclamation-triangle',
+                        acceptLabel: 'Aceptar',
+                        rejectVisible: false,
+                        accept: () => {},
+                    });
                 }
             );
         } else {

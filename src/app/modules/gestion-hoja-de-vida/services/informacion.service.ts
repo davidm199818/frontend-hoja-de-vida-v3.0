@@ -103,6 +103,16 @@ export class InformacionService {
     );
   }
 
+  obtenerDocumentoFirmadoSolicitud(
+    codigoEstudiante: string,
+    idSolicitud: number
+  ): Observable<HttpResponse<Blob>> {
+    return this.http.get(
+      `${this.apiUrl}/${encodeURIComponent(codigoEstudiante)}/solicitudes/${idSolicitud}/documento-firmado`,
+      { responseType: 'blob', observe: 'response' }
+    );
+  }
+
   private crearNombreArchivoResolucion(numeroResolucion: string): string {
     const codigo = numeroResolucion
       .trim()
