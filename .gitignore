@@ -46,3 +46,6 @@ testem.log
 Thumbs.db
 
 .vscode
+
+# Configuración local de contenedores
+/deploy/front.env

@@ -19,7 +19,16 @@ export const gestion_solicitudes = {
 
 export const gestion_autenticacion = {
     production: true,
-    api_url: 'https://apptest.unicauca.edu.co:4410/api/auth/google',
+    api_url:
+        window['env']?.AUTENTICACION_API_URL ||
+        'http://localhost:8096/api/auth/google',
+};
+
+export const gestion_hoja_de_vida = {
+    production: true,
+    api_url:
+        window['env']?.HOJA_VIDA_API_URL ||
+        'http://localhost:8080/api/hoja-vida/estudiantes',
 };
 
 export const gestion_expertos = {
@@ -40,4 +49,9 @@ export const gestion_trabajo_grado = {
 export const gestion_docentes_estudiantes = {
     production: true,
     api_url: 'https://apptest.unicauca.edu.co:4414/api/',
+};
+
+export const evaluacion_docente = {
+    production: true,
+    api_url: 'http://localhost:8086/api/',
 };

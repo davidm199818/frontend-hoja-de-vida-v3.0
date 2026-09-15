@@ -31,6 +31,11 @@ export const dev_login = {
     api_url: 'http://localhost:8080/api/',
 };
 
+export const gestion_hoja_de_vida = {
+    production: false,
+    api_url: 'http://localhost:8080/api/hoja-vida/estudiantes',
+};
+
 export const gestion_expertos = {
     production: false,
     api_url: 'http://localhost:8082/api/',

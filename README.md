@@ -10,6 +10,18 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
+## Contenedor local para hoja de vida
+
+1. Cree `deploy/front.env` a partir de `deploy/front.env.example` y configure Firebase, autenticación y la URL del backend de hoja de vida.
+2. Inicie Docker Desktop.
+3. Construya o actualice el único contenedor local:
+
+```powershell
+.\deploy\actualizar-contenedor-local.ps1
+```
+
+El frontend queda disponible en `http://localhost:4200`. La imagen utiliza Nginx, admite las rutas internas de Angular y recibe las URL de los servicios al iniciar el contenedor.
+
 ## Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
