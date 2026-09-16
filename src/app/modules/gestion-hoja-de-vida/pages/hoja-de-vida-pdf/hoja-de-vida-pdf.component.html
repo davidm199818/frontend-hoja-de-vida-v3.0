@@ -9,11 +9,40 @@
     </button>
 </div>
 
-<div class="document" *ngIf="historia" #pdfContent>
+<div class="document" *ngIf="historia">
 
     <!-- HEADER -->
-    <div class="top-banner">
-        <img src="assets/layout/images/banner-superior.png" alt="Logo Universidad">
+    <header class="institutional-header">
+        <img
+            class="institutional-shield"
+            src="assets/layout/images/escudo-unicauca.png"
+            alt="Escudo de la Universidad del Cauca">
+        <span class="institutional-divider" aria-hidden="true"></span>
+        <div class="institutional-faculty">
+            <strong>Facultad de</strong>
+            <strong>Ingeniería Electrónica</strong>
+            <strong>y Telecomunicaciones</strong>
+        </div>
+        <span class="institutional-divider" aria-hidden="true"></span>
+        <div class="institutional-program">
+            <span>Maestría en</span>
+            <span>Computación</span>
+        </div>
+    </header>
+
+    <main class="document-body" #pdfContent>
+
+    <div
+        class="document-watermarks"
+        aria-hidden="true"
+        data-html2canvas-ignore="true">
+        <div
+            class="document-watermark"
+            *ngFor="let posicion of posicionesMarcasAgua"
+            [style.top.px]="posicion">
+            <span>Documento no oficial</span>
+            <small>Válido únicamente para consulta</small>
+        </div>
     </div>
 
     <!-- DATOS ESTUDIANTE -->
@@ -298,9 +327,24 @@
         </div>
     </div>
 
+    </main>
+
     <!-- FOOTER -->
-    <div class="bottom-banner">
-        <img src="assets/layout/images/footer.png" alt="Pie institucional">
-    </div>
+    <footer class="institutional-footer">
+        <img
+            class="institutional-accreditation"
+            src="assets/layout/images/acreditacion.png"
+            alt="Acreditación institucional">
+        <div class="institutional-contact">
+            <span>Carrera 2 No. 3N-100, Segundo Piso, Sector Tulcán</span>
+            <span>Popayán - Cauca - Colombia</span>
+            <span>Teléfono (602) 8209800 Exts. 2103 - 2145</span>
+            <strong>maestriacomputacion@unicauca.edu.co | www.unicauca.edu.co</strong>
+        </div>
+        <div class="institutional-certifications">
+            <img src="assets/layout/images/Logo_ISO_9001.png" alt="Certificación ISO 9001">
+            <img src="assets/layout/images/IQNET-Azul-2.png" alt="Certificación IQNET">
+        </div>
+    </footer>
 
 </div>
