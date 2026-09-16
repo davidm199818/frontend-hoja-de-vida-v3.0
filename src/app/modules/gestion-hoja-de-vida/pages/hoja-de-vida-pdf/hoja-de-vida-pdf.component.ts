@@ -192,18 +192,20 @@ export class HojaDeVidaPdfComponent implements OnInit {
       return;
     }
 
+    const content = this.pdfContent.nativeElement;
     this.generandoPdf = true;
 
     try {
       this.fechaHoraGeneracion = this.obtenerFechaHoraGeneracion();
+      content.classList.add('pdf-export-mode');
       this.cdr.detectChanges();
       await new Promise((resolve) => setTimeout(resolve, 0));
 
-      const content = this.pdfContent.nativeElement;
       const doc = new jsPDF({
         orientation: 'p',
         unit: 'pt',
-        format: 'a4'
+        format: 'a4',
+        compress: true
       });
 
       const margen = 20;
@@ -232,7 +234,9 @@ export class HojaDeVidaPdfComponent implements OnInit {
 
       doc.save(`hoja-de-vida-${this.codigoEstudiante || 'estudiante'}.pdf`);
     } finally {
+      content.classList.remove('pdf-export-mode');
       this.generandoPdf = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -257,22 +261,34 @@ export class HojaDeVidaPdfComponent implements OnInit {
     const seccionesProtegidas = this.obtenerSeccionesProtegidas(content, canvas);
     const milimetroEnPuntos = 72 / 25.4;
     const altoPagina = doc.internal.pageSize.getHeight();
-    const inicioPrimeraPagina = 62 * milimetroEnPuntos;
+    const inicioPrimeraPagina = 56 * milimetroEnPuntos;
     const finUltimaPagina = 234 * milimetroEnPuntos;
     const inicioPaginaNormal = margen;
     const finPaginaNormal = altoPagina - margen;
+    const altoPaginaNormal = finPaginaNormal - inicioPaginaNormal;
     const altoPrimeraYUltima = finUltimaPagina - inicioPrimeraPagina;
     const altoPrimeraSinPie = finPaginaNormal - inicioPrimeraPagina;
     const altoUltimaSinEncabezado = finUltimaPagina - inicioPaginaNormal;
+    const altoContenidoOriginal = (canvas.height * usableWidth) / canvas.width;
+    const paginasObjetivo = altoContenidoOriginal <= altoPrimeraYUltima
+      ? 1
+      : Math.max(
+          2,
+          1 + Math.ceil(
+            Math.max(0, altoContenidoOriginal - altoPrimeraSinPie) / altoPaginaNormal
+          )
+        );
+    const anchoContenido = usableWidth;
+    const posicionHorizontal = margen;
     let posicionOrigen = 0;
     let numeroPagina = 0;
 
     while (posicionOrigen < canvas.height) {
       const alturaRestanteEnPdf = (
-        (canvas.height - posicionOrigen) * usableWidth
+        (canvas.height - posicionOrigen) * anchoContenido
       ) / canvas.width;
       let inicioContenido = inicioPaginaNormal;
-      let alturaDisponible = finPaginaNormal - inicioPaginaNormal;
+      let alturaDisponible = altoPaginaNormal;
 
       if (numeroPagina === 0) {
         inicioContenido = inicioPrimeraPagina;
@@ -283,22 +299,80 @@ export class HojaDeVidaPdfComponent implements OnInit {
         } else {
           alturaDisponible = altoPrimeraSinPie;
         }
-      } else if (alturaRestanteEnPdf <= altoUltimaSinEncabezado) {
-        alturaDisponible = altoUltimaSinEncabezado;
+      } else {
+        if (alturaRestanteEnPdf <= altoUltimaSinEncabezado) {
+          alturaDisponible = altoUltimaSinEncabezado;
+        } else if (alturaRestanteEnPdf <= altoPaginaNormal) {
+          alturaDisponible = alturaRestanteEnPdf - altoUltimaSinEncabezado;
+        }
       }
 
-      const maxAlturaFragmento = Math.floor(
-        (alturaDisponible * canvas.width) / usableWidth
+      const seccionObligatoriaActual = seccionesProtegidas.find(
+        seccion => seccion.proteccionObligatoria
+          && seccion.inicio <= posicionOrigen + 10
+          && seccion.fin > posicionOrigen
+      );
+      if (seccionObligatoriaActual) {
+        const alturaSeccionObligatoria = (
+          (seccionObligatoriaActual.fin - posicionOrigen) * anchoContenido
+        ) / canvas.width;
+        if (
+          alturaSeccionObligatoria > alturaDisponible
+          && alturaSeccionObligatoria <= altoPaginaNormal
+        ) {
+          alturaDisponible = Math.min(
+            altoPaginaNormal,
+            Math.max(
+              alturaSeccionObligatoria,
+              alturaRestanteEnPdf - altoUltimaSinEncabezado
+            )
+          );
+        }
+      }
+
+      const maxAlturaFragmento = Math.max(
+        1,
+        Math.ceil((alturaDisponible * canvas.width) / anchoContenido)
+      );
+      const maxAlturaSeccionProtegida = Math.ceil(
+        (altoPaginaNormal * canvas.width) / anchoContenido
       );
       const limitePagina = Math.min(posicionOrigen + maxAlturaFragmento, canvas.height);
       const seccionQueNoCabe = seccionesProtegidas.find(
         seccion => seccion.inicio > posicionOrigen + 10
           && seccion.inicio < limitePagina
           && seccion.fin > limitePagina
-          && seccion.fin - seccion.inicio <= maxAlturaFragmento
+          && (
+            seccion.fin - seccion.inicio <= maxAlturaFragmento
+            || (
+              seccion.proteccionObligatoria
+              && seccion.fin - seccion.inicio <= maxAlturaSeccionProtegida
+            )
+          )
       );
-      const alturaFragmento = seccionQueNoCabe
+      const paginasRestantesObjetivo = Math.max(
+        0,
+        paginasObjetivo - numeroPagina - 1
+      );
+      const capacidadRestanteObjetivo = paginasRestantesObjetivo === 0
+        ? 0
+        : altoUltimaSinEncabezado
+          + Math.max(0, paginasRestantesObjetivo - 1) * altoPaginaNormal;
+      const alturaProtegida = seccionQueNoCabe
         ? seccionQueNoCabe.inicio - posicionOrigen
+        : 0;
+      const contenidoRestanteSiProtege = seccionQueNoCabe
+        ? (
+            (canvas.height - posicionOrigen - alturaProtegida) * anchoContenido
+          ) / canvas.width
+        : 0;
+      const puedeProtegerSeccion = seccionQueNoCabe
+        && (
+          seccionQueNoCabe.proteccionObligatoria
+          || contenidoRestanteSiProtege <= capacidadRestanteObjetivo
+        );
+      const alturaFragmento = puedeProtegerSeccion
+        ? alturaProtegida
         : limitePagina - posicionOrigen;
 
       const fragmento = document.createElement('canvas');
@@ -325,14 +399,16 @@ export class HojaDeVidaPdfComponent implements OnInit {
         doc.addPage();
       }
 
-      const alturaEnPdf = (alturaFragmento * usableWidth) / canvas.width;
+      const alturaEnPdf = (alturaFragmento * anchoContenido) / canvas.width;
       doc.addImage(
-        fragmento.toDataURL('image/png'),
-        'PNG',
-        margen,
+        fragmento.toDataURL('image/jpeg', 0.9),
+        'JPEG',
+        posicionHorizontal,
         inicioContenido,
-        usableWidth,
-        alturaEnPdf
+        anchoContenido,
+        alturaEnPdf,
+        undefined,
+        'FAST'
       );
       this.agregarMarcaAgua(doc);
       this.agregarMembreteInstitucional(
@@ -501,7 +577,7 @@ export class HojaDeVidaPdfComponent implements OnInit {
   private obtenerSeccionesProtegidas(
     content: HTMLElement,
     canvas: HTMLCanvasElement
-  ): Array<{ inicio: number; fin: number }> {
+  ): Array<{ inicio: number; fin: number; proteccionObligatoria: boolean }> {
     const rectanguloContenido = content.getBoundingClientRect();
     const escalaCanvas = canvas.height / rectanguloContenido.height;
 
@@ -510,7 +586,8 @@ export class HojaDeVidaPdfComponent implements OnInit {
         const rectanguloElemento = elemento.getBoundingClientRect();
         return {
           inicio: Math.round((rectanguloElemento.top - rectanguloContenido.top) * escalaCanvas),
-          fin: Math.round((rectanguloElemento.bottom - rectanguloContenido.top) * escalaCanvas)
+          fin: Math.round((rectanguloElemento.bottom - rectanguloContenido.top) * escalaCanvas),
+          proteccionObligatoria: elemento.classList.contains('homologated-section')
         };
       })
       .filter(seccion => seccion.inicio > 0 && seccion.fin <= canvas.height)

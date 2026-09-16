@@ -646,6 +646,103 @@ body {
     font-weight: 700;
 }
 
+/* Compacta solo el PDF descargado sin modificar textos ni fuentes. */
+.pdf-export-mode {
+    .student-section {
+        margin-bottom: 24px;
+    }
+
+    .student-info-grid {
+        row-gap: 10px;
+        margin-top: 14px;
+    }
+
+    .student-info-item {
+        padding-bottom: 5px;
+    }
+
+    .section-title {
+        margin-top: 30px;
+        margin-bottom: 12px;
+    }
+
+    .table-card {
+        margin-top: 6px;
+    }
+
+    .table-card-head {
+        padding-block: 7px;
+    }
+
+    .table-card-body {
+        padding: 6px;
+    }
+
+    .academic-table th,
+    .academic-table td {
+        padding-block: 6px;
+    }
+
+    .academic-table-modern .area-row td {
+        padding-block: 7px;
+    }
+
+    .two-columns {
+        margin-top: 24px;
+    }
+
+    .detail-card {
+        padding-block: 10px;
+    }
+
+    .compact-title {
+        margin-bottom: 10px;
+    }
+
+    .detail-grid,
+    .publication-list {
+        gap: 7px;
+    }
+
+    .detail-row,
+    .publication-list li {
+        padding-block: 6px;
+    }
+
+    .recognitions-section {
+        margin-top: 24px;
+    }
+
+    .recognition-item {
+        padding-block: 10px;
+    }
+
+    .signature {
+        margin-top: 42px;
+    }
+
+    .homologated-section {
+        margin-top: 4px;
+
+        .table-card-head {
+            padding-block: 4px;
+        }
+
+        .table-card-body {
+            padding: 2px;
+        }
+
+        .academic-table th,
+        .academic-table td {
+            padding-block: 3px;
+        }
+
+        .homologated-label {
+            padding-block: 0;
+        }
+    }
+}
+
 @media print {
     body {
         background: white;
